@@ -168,7 +168,7 @@
         <div class="content">
             <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​         本文主要用来记录自己Hexo博客搭建过程中遇到的坑。</p>
 <h2 id="个人域名篇"><a href="#个人域名篇" class="headerlink" title="个人域名篇"></a>个人域名篇</h2><p>​         这个个人域名的确有点坑，明明按着教程的操作一步一步来的，还是弄了一晚上，到最后才发现是校园网DNS的坑。。。</p>
-<h4 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h4><p>​        首先我们要购买一个属于自己的域名，可以去腾讯云，阿里云等网站进行购买，这里我在阿里云购买opda.tech，为什么不用com域名，因为这个便宜。</p>
+<h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><p>​        首先我们要购买一个属于自己的域名，可以去腾讯云，阿里云等网站进行购买，这里我在阿里云购买opda.tech，为什么不用com域名，因为这个便宜。</p>
 <p>​    购买域名后我们还要得到github仓库的IP。通过cmd命令行，输入Ping 你的名字.github.io获取名字   </p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/2.png" alt></p>
 <p>红色箭头所指就是你github仓库的IP，然后我们就可以进行DNS解析。</p>
@@ -178,17 +178,17 @@
 <p>解析完的结果</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/11.png" alt></p>
 <p>​    </p>
-<h4 id="github的绑定"><a href="#github的绑定" class="headerlink" title="github的绑定"></a>github的绑定</h4><p>​        进入你创建的仓库内，点击Setting</p>
+<h3 id="github的绑定"><a href="#github的绑定" class="headerlink" title="github的绑定"></a>github的绑定</h3><p>​        进入你创建的仓库内，点击Setting</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/5.png" alt></p>
 <p>​        GitHub Pages设置</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/6.png" alt></p>
 <p>就这样github仓库的绑定就完成啦！</p>
-<h4 id="最后一步"><a href="#最后一步" class="headerlink" title="最后一步"></a>最后一步</h4><p>我们还要在本地博客的source文件夹下新建一个CNAME.txt文本，在里面输入我们的自定义域名</p>
+<h3 id="最后一步"><a href="#最后一步" class="headerlink" title="最后一步"></a>最后一步</h3><p>我们还要在本地博客的source文件夹下新建一个CNAME.txt文本，在里面输入我们的自定义域名</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/7.png" alt></p>
 <p>最后我们Git Base重新部署一下博客就行啦！</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
 
-<h4 id="深坑"><a href="#深坑" class="headerlink" title="深坑"></a>深坑</h4><p>​        如果你是校园网用户的话，你要小心校园网DNS这个坑，会让你无法访问你自己的域名，所以解决方法就是修改我们的DNS就好了。</p>
+<h3 id="深坑"><a href="#深坑" class="headerlink" title="深坑"></a>深坑</h3><p>​        如果你是校园网用户的话，你要小心校园网DNS这个坑，会让你无法访问你自己的域名，所以解决方法就是修改我们的DNS就好了。</p>
 <p>打开我们的控制面板—网络共享中心</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/8.png" alt></p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/9.png" alt></p>
