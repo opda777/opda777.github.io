@@ -132,17 +132,17 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-10-30T02:00:00.000Z">2019-10-30</time>
+                <time class="level-item has-text-grey" datetime="2019-10-30T16:24:05.797Z">2019-10-31</time>
                 
                 <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Hexo/">Hexo</a>
+                <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
                 </div>
                 
                 
                 <span class="level-item has-text-grey">
                     
                     
-                    4 分钟 读完 (大约 542 个字)
+                    9 分钟 读完 (大约 1382 个字)
                 </span>
                 
                 
@@ -151,40 +151,21 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2019/10/30/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">Hexo博客搭建过程(踩坑)</a>
+                <a class="has-link-black-ter" href="/2019/10/31/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/">Unity Visual Effect Graph初探</a>
             
         </h1>
         <div class="content">
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​         本文主要用来记录自己Hexo博客搭建过程中遇到的坑。</p>
-<h1 id="个人域名篇"><a href="#个人域名篇" class="headerlink" title="个人域名篇"></a>个人域名篇</h1><p>​         这个个人域名的确有点坑，明明按着教程的操作一步一步来的，还是弄了一晚上，到最后才发现是校园网DNS的坑。。。</p>
-<h2 id="1-准备"><a href="#1-准备" class="headerlink" title="1.准备"></a>1.准备</h2><p>​        首先我们要购买一个属于自己的域名，可以去腾讯云，阿里云等网站进行购买，这里我在阿里云购买opda.tech，为什么不用com域名，因为这个便宜。</p>
-<p>​    购买域名后我们还要得到github仓库的IP。通过cmd命令行，输入Ping 你的名字.github.io获取名字   </p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/2.png" alt></p>
-<p>红色箭头所指就是你github仓库的IP，然后我们就可以进行DNS解析。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/1.png" alt></p>
-<p>进去之后，点击新手引导，输入cmd获得的IP即可。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/4.png" alt></p>
-<p>解析完的结果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/11.png" alt></p>
-<p>​    </p>
-<h2 id="2-github的绑定"><a href="#2-github的绑定" class="headerlink" title="2.github的绑定"></a>2.github的绑定</h2><p>​        进入你创建的仓库内，点击Setting</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/5.png" alt></p>
-<p>​        GitHub Pages设置</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/6.png" alt></p>
-<p>就这样github仓库的绑定就完成啦！</p>
-<h2 id="3-最后一步"><a href="#3-最后一步" class="headerlink" title="3.最后一步"></a>3.最后一步</h2><p>我们还要在本地博客的source文件夹下新建一个CNAME.txt文本，在里面输入我们的自定义域名</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/7.png" alt></p>
-<p>最后我们Git Base重新部署一下博客就行啦！</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
-
-<h2 id="4-深坑"><a href="#4-深坑" class="headerlink" title="4.深坑"></a>4.深坑</h2><p>​        如果你是校园网用户的话，你要小心校园网DNS这个坑，会让你无法访问你自己的域名，所以解决方法就是修改我们的DNS就好了。</p>
-<p>打开我们的控制面板—网络共享中心</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/8.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/9.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/10.png" alt></p>
-
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近为了实现动画课程设计的烟花效果，所以要学习一下Unity的新特效工具Visual Effect Graph，特此记录学习的过程，避免以后会忘记。</p>
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/10/31/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
@@ -204,13 +185,17 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-10-27T16:01:31.993Z">2019-10-28</time>
+                <time class="level-item has-text-grey" datetime="2019-10-30T02:00:00.000Z">2019-10-30</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Hexo/">Hexo</a>
+                </div>
                 
                 
                 <span class="level-item has-text-grey">
                     
                     
-                    1 分钟 读完 (大约 121 个字)
+                    4 分钟 读完 (大约 543 个字)
                 </span>
                 
                 
@@ -219,26 +204,21 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2019/10/28/hello-world/">Hello World</a>
+                <a class="has-link-black-ter" href="/2019/10/30/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">Hexo博客搭建过程(踩坑)</a>
             
         </h1>
         <div class="content">
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="hljs-string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​         本文主要用来记录自己Hexo博客搭建过程中遇到的坑。</p>
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/10/30/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
@@ -305,7 +285,7 @@
                         分类
                     </p>
                     <p class="title has-text-weight-normal">
-                        1
+                        2
                     </p>
                 </div>
             </div>
@@ -315,7 +295,7 @@
                         标签
                     </p>
                     <p class="title has-text-weight-normal">
-                        1
+                        2
                     </p>
                 </div>
             </div>
@@ -385,6 +365,14 @@
             <span class="level-end">
                 <span class="level-item tag">1</span>
             </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Unity/">
+            <span class="level-start">
+                <span class="level-item">Unity</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
         </a></li>
             </ul>
         </div>
@@ -396,7 +384,7 @@
         <h3 class="menu-label">
             标签云
         </h3>
-        <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a>
+        <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Unity/" style="font-size: 10px;">Unity</a>
     </div>
 </div>
     
@@ -408,6 +396,25 @@
         <h3 class="menu-label">
             最新文章
         </h3>
+        
+        <article class="media">
+            
+            <a href="/2019/10/31/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Unity Visual Effect Graph初探">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-10-30T16:24:05.797Z">2019-10-31</time></div>
+                    <a href="/2019/10/31/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Unity Visual Effect Graph初探</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
+                    </p>
+                </div>
+            </div>
+        </article>
         
         <article class="media">
             
@@ -423,25 +430,6 @@
                     <a href="/2019/10/30/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Hexo博客搭建过程(踩坑)</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Hexo/">Hexo</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2019/10/28/hello-world/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Hello World">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-10-27T16:01:31.993Z">2019-10-28</time></div>
-                    <a href="/2019/10/28/hello-world/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Hello World</a>
-                    <p class="is-size-7 is-uppercase">
-                        
                     </p>
                 </div>
             </div>
@@ -489,6 +477,13 @@
                     </a>
                 </div>
                 
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Unity/">
+                        <span class="tag">Unity</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
             </div>
         </div>
     </div>
@@ -513,6 +508,25 @@
         
         <article class="media">
             
+            <a href="/2019/10/31/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Unity Visual Effect Graph初探">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-10-30T16:24:05.797Z">2019-10-31</time></div>
+                    <a href="/2019/10/31/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Unity Visual Effect Graph初探</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/10/30/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/images/thumbnail.svg" alt="Hexo博客搭建过程(踩坑)">
@@ -525,25 +539,6 @@
                     <a href="/2019/10/30/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Hexo博客搭建过程(踩坑)</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/Hexo/">Hexo</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
-        <article class="media">
-            
-            <a href="/2019/10/28/hello-world/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Hello World">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-10-27T16:01:31.993Z">2019-10-28</time></div>
-                    <a href="/2019/10/28/hello-world/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Hello World</a>
-                    <p class="is-size-7 is-uppercase">
-                        
                     </p>
                 </div>
             </div>
@@ -587,6 +582,13 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/Hexo/">
                         <span class="tag">Hexo</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Unity/">
+                        <span class="tag">Unity</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
