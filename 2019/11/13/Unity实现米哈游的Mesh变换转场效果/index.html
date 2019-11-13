@@ -10,16 +10,16 @@
 <title>Unity实现米哈游的Mesh变换转场效果 - Opda</title>
 
 
-    <meta name="description" content="前言之前看过米哈游大佬制作的桃源恋歌MMD，被其中的Mesh变换转场效果所折服了，所以自己想模仿着实现这个效果，幸好kerjiro技术美术大神开源了这方面的视觉特效项目，感觉自己如果想成为TA还有好长的路要走。。。 最终效果首先让我们来看一下最终效果  实现思路其实这个效果是通过几何着色器来实现的，主要思路就是通过几何着色器对三角面片的顶点进行添加，构成一个Cube。  几何着色器相信大家接触的最">
+    <meta name="description" content="前言之前看过米哈游大佬制作的桃源恋歌MMD，被其中的Mesh变换转场效果所折服了，所以自己想模仿着实现这个效果，幸好kerjiro技术美术大神开源了这方面的视觉特效项目，感觉自己如果想成为TA还有好长的路要走。。。">
 <meta name="keywords" content="Unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity实现米哈游的Mesh变换转场效果">
 <meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;11&#x2F;13&#x2F;Unity%E5%AE%9E%E7%8E%B0%E7%B1%B3%E5%93%88%E6%B8%B8%E7%9A%84Mesh%E5%8F%98%E6%8D%A2%E8%BD%AC%E5%9C%BA%E6%95%88%E6%9E%9C&#x2F;index.html">
 <meta property="og:site_name" content="Opda">
-<meta property="og:description" content="前言之前看过米哈游大佬制作的桃源恋歌MMD，被其中的Mesh变换转场效果所折服了，所以自己想模仿着实现这个效果，幸好kerjiro技术美术大神开源了这方面的视觉特效项目，感觉自己如果想成为TA还有好长的路要走。。。 最终效果首先让我们来看一下最终效果  实现思路其实这个效果是通过几何着色器来实现的，主要思路就是通过几何着色器对三角面片的顶点进行添加，构成一个Cube。  几何着色器相信大家接触的最">
+<meta property="og:description" content="前言之前看过米哈游大佬制作的桃源恋歌MMD，被其中的Mesh变换转场效果所折服了，所以自己想模仿着实现这个效果，幸好kerjiro技术美术大神开源了这方面的视觉特效项目，感觉自己如果想成为TA还有好长的路要走。。。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
-<meta property="og:updated_time" content="2019-11-13T09:07:03.837Z">
+<meta property="og:updated_time" content="2019-11-13T09:26:34.514Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
 
@@ -149,7 +149,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    21 分钟 读完 (大约 3181 个字)
+                    21 分钟 读完 (大约 3182 个字)
                 </span>
                 
                 
@@ -168,6 +168,8 @@
         </h1>
         <div class="content">
             <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前看过米哈游大佬制作的桃源恋歌MMD，被其中的Mesh变换转场效果所折服了，所以自己想模仿着实现这个效果，幸好kerjiro技术美术大神开源了这方面的视觉特效项目，感觉自己如果想成为TA还有好长的路要走。。。</p>
+ <a id="more"></a> 
+
 <h2 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h2><p>首先让我们来看一下最终效果</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-MeshTransform/Effect.gif" alt="Effect"></p>
 <h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2><p>其实这个效果是通过几何着色器来实现的，主要思路就是通过几何着色器对三角面片的顶点进行添加，构成一个Cube。</p>
