@@ -7,19 +7,19 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>Unity VEG实现烟花效果 - Opda</title>
+<title>UE4学习笔记(1)——简单框架 - Opda</title>
 
 
-    <meta name="description" content="前言这次利用VEG实现普通烟花效果。">
-<meta name="keywords" content="Unity">
+    <meta name="description" content="前言纪录自己的UE4学习之路">
+<meta name="keywords" content="UE4">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Unity VEG实现烟花效果">
-<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;11&#x2F;01&#x2F;Unity-VEG%E5%AE%9E%E7%8E%B0%E7%83%9F%E8%8A%B1%E6%95%88%E6%9E%9C&#x2F;index.html">
+<meta property="og:title" content="UE4学习笔记(1)——简单框架">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;12&#x2F;13&#x2F;UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(1)%E2%80%94%E2%80%94%E7%AE%80%E5%8D%95%E6%A1%86%E6%9E%B6&#x2F;index.html">
 <meta property="og:site_name" content="Opda">
-<meta property="og:description" content="前言这次利用VEG实现普通烟花效果。">
+<meta property="og:description" content="前言纪录自己的UE4学习之路">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
-<meta property="og:updated_time" content="2019-11-01T10:52:06.467Z">
+<meta property="og:updated_time" content="2019-11-06T13:21:23.097Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
 
@@ -79,7 +79,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/game.svg" alt="Unity VEG实现烟花效果" height="28">
+                <img src="/images/game.svg" alt="UE4学习笔记(1)——简单框架" height="28">
             
             </a>
         </div>
@@ -139,17 +139,17 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-10-31T16:32:55.866Z">2019-11-01</time>
+                <time class="level-item has-text-grey" datetime="2019-12-13T05:51:31.367Z">2019-12-13</time>
                 
                 <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
+                <a class="has-link-grey -link" href="/categories/UE4/">UE4</a>
                 </div>
                 
                 
                 <span class="level-item has-text-grey">
                     
                     
-                    3 分钟 读完 (大约 414 个字)
+                    5 分钟 读完 (大约 817 个字)
                 </span>
                 
                 
@@ -163,34 +163,36 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                Unity VEG实现烟花效果
+                UE4学习笔记(1)——简单框架
             
         </h1>
         <div class="content">
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这次利用VEG实现普通烟花效果。</p>
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>纪录自己的UE4学习之路</p>
  <a id="more"></a> 
 
-<h2 id="主粒子"><a href="#主粒子" class="headerlink" title="主粒子"></a>主粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/1.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/2.png" alt></p>
-<p>设置主粒子的速度，位置，周期等参数。</p>
-<h3 id="Position-Line"><a href="#Position-Line" class="headerlink" title="Position(Line)"></a>Position(Line)</h3><p>用于设置粒子的初始化位置，从Start到End随机生成一个位置点。</p>
-<h2 id="烟花粒子"><a href="#烟花粒子" class="headerlink" title="烟花粒子"></a>烟花粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/3.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/4.png" alt></p>
-<p>这里利用GPU Event当主粒子消亡时生成新的眼花粒子。</p>
-<h3 id="GPU-Event"><a href="#GPU-Event" class="headerlink" title="GPU Event"></a>GPU Event</h3><p> GPU事件由系统在特定条件下触发，并且可以被其他系统捕获以生成新粒子。 可以通过读取Source或使用Inherit Source节点在子系统中访问事件数据。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/5.png" alt></p>
-<h2 id="主粒子的拖尾粒子"><a href="#主粒子的拖尾粒子" class="headerlink" title="主粒子的拖尾粒子"></a>主粒子的拖尾粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/6.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/7.png" alt></p>
-<h2 id="烟花粒子的拖尾"><a href="#烟花粒子的拖尾" class="headerlink" title="烟花粒子的拖尾"></a>烟花粒子的拖尾</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/8.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/9.png" alt></p>
-<p>就这样我们的烟花就完成啦</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/10.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/11.png" alt></p>
-<p>现在看起来还是有点难看的，但问题不大，给它加点后处理就好了，PostProcessVolume</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/12.png" alt></p>
-<p>就这样，好看多了</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/13.png" alt></p>
-<h1 id="未完待续"><a href="#未完待续" class="headerlink" title="未完待续"></a>未完待续</h1><p>可能后面还想加点其他的功能，所以未完待续。</p>
+<h1 id="UE4的简单框架"><a href="#UE4的简单框架" class="headerlink" title="UE4的简单框架"></a>UE4的简单框架</h1><blockquote>
+<p> UE创世，万物皆UObject，接着有Actor 。</p>
+</blockquote>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note/1.png" alt="继承关系"> </p>
+<h2 id="Uobject"><a href="#Uobject" class="headerlink" title="Uobject"></a>Uobject</h2><p>Uobject是UE4中最基础的类，具有 元数据、反射生成、GC垃圾回收、序列化、编辑器可见，Class Default Object等功能。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note/2.png" alt> </p>
+<h2 id="Actor"><a href="#Actor" class="headerlink" title="Actor"></a>Actor</h2><p>Actor是UE4中最基本的场景元素，与Unity3D的gameobject相似，本身是一个容器，但是与unity不同的是，Actor没有任何可视化属性，甚至连位置属性也没有。但是也是与Unity相似，可以挂在多个可视化的组件( Component)，以达到各种功能，Actor也可以有子Actor。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note/3.png" alt></p>
+<p>Actor继承至Uobject，多了 Replication（网络复制）,Spawn（生生死死），Tick(有了心跳)等功能。</p>
+<h2 id="组件-Component"><a href="#组件-Component" class="headerlink" title="组件(Component)"></a>组件(Component)</h2><p>组件挂在Actor身上发挥功能，例如位置组件，Actor的最终位置来至于他的根组件。组件也可以有根组件。</p>
+<h2 id="Pawn"><a href="#Pawn" class="headerlink" title="Pawn"></a>Pawn</h2><p>Pawn是可以被控制的物体，相当于有controller的大脑，他可以是交通工具，鱼等，可以默认为生物的基类。</p>
+<h2 id="Character"><a href="#Character" class="headerlink" title="Character"></a>Character</h2><p>Character是人形的Actor，继承于Pawn， 默认拥有一个用于碰撞的胶囊体组件(CapsuleComponent)和运动相关的组件(CharacterMoveMentComponent)，并具有一些动画相关的功能。可以认为是人性动物的基类。 </p>
+<h2 id="控制器-Controller"><a href="#控制器-Controller" class="headerlink" title="控制器(Controller)"></a>控制器(Controller)</h2><p>控制器用于控制Pawn的行为， 一般分为AIController和PlayerController。控制器也是从Actor派生的，因此也可以加入到场景中。 </p>
+<h3 id="PlayerController"><a href="#PlayerController" class="headerlink" title="PlayerController"></a>PlayerController</h3><p> 玩家控制器。是Pawn和控制其的玩家之间的桥梁，PlayerController代表了人类玩家的意愿。 </p>
+<h3 id="AIController"><a href="#AIController" class="headerlink" title="AIController"></a>AIController</h3><p> 用于控制NPC的控制器，决定了NPC如何与玩家互动。 </p>
+<h2 id="显示"><a href="#显示" class="headerlink" title="显示"></a>显示</h2><h3 id="HUD"><a href="#HUD" class="headerlink" title="HUD"></a>HUD</h3><p>UI, 显示玩家的名字，血条，得分等信息。 </p>
+<h3 id="相机"><a href="#相机" class="headerlink" title="相机"></a>相机</h3><p> 每个PlayerConroller都有一个PlayerCameraManager，代表了玩家的视角。 </p>
+<h2 id="游戏规则和状态"><a href="#游戏规则和状态" class="headerlink" title="游戏规则和状态"></a>游戏规则和状态</h2><h3 id="GameMode"><a href="#GameMode" class="headerlink" title="GameMode"></a>GameMode</h3><p> 游戏模式。处理游戏的规则，只存在与服务器端，因此客户端相关的逻辑不能存放在GameMode中。 </p>
+<h3 id="GameState"><a href="#GameState" class="headerlink" title="GameState"></a>GameState</h3><p>游戏状态， 记录游戏的数据，比如当前游戏的进度，世界任务的完成状态等，会自动同步到各个客户端。 </p>
+<h3 id="PlayerState"><a href="#PlayerState" class="headerlink" title="PlayerState"></a>PlayerState</h3><p> 玩家状态。记录玩家个人的数据，比如名字分数等，会自动同步到各个客户端。 </p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>GamePlay框架使用了MVC架构，其中Pawn是视图，PlayerState是数据模型，PlayerController是控制器。</p>
+<p>一个游戏由游戏规则(GameMode)和游戏状态组成(GameState)；玩家在游戏里的化身是Pawn，玩家通过PlayerConroller控制着自己的化身，通过PlayerCameraManager观察世界，PlayerState记录了玩家的数据，HUD显示了这些状态；NPC则由AIConroller去控制，与玩家进行互动。 </p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note/GameFramework.jpg" alt="GameFramework"></p>
 
         </div>
         
@@ -198,7 +200,7 @@
             <div class="level-start">
                 <div class="level-item">
                     <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/Unity/" rel="tag">Unity</a>
+                    <a class="has-link-grey -link" href="/tags/UE4/" rel="tag">UE4</a>
                 </div>
             </div>
         </div>
@@ -245,16 +247,16 @@
     <div class="level post-navigation is-flex-wrap is-mobile">
         
         <div class="level-start">
-            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/11/06/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(1)%E2%80%94%E2%80%94%E7%AE%80%E5%8D%95%E6%A1%86%E6%9E%B6/">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/12/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/">
                 <i class="level-item fas fa-chevron-left"></i>
-                <span class="level-item">UE4学习笔记(1)——简单框架</span>
+                <span class="level-item">UE4学习笔记(2)---蓝图接口-标签</span>
             </a>
         </div>
         
         
         <div class="level-end">
-            <a class="level level-item has-link-grey  article-nav-next" href="/2019/10/31/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/">
-                <span class="level-item">Unity Visual Effect Graph初探</span>
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/10/30/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">
+                <span class="level-item">Hexo博客搭建过程(踩坑)</span>
                 <i class="level-item fas fa-chevron-right"></i>
             </a>
         </div>
@@ -273,7 +275,7 @@
 <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
 <script>
 	var gitment = new Gitment({
-		id: '84a35d4da6badcc57c37f9ce4cebb50f',
+		id: '536b228590f4c9fdf1fda6209f68296c',
 		owner: 'opda777',
 		repo: 'opda777.github.io',
 		oauth: {
@@ -378,34 +380,74 @@
         <a class="is-flex" href="#前言">
         <span class="has-mr-6">1</span>
         <span>前言</span>
-        </a><ul class="menu-list"><li>
-        <a class="is-flex" href="#主粒子">
-        <span class="has-mr-6">1.1</span>
-        <span>主粒子</span>
-        </a><ul class="menu-list"><li>
-        <a class="is-flex" href="#Position-Line">
-        <span class="has-mr-6">1.1.1</span>
-        <span>Position(Line)</span>
-        </a></li></ul></li><li>
-        <a class="is-flex" href="#烟花粒子">
-        <span class="has-mr-6">1.2</span>
-        <span>烟花粒子</span>
-        </a><ul class="menu-list"><li>
-        <a class="is-flex" href="#GPU-Event">
-        <span class="has-mr-6">1.2.1</span>
-        <span>GPU Event</span>
-        </a></li></ul></li><li>
-        <a class="is-flex" href="#主粒子的拖尾粒子">
-        <span class="has-mr-6">1.3</span>
-        <span>主粒子的拖尾粒子</span>
         </a></li><li>
-        <a class="is-flex" href="#烟花粒子的拖尾">
-        <span class="has-mr-6">1.4</span>
-        <span>烟花粒子的拖尾</span>
-        </a></li></ul></li><li>
-        <a class="is-flex" href="#未完待续">
+        <a class="is-flex" href="#UE4的简单框架">
         <span class="has-mr-6">2</span>
-        <span>未完待续</span>
+        <span>UE4的简单框架</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Uobject">
+        <span class="has-mr-6">2.1</span>
+        <span>Uobject</span>
+        </a></li><li>
+        <a class="is-flex" href="#Actor">
+        <span class="has-mr-6">2.2</span>
+        <span>Actor</span>
+        </a></li><li>
+        <a class="is-flex" href="#组件-Component">
+        <span class="has-mr-6">2.3</span>
+        <span>组件(Component)</span>
+        </a></li><li>
+        <a class="is-flex" href="#Pawn">
+        <span class="has-mr-6">2.4</span>
+        <span>Pawn</span>
+        </a></li><li>
+        <a class="is-flex" href="#Character">
+        <span class="has-mr-6">2.5</span>
+        <span>Character</span>
+        </a></li><li>
+        <a class="is-flex" href="#控制器-Controller">
+        <span class="has-mr-6">2.6</span>
+        <span>控制器(Controller)</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#PlayerController">
+        <span class="has-mr-6">2.6.1</span>
+        <span>PlayerController</span>
+        </a></li><li>
+        <a class="is-flex" href="#AIController">
+        <span class="has-mr-6">2.6.2</span>
+        <span>AIController</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#显示">
+        <span class="has-mr-6">2.7</span>
+        <span>显示</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#HUD">
+        <span class="has-mr-6">2.7.1</span>
+        <span>HUD</span>
+        </a></li><li>
+        <a class="is-flex" href="#相机">
+        <span class="has-mr-6">2.7.2</span>
+        <span>相机</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#游戏规则和状态">
+        <span class="has-mr-6">2.8</span>
+        <span>游戏规则和状态</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#GameMode">
+        <span class="has-mr-6">2.8.1</span>
+        <span>GameMode</span>
+        </a></li><li>
+        <a class="is-flex" href="#GameState">
+        <span class="has-mr-6">2.8.2</span>
+        <span>GameState</span>
+        </a></li><li>
+        <a class="is-flex" href="#PlayerState">
+        <span class="has-mr-6">2.8.3</span>
+        <span>PlayerState</span>
+        </a></li></ul></li></ul></li><li>
+        <a class="is-flex" href="#总结">
+        <span class="has-mr-6">3</span>
+        <span>总结</span>
         </a></li></ul>
             </div>
         </div>
@@ -429,11 +471,11 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/game.svg" alt="Unity VEG实现烟花效果" height="28">
+                    <img src="/images/game.svg" alt="UE4学习笔记(1)——简单框架" height="28">
                 
                 </a>
                 <p class="is-size-7">
-                &copy; 2019 Opda&nbsp;
+                &copy; 2020 Opda&nbsp;
                 Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
                         href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 

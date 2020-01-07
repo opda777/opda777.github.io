@@ -7,19 +7,19 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>UE4学习笔记(2)---蓝图接口-标签 - Opda</title>
+<title>Unity Visual Effect Graph初探 - Opda</title>
 
 
-    <meta name="description" content="蓝图接口 蓝图接口（Blueprint Interface） 是一个或多个函数的集合 - 只有名称，没有实现。可以添加到其他蓝图中。任何添加了该接口的蓝图都保证拥有这些函数。接口的函数 可以在添加它的每个蓝图中提供功能。在本质上，这类似于一般编程中的接口概念， 它允许多个不同类型的对象通过一个公共接口 共享和被访问。简单地说，蓝图接口允许不同的蓝图相互共享和发送数据。">
-<meta name="keywords" content="UE4">
+    <meta name="description" content="前言最近为了实现动画课程设计的烟花效果，所以要学习一下Unity的新特效工具Visual Effect Graph，特此记录学习的过程，避免以后会忘记。">
+<meta name="keywords" content="Unity">
 <meta property="og:type" content="article">
-<meta property="og:title" content="UE4学习笔记(2)---蓝图接口-标签">
-<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;11&#x2F;13&#x2F;UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE&#x2F;index.html">
+<meta property="og:title" content="Unity Visual Effect Graph初探">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;12&#x2F;13&#x2F;Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2&#x2F;index.html">
 <meta property="og:site_name" content="Opda">
-<meta property="og:description" content="蓝图接口 蓝图接口（Blueprint Interface） 是一个或多个函数的集合 - 只有名称，没有实现。可以添加到其他蓝图中。任何添加了该接口的蓝图都保证拥有这些函数。接口的函数 可以在添加它的每个蓝图中提供功能。在本质上，这类似于一般编程中的接口概念， 它允许多个不同类型的对象通过一个公共接口 共享和被访问。简单地说，蓝图接口允许不同的蓝图相互共享和发送数据。">
+<meta property="og:description" content="前言最近为了实现动画课程设计的烟花效果，所以要学习一下Unity的新特效工具Visual Effect Graph，特此记录学习的过程，避免以后会忘记。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
-<meta property="og:updated_time" content="2019-11-13T15:15:37.044Z">
+<meta property="og:updated_time" content="2019-10-31T11:41:50.887Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
 
@@ -79,7 +79,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/game.svg" alt="UE4学习笔记(2)---蓝图接口-标签" height="28">
+                <img src="/images/game.svg" alt="Unity Visual Effect Graph初探" height="28">
             
             </a>
         </div>
@@ -139,17 +139,17 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-11-13T13:10:19.217Z">2019-11-13</time>
+                <time class="level-item has-text-grey" datetime="2019-12-13T05:51:32.201Z">2019-12-13</time>
                 
                 <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/UE4/">UE4</a>
+                <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
                 </div>
                 
                 
                 <span class="level-item has-text-grey">
                     
                     
-                    3 分钟 读完 (大约 407 个字)
+                    9 分钟 读完 (大约 1382 个字)
                 </span>
                 
                 
@@ -163,26 +163,65 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                UE4学习笔记(2)---蓝图接口-标签
+                Unity Visual Effect Graph初探
             
         </h1>
         <div class="content">
-            <h1 id="蓝图接口"><a href="#蓝图接口" class="headerlink" title="蓝图接口"></a>蓝图接口</h1><p> <strong>蓝图接口（Blueprint Interface）</strong> 是一个或多个函数的集合 - 只有名称，没有实现。可以添加到其他蓝图中。任何添加了该接口的蓝图都保证拥有这些函数。接口的函数 可以在添加它的每个蓝图中提供功能。在本质上，这类似于一般编程中的接口概念， 它允许多个不同类型的对象通过一个公共接口 共享和被访问。简单地说，蓝图接口允许不同的蓝图相互共享和发送数据。 </p>
-<a id="more"></a>
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近为了实现动画课程设计的烟花效果，所以要学习一下Unity的新特效工具Visual Effect Graph，特此记录学习的过程，避免以后会忘记。</p>
+ <a id="more"></a> 
 
-<h2 id="创建蓝图接口"><a href="#创建蓝图接口" class="headerlink" title="创建蓝图接口"></a>创建蓝图接口</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/1.png" alt></p>
-<p>新建函数和函数的输入输出值</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/2.png" alt></p>
-<p>要使用蓝图接口，就必须继承该接口，并且实现。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/3.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/4.png" alt></p>
-<p>实现接口之后，其他蓝图类就可以调用此方法，实现了蓝图之间的通信。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/5.png" alt></p>
-<h2 id="标签"><a href="#标签" class="headerlink" title="标签"></a>标签</h2><p>在调用蓝图接口方法前，先使用标签来判断是敌人还是友军，其实我感觉UE4的标签和Unity的标签还是挺相似的</p>
-<h3 id="标签的设置方法"><a href="#标签的设置方法" class="headerlink" title="标签的设置方法"></a>标签的设置方法</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/6.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/7.png" alt></p>
-<h2 id="调用蓝图接口方法"><a href="#调用蓝图接口方法" class="headerlink" title="调用蓝图接口方法"></a>调用蓝图接口方法</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/8.png" alt></p>
-<p>就这样完成了蓝图接口的调用</p>
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><blockquote>
+<p>目前Visual Effect Graph只能在HDRP中使用，也就是说必须使用Unity2018.3以上的版本。</p>
+</blockquote>
+<h2 id="为什么要使用VEF"><a href="#为什么要使用VEF" class="headerlink" title="为什么要使用VEF"></a>为什么要使用VEF</h2><p>我们已经有传统的Particle System系统，那为什么要用VEF呢？</p>
+<p>其实VEF能比传统的Particle System能做出更加复杂酷炫的特效，具体可以查看Unity的官方文档。而且我们认为VEF还有一个更加巨大有点就是可视化，我刚开始接触Particle System的时候，看到这么多参数，头都晕了….这次VEF的工作流非常的清楚。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/24.jpg" alt="VEF和传统Particle System区别"></p>
+<h2 id="VEF的工作流"><a href="#VEF的工作流" class="headerlink" title="VEF的工作流"></a>VEF的工作流</h2><p>关于VEF的安装和配置就不说了，官方文档有详细的讲解。</p>
+<p>首先我们来看一下VEF的画面，可以看出和shader Graph非常的相似。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/1.png" alt="VEG"></p>
+<p>VEF默认模板由4个流程构成(VEF称为Context)，包含着多个Block，整个VEF工作流抽象成4个部分</p>
+<h3 id="Spawn"><a href="#Spawn" class="headerlink" title="Spawn"></a>Spawn</h3><p>负责生成粒子，右键点击添加的Block都是与粒子生成相关。</p>
+<h3 id="Initialize"><a href="#Initialize" class="headerlink" title="Initialize"></a>Initialize</h3><p>初始化模块，负责初始化粒子的属性，如初始速度，生命周期。</p>
+<h3 id="Update"><a href="#Update" class="headerlink" title="Update"></a>Update</h3><p>每帧对粒子的参数进行更新，比如重力，移动速度，坐标等。</p>
+<h3 id="Output"><a href="#Output" class="headerlink" title="Output"></a>Output</h3><p>主要负责粒子的渲染，如颜色，形状等。</p>
+<h4 id="注意-1"><a href="#注意-1" class="headerlink" title="注意"></a>注意</h4><p>每个Context连接并不是唯一，比如一个Spawn可连接多个Initialize，朝多个方向发射</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/2.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/3.png" alt></p>
+<h2 id="VEF的使用"><a href="#VEF的使用" class="headerlink" title="VEF的使用"></a>VEF的使用</h2><h3 id="小测试"><a href="#小测试" class="headerlink" title="小测试"></a>小测试</h3><p>VEF的小测试，以粒子的初始速度为基准设置粒子的颜色</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/4.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/5.png" alt></p>
+<p>实现以原点为圆心，半径为1，圆以内的呈绿色，圆以外的呈紫色。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/6.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/7.png" alt></p>
+<p>也可添加Get Attribute：Color结点获取粒子原本的颜色，达到新效果。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/8.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/9.png" alt></p>
+<h3 id="Point-Cache-bake-tool-点阵缓存烘焙器"><a href="#Point-Cache-bake-tool-点阵缓存烘焙器" class="headerlink" title="Point Cache bake tool(点阵缓存烘焙器)"></a>Point Cache bake tool(点阵缓存烘焙器)</h3><p>这个是VEG添加的新工具，它的作用是把一张图或者Mesh的信息，烘焙成一张点阵图，然后再VEG中使用，可烘焙的信息有颜色，法线，位置，UV信息等。</p>
+<p>首先点开烘焙工具，烘焙工具在上方Window—Visual Effects—Utilities—Point Cache bake tool,选择要烘焙的网格和信息，这里我选择胶囊体作为测试。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/10.png" alt></p>
+<p>在VEG中使用以下两个节点，即可得到一个粒子形成的胶囊体</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/11.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/12.png" alt></p>
+<h3 id="Vector-Field-Force-矢量场力"><a href="#Vector-Field-Force-矢量场力" class="headerlink" title="Vector Field Force(矢量场力)"></a>Vector Field Force(矢量场力)</h3><p>官方文档解释：矢量场力施加从包含矢量数据的3D纹理中获取的力。我也不是很明白，以后有机会再研究。通过结合矢量场力和Point Cache我们可以实现粒子物体爆掉的感觉。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/13.png" alt></p>
+<h3 id="VFX-Binder脚本，参数与事件的绑定"><a href="#VFX-Binder脚本，参数与事件的绑定" class="headerlink" title="VFX Binder脚本，参数与事件的绑定"></a>VFX Binder脚本，参数与事件的绑定</h3><p>为了在游戏运行时根据游戏内的逻辑来实时动态改变VEG，我们可以用VFX Binder绑定脚本。</p>
+<h4 id="参数绑定"><a href="#参数绑定" class="headerlink" title="参数绑定"></a>参数绑定</h4><p>首先，我们为VFX添加VFX Parameter binder脚本</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/14.png" alt></p>
+<p>在Hierarchy面板新建一个Cube，这个Cube用于传递位置参数进VEG，实时更新粒子喷发的位置。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/15.png" alt></p>
+<p>进入VEG在参数面板新建一个Vector3用于存储Cube的位置参数，并传递给粒子。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/18.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/17.png" alt="最终结果"></p>
+<h4 id="事件绑定"><a href="#事件绑定" class="headerlink" title="事件绑定"></a>事件绑定</h4><p>在VEG里事件作为一个单独的Context，不能附加任何的Block并且只能和Spawn相连，作用是管理Spawn的发射开关。</p>
+<p>现在做鼠标点击位置生成粒子效果</p>
+<p>首先新建一个Plane作为脚本的载体，并且绑定VFX Mouse Event Blinder事件,拖入新建的VFX</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/22.png" alt></p>
+<p>双击VEX，新建一个Event，注意名字要和脚本上的EventName要一致。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/21.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/23.png" alt></p>
+<h5 id="注意-2"><a href="#注意-2" class="headerlink" title="注意"></a>注意</h5><p>Location为Source的Attribute只能用在Initializes中的Block上</p>
+<p>最后我们就能实现鼠标点击位置生成粒子的效果了。</p>
+<h1 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h1><p>第一次尝试这样做笔记，比较痛苦，但成就感也是满满的。</p>
 
         </div>
         
@@ -190,7 +229,7 @@
             <div class="level-start">
                 <div class="level-item">
                     <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/UE4/" rel="tag">UE4</a>
+                    <a class="has-link-grey -link" href="/tags/Unity/" rel="tag">Unity</a>
                 </div>
             </div>
         </div>
@@ -236,10 +275,17 @@
 <div class="card card-transparent">
     <div class="level post-navigation is-flex-wrap is-mobile">
         
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/12/13/Unity%E5%AE%9E%E7%8E%B0%E7%B1%B3%E5%93%88%E6%B8%B8%E7%9A%84Mesh%E5%8F%98%E6%8D%A2%E8%BD%AC%E5%9C%BA%E6%95%88%E6%9E%9C/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Unity实现米哈游的Mesh变换转场效果</span>
+            </a>
+        </div>
+        
         
         <div class="level-end">
-            <a class="level level-item has-link-grey  article-nav-next" href="/2019/11/13/Unity%E5%AE%9E%E7%8E%B0%E7%B1%B3%E5%93%88%E6%B8%B8%E7%9A%84Mesh%E5%8F%98%E6%8D%A2%E8%BD%AC%E5%9C%BA%E6%95%88%E6%9E%9C/">
-                <span class="level-item">Unity实现米哈游的Mesh变换转场效果</span>
+            <a class="level level-item has-link-grey  article-nav-next" href="/2019/12/13/Unity-VEG%E5%AE%9E%E7%8E%B0%E7%83%9F%E8%8A%B1%E6%95%88%E6%9E%9C/">
+                <span class="level-item">Unity VEG实现烟花效果</span>
                 <i class="level-item fas fa-chevron-right"></i>
             </a>
         </div>
@@ -258,7 +304,7 @@
 <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
 <script>
 	var gitment = new Gitment({
-		id: 'a6acbc0b5bf0f7ecda24658a44634c8e',
+		id: '1549b21b423f9fd9cf58277f007b3f70',
 		owner: 'opda777',
 		repo: 'opda777.github.io',
 		oauth: {
@@ -360,26 +406,62 @@
                     目录
                 </h3>
                 <ul class="menu-list"><li>
-        <a class="is-flex" href="#蓝图接口">
+        <a class="is-flex" href="#前言">
         <span class="has-mr-6">1</span>
-        <span>蓝图接口</span>
-        </a><ul class="menu-list"><li>
-        <a class="is-flex" href="#创建蓝图接口">
-        <span class="has-mr-6">1.1</span>
-        <span>创建蓝图接口</span>
-        </a></li><li>
-        <a class="is-flex" href="#标签">
+        <span>前言</span>
+        </a><ul class="menu-list"><ul class="menu-list"><li>
+        <a class="is-flex" href="#注意">
+        <span class="has-mr-6">1.1.1</span>
+        <span>注意</span>
+        </a></li></ul><li>
+        <a class="is-flex" href="#为什么要使用VEF">
         <span class="has-mr-6">1.2</span>
-        <span>标签</span>
-        </a><ul class="menu-list"><li>
-        <a class="is-flex" href="#标签的设置方法">
-        <span class="has-mr-6">1.2.1</span>
-        <span>标签的设置方法</span>
-        </a></li></ul></li><li>
-        <a class="is-flex" href="#调用蓝图接口方法">
+        <span>为什么要使用VEF</span>
+        </a></li><li>
+        <a class="is-flex" href="#VEF的工作流">
         <span class="has-mr-6">1.3</span>
-        <span>调用蓝图接口方法</span>
-        </a></li></ul></li></ul>
+        <span>VEF的工作流</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Spawn">
+        <span class="has-mr-6">1.3.1</span>
+        <span>Spawn</span>
+        </a></li><li>
+        <a class="is-flex" href="#Initialize">
+        <span class="has-mr-6">1.3.2</span>
+        <span>Initialize</span>
+        </a></li><li>
+        <a class="is-flex" href="#Update">
+        <span class="has-mr-6">1.3.3</span>
+        <span>Update</span>
+        </a></li><li>
+        <a class="is-flex" href="#Output">
+        <span class="has-mr-6">1.3.4</span>
+        <span>Output</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#VEF的使用">
+        <span class="has-mr-6">1.4</span>
+        <span>VEF的使用</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#小测试">
+        <span class="has-mr-6">1.4.1</span>
+        <span>小测试</span>
+        </a></li><li>
+        <a class="is-flex" href="#Point-Cache-bake-tool-点阵缓存烘焙器">
+        <span class="has-mr-6">1.4.2</span>
+        <span>Point Cache bake tool(点阵缓存烘焙器)</span>
+        </a></li><li>
+        <a class="is-flex" href="#Vector-Field-Force-矢量场力">
+        <span class="has-mr-6">1.4.3</span>
+        <span>Vector Field Force(矢量场力)</span>
+        </a></li><li>
+        <a class="is-flex" href="#VFX-Binder脚本，参数与事件的绑定">
+        <span class="has-mr-6">1.4.4</span>
+        <span>VFX Binder脚本，参数与事件的绑定</span>
+        </a></li></ul></li></ul></li><li>
+        <a class="is-flex" href="#感受">
+        <span class="has-mr-6">2</span>
+        <span>感受</span>
+        </a></li></ul>
             </div>
         </div>
     </div>
@@ -402,11 +484,11 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/game.svg" alt="UE4学习笔记(2)---蓝图接口-标签" height="28">
+                    <img src="/images/game.svg" alt="Unity Visual Effect Graph初探" height="28">
                 
                 </a>
                 <p class="is-size-7">
-                &copy; 2019 Opda&nbsp;
+                &copy; 2020 Opda&nbsp;
                 Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
                         href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
