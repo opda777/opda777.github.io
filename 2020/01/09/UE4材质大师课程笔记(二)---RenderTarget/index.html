@@ -19,7 +19,7 @@
 <meta property="og:description" content="RenderTargetUE4的RenderTarget感觉和Unity的差不多，都是获得一个摄像机的渲染结果，然后存在RenderTarget里面进行读取使用。 在UE4中要使用RenderTarget，首先要添加SceneCapture2D组件或者SceneCapture Cube组件，前者获取2D，后者获取Cube立方体贴图。    RenderTarget的使用渲染材质在UE4中过程化生成">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
-<meta property="og:updated_time" content="2020-01-09T13:00:06.262Z">
+<meta property="og:updated_time" content="2020-01-10T12:57:27.247Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
 
@@ -149,7 +149,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    2 分钟 读完 (大约 268 个字)
+                    7 分钟 读完 (大约 993 个字)
                 </span>
                 
                 
@@ -177,7 +177,28 @@
 <p>可以看出以上这个需要529条指令<img src="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/Noise%E6%8C%87%E4%BB%A4.png" alt="Noise指令"></p>
 <p>将材质绘制到RenderTarget</p>
 <p><img src="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/%E5%B0%86%E6%9D%90%E8%B4%A8%E6%B8%B2%E6%9F%93%E5%88%B0RenderTarget.png" alt="将材质渲染到RenderTarget"></p>
-<p>得到</p>
+<p>得到左边的RenderTarget噪点图了，然后右键创建静态纹理则可以得到可以用的Texture纹理了。</p>
+<p><img src="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/image-20200109210329543.png" alt="image-20200109210329543"></p>
+<p>指令就变为了34，效率得到了提升。</p>
+<p><img src="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/image-20200109210452008.png" alt="image-20200109210452008"></p>
+<h3 id="高级应用"><a href="#高级应用" class="headerlink" title="高级应用"></a>高级应用</h3><h4 id="高度图"><a href="#高度图" class="headerlink" title="高度图"></a>高度图</h4><p>效果如下，随着鼠标左键的按下，在平面生成不同的高度。</p>
+<p><img src="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/image-20200110182834948.png" alt="image-20200110182834948"></p>
+<p>1.首先我们要创建MAT_HeightfieldPainter材质，设置如下，注意要把shading Model改为Unlit无光照模式。这个材质主要用于控制物体在Z轴的世界偏移。</p>
+<p><img src="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/image-20200110183116238.png" alt="image-20200110183116238"></p>
+<p>2.创建MAT_ForceSplat材质，设置如下，主要用于处理鼠标点击平面所产生的uv坐标，通过下面的计算获得一个关于这个uv坐标为圆心的渐变圆形贴图</p>
+<p><img src="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/image-20200110183515861.png" alt="image-20200110183515861"></p>
+<p>3.新建一个HeightFieldPainter的Actor蓝图，设置如下</p>
+<p><img src="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/image-20200110200935951.png" alt="image-20200110200935951"></p>
+<p>然后在构造函数里面进行动态材质的设置，这里主要针对我们上面的材质创建动态材质。</p>
+<p><img src="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/image-20200110201017886.png" alt="image-20200110201017886"></p>
+<p>新建TraceFromCamera函数，函数用于从摄像头方向射出射线，进行射线检测，如果检测到碰撞物体，就进行伤害传递。</p>
+<p><img src="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/image-20200110204023291.png" alt="image-20200110204023291"></p>
+<p>Begin函数，首先我们要为新建一个RenderTexture并保存，同时将RT传递给Z轴偏移的MAT_HeightfieldPainter材质。</p>
+<p><img src="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/image-20200110204531617.png" alt="image-20200110204531617"></p>
+<p>最后处理伤害函数，传递参数给MAT_ForceSplat材质，例如点击的uv坐标，力度，大小，最后要用Draw Material to Render Target函数将材质绘制到RT里面，这样HeighfieldPainter材质才会根据RT图进行Z轴的偏移。</p>
+<p><img src="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/image-20200110204555551.png" alt="image-20200110204555551"></p>
+<p><img src="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/image-20200110204706652.png" alt="image-20200110204706652"></p>
+<p>这里注意，这种方法只适用于平面，计算点击位置的uv坐标也比较简单，首先获取点击位置的世界坐标，然后获取静态网格的worldTransform,然后通过Invert Transform获得从世界坐标到静态网格本地坐标的变换矩阵，将点击位置从世界空间转换为静态网格的本地空间，当然我们也要将得到的本地坐标转为uv坐标，就要除于网格的长宽，映射到【0，1】，这样就得到了正确的uv坐标。</p>
 
         </div>
         
@@ -366,6 +387,10 @@
         <a class="is-flex" href="#渲染材质">
         <span class="has-mr-6">1.1.1</span>
         <span>渲染材质</span>
+        </a></li><li>
+        <a class="is-flex" href="#高级应用">
+        <span class="has-mr-6">1.1.2</span>
+        <span>高级应用</span>
         </a></li></ul></li></ul></li></ul>
             </div>
         </div>
