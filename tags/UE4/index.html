@@ -205,7 +205,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    2 分钟 读完 (大约 270 个字)
+                    3 分钟 读完 (大约 407 个字)
                 </span>
                 
                 
@@ -214,26 +214,21 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/">UE4官方直播材质篇 笔记</a>
+                <a class="has-link-black-ter" href="/2020/08/23/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/">UE4学习笔记(2)---蓝图接口-标签</a>
             
         </h1>
         <div class="content">
-            <h1 id="矢量表达式"><a href="#矢量表达式" class="headerlink" title="矢量表达式"></a>矢量表达式</h1><p><strong>ObjectPositionWS</strong>：输出对象边界的世界场景空间中心位置。</p>
-<p><img src="https://pic3.zhimg.com/80/v2-8ab9518a016e348827d82e09b7eccfbe_hd.png" alt="img"></p>
-<p><strong>Absolute world position</strong>：输出世界空间中当前像素的位置。</p>
-<p>![absolu world position](D:\360MoveData\Users\Administrator.WIN-OGAUOR7DBB3\Desktop\absolu world position.png)</p>
-<p><strong>VertexNormalWS</strong>:表达式输出世界场景空间顶点法线</p>
-<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CVertexNormalWS.png" alt="VertexNormalWS"></p>
-<p><strong>PixelNormalWS</strong>：表达式输出当前像素的世界空间法线向量</p>
-<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CPixelNormalWS.png" alt="PixelNormalWS"></p>
-<h1 id="常量表达式"><a href="#常量表达式" class="headerlink" title="常量表达式"></a>常量表达式</h1><p><strong>PerInstanceRandom（按实例随机）</strong>：表达式按材质所应用于的静态网格实例输出不同的随机浮点值。</p>
-<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CPerInstanceRandom.png" alt="PerInstanceRandom"></p>
-<h1 id="函数表达式"><a href="#函数表达式" class="headerlink" title="函数表达式"></a>函数表达式</h1><p><strong>SpeedTreeColorVariation</strong>:常用于不同物体的随机颜色</p>
-<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CSpeedTreeColorVariation.png" alt="SpeedTreeColorVariation"></p>
-<h1 id="植物霜冻效果"><a href="#植物霜冻效果" class="headerlink" title="植物霜冻效果"></a>植物霜冻效果</h1><p>利用网格的世界空间法线的Z轴来进行SnowColor和BaseColor的渐变，渐变主要使用了Lerp函数。<img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5C%E6%A4%8D%E7%89%A9%E9%9C%9C%E5%86%BB%E6%95%88%E6%9E%9C.png" alt></p>
-
+            <h1 id="蓝图接口"><a href="#蓝图接口" class="headerlink" title="蓝图接口"></a>蓝图接口</h1><p> <strong>蓝图接口（Blueprint Interface）</strong> 是一个或多个函数的集合 - 只有名称，没有实现。可以添加到其他蓝图中。任何添加了该接口的蓝图都保证拥有这些函数。接口的函数 可以在添加它的每个蓝图中提供功能。在本质上，这类似于一般编程中的接口概念， 它允许多个不同类型的对象通过一个公共接口 共享和被访问。简单地说，蓝图接口允许不同的蓝图相互共享和发送数据。 </p>
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2020/08/23/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
@@ -263,7 +258,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    3 分钟 读完 (大约 407 个字)
+                    2 分钟 读完 (大约 270 个字)
                 </span>
                 
                 
@@ -272,21 +267,26 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2020/08/23/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/">UE4学习笔记(2)---蓝图接口-标签</a>
+                <a class="has-link-black-ter" href="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/">UE4官方直播材质篇 笔记</a>
             
         </h1>
         <div class="content">
-            <h1 id="蓝图接口"><a href="#蓝图接口" class="headerlink" title="蓝图接口"></a>蓝图接口</h1><p> <strong>蓝图接口（Blueprint Interface）</strong> 是一个或多个函数的集合 - 只有名称，没有实现。可以添加到其他蓝图中。任何添加了该接口的蓝图都保证拥有这些函数。接口的函数 可以在添加它的每个蓝图中提供功能。在本质上，这类似于一般编程中的接口概念， 它允许多个不同类型的对象通过一个公共接口 共享和被访问。简单地说，蓝图接口允许不同的蓝图相互共享和发送数据。 </p>
+            <h1 id="矢量表达式"><a href="#矢量表达式" class="headerlink" title="矢量表达式"></a>矢量表达式</h1><p><strong>ObjectPositionWS</strong>：输出对象边界的世界场景空间中心位置。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-8ab9518a016e348827d82e09b7eccfbe_hd.png" alt="img"></p>
+<p><strong>Absolute world position</strong>：输出世界空间中当前像素的位置。</p>
+<p>![absolu world position](D:\360MoveData\Users\Administrator.WIN-OGAUOR7DBB3\Desktop\absolu world position.png)</p>
+<p><strong>VertexNormalWS</strong>:表达式输出世界场景空间顶点法线</p>
+<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CVertexNormalWS.png" alt="VertexNormalWS"></p>
+<p><strong>PixelNormalWS</strong>：表达式输出当前像素的世界空间法线向量</p>
+<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CPixelNormalWS.png" alt="PixelNormalWS"></p>
+<h1 id="常量表达式"><a href="#常量表达式" class="headerlink" title="常量表达式"></a>常量表达式</h1><p><strong>PerInstanceRandom（按实例随机）</strong>：表达式按材质所应用于的静态网格实例输出不同的随机浮点值。</p>
+<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CPerInstanceRandom.png" alt="PerInstanceRandom"></p>
+<h1 id="函数表达式"><a href="#函数表达式" class="headerlink" title="函数表达式"></a>函数表达式</h1><p><strong>SpeedTreeColorVariation</strong>:常用于不同物体的随机颜色</p>
+<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CSpeedTreeColorVariation.png" alt="SpeedTreeColorVariation"></p>
+<h1 id="植物霜冻效果"><a href="#植物霜冻效果" class="headerlink" title="植物霜冻效果"></a>植物霜冻效果</h1><p>利用网格的世界空间法线的Z轴来进行SnowColor和BaseColor的渐变，渐变主要使用了Lerp函数。<img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5C%E6%A4%8D%E7%89%A9%E9%9C%9C%E5%86%BB%E6%95%88%E6%9E%9C.png" alt></p>
+
         </div>
         
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2020/08/23/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
         
         
     </div>

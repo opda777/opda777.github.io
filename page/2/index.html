@@ -455,7 +455,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    2 分钟 读完 (大约 270 个字)
+                    3 分钟 读完 (大约 407 个字)
                 </span>
                 
                 
@@ -464,26 +464,21 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/">UE4官方直播材质篇 笔记</a>
+                <a class="has-link-black-ter" href="/2020/08/23/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/">UE4学习笔记(2)---蓝图接口-标签</a>
             
         </h1>
         <div class="content">
-            <h1 id="矢量表达式"><a href="#矢量表达式" class="headerlink" title="矢量表达式"></a>矢量表达式</h1><p><strong>ObjectPositionWS</strong>：输出对象边界的世界场景空间中心位置。</p>
-<p><img src="https://pic3.zhimg.com/80/v2-8ab9518a016e348827d82e09b7eccfbe_hd.png" alt="img"></p>
-<p><strong>Absolute world position</strong>：输出世界空间中当前像素的位置。</p>
-<p>![absolu world position](D:\360MoveData\Users\Administrator.WIN-OGAUOR7DBB3\Desktop\absolu world position.png)</p>
-<p><strong>VertexNormalWS</strong>:表达式输出世界场景空间顶点法线</p>
-<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CVertexNormalWS.png" alt="VertexNormalWS"></p>
-<p><strong>PixelNormalWS</strong>：表达式输出当前像素的世界空间法线向量</p>
-<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CPixelNormalWS.png" alt="PixelNormalWS"></p>
-<h1 id="常量表达式"><a href="#常量表达式" class="headerlink" title="常量表达式"></a>常量表达式</h1><p><strong>PerInstanceRandom（按实例随机）</strong>：表达式按材质所应用于的静态网格实例输出不同的随机浮点值。</p>
-<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CPerInstanceRandom.png" alt="PerInstanceRandom"></p>
-<h1 id="函数表达式"><a href="#函数表达式" class="headerlink" title="函数表达式"></a>函数表达式</h1><p><strong>SpeedTreeColorVariation</strong>:常用于不同物体的随机颜色</p>
-<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CSpeedTreeColorVariation.png" alt="SpeedTreeColorVariation"></p>
-<h1 id="植物霜冻效果"><a href="#植物霜冻效果" class="headerlink" title="植物霜冻效果"></a>植物霜冻效果</h1><p>利用网格的世界空间法线的Z轴来进行SnowColor和BaseColor的渐变，渐变主要使用了Lerp函数。<img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5C%E6%A4%8D%E7%89%A9%E9%9C%9C%E5%86%BB%E6%95%88%E6%9E%9C.png" alt></p>
-
+            <h1 id="蓝图接口"><a href="#蓝图接口" class="headerlink" title="蓝图接口"></a>蓝图接口</h1><p> <strong>蓝图接口（Blueprint Interface）</strong> 是一个或多个函数的集合 - 只有名称，没有实现。可以添加到其他蓝图中。任何添加了该接口的蓝图都保证拥有这些函数。接口的函数 可以在添加它的每个蓝图中提供功能。在本质上，这类似于一般编程中的接口概念， 它允许多个不同类型的对象通过一个公共接口 共享和被访问。简单地说，蓝图接口允许不同的蓝图相互共享和发送数据。 </p>
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2020/08/23/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
@@ -513,7 +508,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    3 分钟 读完 (大约 407 个字)
+                    2 分钟 读完 (大约 270 个字)
                 </span>
                 
                 
@@ -522,21 +517,26 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2020/08/23/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/">UE4学习笔记(2)---蓝图接口-标签</a>
+                <a class="has-link-black-ter" href="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/">UE4官方直播材质篇 笔记</a>
             
         </h1>
         <div class="content">
-            <h1 id="蓝图接口"><a href="#蓝图接口" class="headerlink" title="蓝图接口"></a>蓝图接口</h1><p> <strong>蓝图接口（Blueprint Interface）</strong> 是一个或多个函数的集合 - 只有名称，没有实现。可以添加到其他蓝图中。任何添加了该接口的蓝图都保证拥有这些函数。接口的函数 可以在添加它的每个蓝图中提供功能。在本质上，这类似于一般编程中的接口概念， 它允许多个不同类型的对象通过一个公共接口 共享和被访问。简单地说，蓝图接口允许不同的蓝图相互共享和发送数据。 </p>
+            <h1 id="矢量表达式"><a href="#矢量表达式" class="headerlink" title="矢量表达式"></a>矢量表达式</h1><p><strong>ObjectPositionWS</strong>：输出对象边界的世界场景空间中心位置。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-8ab9518a016e348827d82e09b7eccfbe_hd.png" alt="img"></p>
+<p><strong>Absolute world position</strong>：输出世界空间中当前像素的位置。</p>
+<p>![absolu world position](D:\360MoveData\Users\Administrator.WIN-OGAUOR7DBB3\Desktop\absolu world position.png)</p>
+<p><strong>VertexNormalWS</strong>:表达式输出世界场景空间顶点法线</p>
+<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CVertexNormalWS.png" alt="VertexNormalWS"></p>
+<p><strong>PixelNormalWS</strong>：表达式输出当前像素的世界空间法线向量</p>
+<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CPixelNormalWS.png" alt="PixelNormalWS"></p>
+<h1 id="常量表达式"><a href="#常量表达式" class="headerlink" title="常量表达式"></a>常量表达式</h1><p><strong>PerInstanceRandom（按实例随机）</strong>：表达式按材质所应用于的静态网格实例输出不同的随机浮点值。</p>
+<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CPerInstanceRandom.png" alt="PerInstanceRandom"></p>
+<h1 id="函数表达式"><a href="#函数表达式" class="headerlink" title="函数表达式"></a>函数表达式</h1><p><strong>SpeedTreeColorVariation</strong>:常用于不同物体的随机颜色</p>
+<p><img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CSpeedTreeColorVariation.png" alt="SpeedTreeColorVariation"></p>
+<h1 id="植物霜冻效果"><a href="#植物霜冻效果" class="headerlink" title="植物霜冻效果"></a>植物霜冻效果</h1><p>利用网格的世界空间法线的Z轴来进行SnowColor和BaseColor的渐变，渐变主要使用了Lerp函数。<img src="/2020/08/23/UE4%E5%AE%98%E6%96%B9%E7%9B%B4%E6%92%AD%E6%9D%90%E8%B4%A8%E7%AF%87-%E7%AC%94%E8%AE%B0/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5C%E6%A4%8D%E7%89%A9%E9%9C%9C%E5%86%BB%E6%95%88%E6%9E%9C.png" alt></p>
+
         </div>
         
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2020/08/23/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
         
         
     </div>
@@ -1082,11 +1082,15 @@
             <div class="level-left">
                 <time class="level-item has-text-grey" datetime="2020-08-23T08:30:41.500Z">2020-08-23</time>
                 
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a>
+                </div>
+                
                 
                 <span class="level-item has-text-grey">
                     
                     
-                    23 分钟 读完 (大约 3375 个字)
+                    1 分钟 读完 (大约 196 个字)
                 </span>
                 
                 
@@ -1095,160 +1099,13 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2020/08/23/C#%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B/">C#基本类型</a>
+                <a class="has-link-black-ter" href="/2020/08/23/2019%E5%B9%B4---%E5%B0%8F%E8%AE%B0/">2019年---小记</a>
             
         </h1>
         <div class="content">
-            <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Title: C#复习</span><br></pre></td></tr></table></figure>
-
-<h1 id="基本类型"><a href="#基本类型" class="headerlink" title="基本类型"></a>基本类型</h1><p><strong>数据类型主要用于指明变量和常量存储值的类型</strong></p>
-<p>C# 语言的数据类型分为值类型和引用类型。</p>
-<p>值类型包括整型、浮点型、字符型、布尔型、枚举型等；引用类型包括类、接口、数组、委托、字符串等。</p>
-<p><strong>从内存存储空间的角度而言，值类型的值是存放到栈中的，每次存取值都会在该内存中操作；引用类型首先会在栈中创建一个引用变量，然后在堆中创建对象本身，再把这个对象所在内存的首地址赋给引用变量。</strong></p>
-<h1 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h1><p>变量和常量是相对的：变量是指所存放的值是允许改变的，而常量表示存入的值不允许改变。</p>
-<h1 id="常量"><a href="#常量" class="headerlink" title="常量"></a>常量</h1><p>与变量不同的是，常量在第一次被赋值后值就不能再改变。定义常量需要使用关键字 <strong>const</strong> 来完成。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const 数据类型 常量名 = 值;</span><br></pre></td></tr></table></figure>
-
-<p><strong>需要注意的是，在定义常量时必须为其赋值，因为不赋值的话以后就再也不能赋值了。另外，也可以同时定义多个常量。</strong></p>
-<h1 id="类的定义"><a href="#类的定义" class="headerlink" title="类的定义"></a>类的定义</h1><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">类的访问修饰符    修饰符    类名</span><br><span class="line">&#123;</span><br><span class="line">    类的成员</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>类的访问修饰符：用于设定对类的访问限制，包括 public、internal 或者不写，用 internal 或者不写时代表只能在当前项目中访问类；public 则代表可以在任何项目中访问类。</li>
-<li>修饰符：修饰符是对类本身特点的描述，包括 abstract、sealed 和 static。abstract 是抽象的意思，使用它修饰符的类不能被实例化；sealed 修饰的类是密封类，不能 被继承；static 修饰的类是静态类，不能被实例化。</li>
-<li>类名：类名用于描述类的功能，因此在定义类名时最好是具有实际意义，这样方便用户理解类中描述的内容。在同一个命名空间下类名必须是唯一的。</li>
-<li>类的成员：在类中能定义的元素，主要包括字段、属性、方法。</li>
-</ul>
-<h1 id="类的成员修饰符"><a href="#类的成员修饰符" class="headerlink" title="类的成员修饰符"></a>类的成员修饰符</h1><h4 id="1-public"><a href="#1-public" class="headerlink" title="1) public"></a>1) public</h4><p>成员可以被任何代码访问。</p>
-<h4 id="2-private"><a href="#2-private" class="headerlink" title="2) private"></a>2) private</h4><p>成员仅能被同一个类中的代码访问，如果在类成员前未使用任何访问修饰 符，则默认为private。</p>
-<h4 id="3-internal"><a href="#3-internal" class="headerlink" title="3) internal"></a>3) internal</h4><p>成员仅能被同一个项目中的代码访问。</p>
-<h4 id="4-protected"><a href="#4-protected" class="headerlink" title="4) protected"></a>4) protected</h4><p>成员只能由类或派生类中的代码访问。派生类是在继承中涉及的，将在后面详细介绍。</p>
-<h2 id="字段"><a href="#字段" class="headerlink" title="字段"></a>字段</h2><p>字段的定义与前面介绍的变量和常量的定义类似，只是在变量或常量前面可以加上访问修饰符、修饰符。</p>
-<p>在修饰字段时通常用两个修饰符，即readonly （只读）和static （静态的）。</p>
-<p>使用 readonly 修饰字段意味着只能读取该字段的值而不能给字段赋值。</p>
-<p>使用 static 修饰的字段是静态字段，可以直接通过类名访问该字段。</p>
-<p>需要注意的是常量不能使用 static 修饰符修饰。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">访问修饰符    修饰符    数据类型    字段名</span><br></pre></td></tr></table></figure>
-
-<h1 id="方法的定义"><a href="#方法的定义" class="headerlink" title="方法的定义"></a>方法的定义</h1><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">访问修饰符    修饰符    返回值类型    方法名(参数列表)</span><br><span class="line">&#123;</span><br><span class="line">    语句块;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="修饰符"><a href="#修饰符" class="headerlink" title="修饰符"></a>修饰符</h2><p>在定义方法时修饰符包括 virtual（虚拟的）、abstract（抽象的）、override（重写的）、static（静态的）、sealed（密封的）。override 是在类之间继承时使用的。</p>
-<h2 id="参数传递"><a href="#参数传递" class="headerlink" title="参数传递"></a>参数传递</h2><table>
-<thead>
-<tr>
-<th align="center">方式</th>
-<th align="left">描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">值参数</td>
-<td align="left">复制参数的实际值给函数的形式参数，实参和形参使用的是两个不同内存中的值。</td>
-</tr>
-<tr>
-<td align="center">引用参数</td>
-<td align="left">这种方式复制参数的内存位置的引用给形式参数。这意味着，当形参的值发生改变时，同时也改变实参的值。</td>
-</tr>
-<tr>
-<td align="center">输出参数</td>
-<td align="left">这种方式可以返回多个值。</td>
-</tr>
-</tbody></table>
-<h2 id="按引用传递参数"><a href="#按引用传递参数" class="headerlink" title="按引用传递参数"></a>按引用传递参数</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public void sawp(ref int x, ref int y)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="按输出传递参数"><a href="#按输出传递参数" class="headerlink" title="按输出传递参数"></a>按输出传递参数</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public void GetValue(out int x, out int y)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="get和set访问器"><a href="#get和set访问器" class="headerlink" title="get和set访问器"></a>get和set访问器</h1><p>属性经常与字段连用，并提供了 get 访问器和 set 访问器，分别用于获取或设置字段的值。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">//设置图书编号属性</span><br><span class="line">        public int Id</span><br><span class="line">        &#123;</span><br><span class="line">            get</span><br><span class="line">            &#123;</span><br><span class="line">                return id;</span><br><span class="line">            &#125;</span><br><span class="line">            set</span><br><span class="line">            &#123;</span><br><span class="line">                id = value;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="可空类型（Nullable）"><a href="#可空类型（Nullable）" class="headerlink" title="可空类型（Nullable）"></a>可空类型（Nullable）</h1><p>C＃提供了一个特殊的数据类型，<strong>nullable</strong>类型（可空类型），可空类型可以表示其基础值类型正常范围内的值，再加上一个null值。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;data_type&gt; ? &lt;variable_name&gt; = null;</span><br><span class="line">int? num1 = null;</span><br></pre></td></tr></table></figure>
-
-<h2 id="Null合并运算符（？-）"><a href="#Null合并运算符（？-）" class="headerlink" title="Null合并运算符（？?）"></a>Null合并运算符（？?）</h2><p>如果第一个操作数的值为null，则运算符返回第二个操作数的值，否则返回第一个操作数的值。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">num3 = num1 ?? 5.34;</span><br></pre></td></tr></table></figure>
-
-<h1 id="C-多维数组"><a href="#C-多维数组" class="headerlink" title="C# 多维数组"></a>C# 多维数组</h1><p>长度一致</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//一个 string 变量的二维数组</span><br><span class="line">string [,] names;</span><br><span class="line"></span><br><span class="line">//一个 int 变量的三维数组</span><br><span class="line">int [ , , ] m;</span><br><span class="line"></span><br><span class="line">int [,] a = int [3,4] = &#123;  </span><br><span class="line"> &#123;0, 1, 2, 3&#125; ,   /*  初始化索引号为 0 的行 */</span><br><span class="line"> &#123;4, 5, 6, 7&#125; ,   /*  初始化索引号为 1 的行 */</span><br><span class="line"> &#123;8, 9, 10, 11&#125;   /*  初始化索引号为 2 的行 */</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h1 id="C-交错数组"><a href="#C-交错数组" class="headerlink" title="C# 交错数组"></a>C# 交错数组</h1><p>长度没有限制，可以不一样，可以理解为数组的数组</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 声明一个交错数组 a，a 中有三个元素，分别是 a[0],a[1],a[2] 每个元素都是一个数组</span><br><span class="line">int[][] a = new int[3][]; </span><br><span class="line">//以下是声明交错数组的每一个元素的，每个数组的长度可以不同</span><br><span class="line">a[0] = new int[] &#123; 1,2,3 &#125;;</span><br><span class="line">a[1] = new int[] &#123; 4,5,6,7,8 &#125;;</span><br><span class="line">a[2] = new int[] &#123; 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 &#125;;</span><br></pre></td></tr></table></figure>
-
-<h1 id="传递数组给函数"><a href="#传递数组给函数" class="headerlink" title="传递数组给函数"></a>传递数组给函数</h1><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">double getAverage(int[] arr, int size)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">/* 一个带有 5 个元素的 int 数组 */</span><br><span class="line">int [] balance = new int[]&#123;1000, 2, 3, 17, 50&#125;;</span><br><span class="line"></span><br><span class="line">/* 传递数组的指针作为参数 */</span><br><span class="line">avg = app.getAverage(balance, 5 ) ;</span><br></pre></td></tr></table></figure>
-
-<h1 id="参数数组"><a href="#参数数组" class="headerlink" title="参数数组"></a>参数数组</h1><p>当声明一个方法时，您不能确定要传递给函数作为参数的参数数目。C# 参数数组解决了这个问题，参数数组通常用于传递未知数量的参数给函数。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public int AddElements(params int[] arr)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">//会把1，5，2，9，8合并入arr数组</span><br><span class="line">int num = SumVals(1,5,2,9,8);</span><br><span class="line">//也可以直接传进一个数组</span><br></pre></td></tr></table></figure>
-
-<h2 id="params-关键字"><a href="#params-关键字" class="headerlink" title="params 关键字"></a>params 关键字</h2><p>参数数组必须是一维数组。</p>
-<p>会把传递进来的参数并入一个数组。</p>
-<h1 id="Array类"><a href="#Array类" class="headerlink" title="Array类"></a>Array类</h1><p>Array 类是 C# 中所有数组的基类，它是在 System 命名空间中定义。Array 类提供了各种用于数组的属性和方法。<strong>如：获取数组长度，进行排序等</strong></p>
-<h1 id="C＃字符串（String）"><a href="#C＃字符串（String）" class="headerlink" title="C＃字符串（String）"></a>C＃字符串（String）</h1><p>创建String对象方法</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">//字符串，字符串连接</span><br><span class="line">            string fname, lname;</span><br><span class="line">            fname = &quot;Rowan&quot;;</span><br><span class="line">            lname = &quot;Atkinson&quot;;</span><br><span class="line"></span><br><span class="line">            string fullname = fname + lname;</span><br><span class="line">            Console.WriteLine(&quot;Full Name: &#123;0&#125;&quot;, fullname);</span><br><span class="line"></span><br><span class="line">            //通过使用 string 构造函数</span><br><span class="line">            char[] letters = &#123; &apos;H&apos;, &apos;e&apos;, &apos;l&apos;, &apos;l&apos;,&apos;o&apos; &#125;;</span><br><span class="line">            string greetings = new string(letters);</span><br><span class="line">            Console.WriteLine(&quot;Greetings: &#123;0&#125;&quot;, greetings);</span><br><span class="line"></span><br><span class="line">            //方法返回字符串</span><br><span class="line">            string[] sarray = &#123; &quot;Hello&quot;, &quot;From&quot;, &quot;Tutorials&quot;, &quot;Point&quot; &#125;;</span><br><span class="line">            string message = String.Join(&quot; &quot;, sarray);</span><br><span class="line">            Console.WriteLine(&quot;Message: &#123;0&#125;&quot;, message);</span><br><span class="line"></span><br><span class="line">            //用于转化值的格式化方法</span><br><span class="line">            DateTime waiting = new DateTime(2012, 10, 10, 17, 58, 1);</span><br><span class="line">            string chat = String.Format(&quot;Message sent at &#123;0:t&#125; on &#123;0:D&#125;&quot;, </span><br><span class="line">            waiting);</span><br><span class="line">            Console.WriteLine(&quot;Message: &#123;0&#125;&quot;, chat);</span><br><span class="line">            Console.ReadKey() ;</span><br></pre></td></tr></table></figure>
-
-<h1 id="C-结构（Struct）"><a href="#C-结构（Struct）" class="headerlink" title="C# 结构（Struct）"></a>C# 结构（Struct）</h1><p>在 C# 中，结构是值类型数据结构。它使得一个单一变量可以存储各种数据类型的相关数据。<strong>struct</strong> 关键字用于创建结构。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct Books</span><br><span class="line">&#123;</span><br><span class="line">   public string title;</span><br><span class="line">   public string author;</span><br><span class="line">   public string subject;</span><br><span class="line">   public int book_id;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h2 id="C-结构特点"><a href="#C-结构特点" class="headerlink" title="C#结构特点"></a>C#结构特点</h2><ul>
-<li>结构可带有方法、字段、索引、属性、运算符方法和事件。</li>
-<li>结构可定义构造函数，但不能定义析构函数。但是，您不能为结构定义默认的构造函数。默认的构造函数是自动定义的，且不能被改变。</li>
-<li>与类不同，结构不能继承其他的结构或类。</li>
-<li>结构不能作为其他结构或类的基础结构。</li>
-<li>结构可实现一个或多个接口</li>
-<li>结构成员不能指定为 abstract、virtual 或 protected（因为都不可以继承）</li>
-<li>当您使用 <strong>New</strong> 操作符创建一个结构对象时，会调用适当的构造函数来创建结构。与类不同，结构可以不使用 New 操作符即可被实例化。</li>
-<li>如果不使用 New 操作符，只有在所有的字段都被初始化之后，字段才被赋值，对象才被使用。</li>
-</ul>
-<h2 id="类与结构的不同"><a href="#类与结构的不同" class="headerlink" title="类与结构的不同"></a>类与结构的不同</h2><ul>
-<li>类是引用类型，结构是值类型。</li>
-<li>结构不支持继承。</li>
-<li>结构不能声明默认的构造函数。</li>
-</ul>
-<h1 id="C-枚举（Enum）声明与使用"><a href="#C-枚举（Enum）声明与使用" class="headerlink" title="C#枚举（Enum）声明与使用"></a>C#枚举（Enum）声明与使用</h1><p>C# 枚举是值数据类型。换句话说，枚举包含自己的值，且不能继承或传递继承。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">enum Days &#123; Sun, Mon, tue, Wed, thu, Fri, Sat &#125;;</span><br></pre></td></tr></table></figure>
-
-<p>枚举列表中的每个符号代表一个整数值，一个比它前面的符号大的整数值。默认情况下，第一个枚举符号的值是 0.</p>
-<h1 id="C-类（Class）"><a href="#C-类（Class）" class="headerlink" title="C#类（Class）"></a>C#类（Class）</h1><p>当您定义一个类时，您定义了一个数据类型的蓝图。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;access specifier&gt; class  class_name </span><br><span class="line">&#123;</span><br><span class="line">    // member variables</span><br><span class="line">    &lt;access specifier&gt; &lt;data type&gt; variable1;</span><br><span class="line">    &lt;access specifier&gt; &lt;data type&gt; variable2;</span><br><span class="line">    ...</span><br><span class="line">    &lt;access specifier&gt; &lt;data type&gt; variableN;</span><br><span class="line">    // member methods</span><br><span class="line">    &lt;access specifier&gt; &lt;return type&gt; method1(parameter_list) </span><br><span class="line">    &#123;</span><br><span class="line">        // method body </span><br><span class="line">    &#125;</span><br><span class="line">    &lt;access specifier&gt; &lt;return type&gt; method2(parameter_list) </span><br><span class="line">    &#123;</span><br><span class="line">        // method body </span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    &lt;access specifier&gt; &lt;return type&gt; methodN(parameter_list) </span><br><span class="line">    &#123;</span><br><span class="line">        // method body </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>访问标识符 <access specifier> 指定了对类及其成员的访问规则。类的默认访问标识符是 <strong>internal</strong>，成员的默认访问标识符是 <strong>private</strong>。</access></p>
-<h2 id="成员函数和封装"><a href="#成员函数和封装" class="headerlink" title="成员函数和封装"></a>成员函数和封装</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">private double length;   // 长度</span><br><span class="line"></span><br><span class="line">public void setLength( double len )</span><br><span class="line">       &#123;</span><br><span class="line">            length = len;</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
-
-<p>成员变量是对象的属性（从设计角度），且它们保持私有来实现封装。这些变量只能使用公共成员函数来访问。</p>
-<h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p>类的 <strong>构造函数</strong> 是类的一个特殊的成员函数，当创建类的新对象时执行。</p>
-<p>构造函数的名称与类的名称完全相同，它没有任何返回类型。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class Line</span><br><span class="line">&#123;</span><br><span class="line">	public Line()</span><br><span class="line">      &#123;</span><br><span class="line">         Console.WriteLine(&quot;对象已创建&quot;);</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>默认的构造函数</strong>没有任何参数。但是如果您需要一个带有参数的构造函数可以有参数，这种构造函数叫做<strong>参数化构造函数</strong>。</p>
-<h2 id="析构函数"><a href="#析构函数" class="headerlink" title="析构函数"></a>析构函数</h2><p>析构函数用于在结束程序（比如关闭文件、释放内存等）之前释放资源。析构函数不能继承或重载。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">~Line() //析构函数</span><br><span class="line">      &#123;</span><br><span class="line">         Console.WriteLine(&quot;对象已删除&quot;);</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="静态成员"><a href="#静态成员" class="headerlink" title="静态成员"></a>静态成员</h2><p><strong>static</strong> 关键字把类成员定义为静态的。直接调用类而不需要创建类的实例来获取。静态变量可在成员函数或类的定义外部进行初始化。您也可以在类的定义内部初始化静态变量。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">class StaticVar</span><br><span class="line">&#123;</span><br><span class="line">	public static int num;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>一个<strong>成员函数</strong>声明为 <strong>static</strong>。这样的函数只能访问静态变量。静态函数在对象被创建之前就已经存在。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public static int getNum()</span><br><span class="line">        &#123;</span><br><span class="line">            return num;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h1><p>继承的思想实现了 <strong>属于（IS-A）</strong> 关系。派生类只能有一个直接基类，但一个基类可以有多个直接派生类。继承是可以传递的。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class Shape</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">// 派生类</span><br><span class="line">class Rectangle : Shape</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="基类初始化"><a href="#基类初始化" class="headerlink" title="基类初始化"></a>基类初始化</h2><p>派生类继承了基类的成员变量和成员方法。因此父类对象应在子类对象创建之前被创建。您可以在成员初始化列表中进行父类的初始化。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public Tabletop(double l, double w) : base(l, w)</span><br><span class="line">      &#123; &#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="C-不支持多重继承"><a href="#C-不支持多重继承" class="headerlink" title="C#不支持多重继承"></a>C#不支持多重继承</h2><p><strong>C# 不支持多重继承</strong>。但是，您可以使用接口来实现多重继承。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 接口 PaintCost</span><br><span class="line"> public interface PaintCost </span><br><span class="line">   &#123;</span><br><span class="line">      int getCost(int area);</span><br><span class="line"></span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="C-多态性"><a href="#C-多态性" class="headerlink" title="C#多态性"></a>C#多态性</h1><p>多态性可以是静态的或动态的。在<strong>静态多态性</strong>中，函数的响应是在编译时发生的。在<strong>动态多态性</strong>中，函数的响应是在运行时发生的。</p>
-<p>C#提供了两种技术实现多态：函数重载，运算符重载</p>
-<h2 id="函数重载"><a href="#函数重载" class="headerlink" title="函数重载"></a>函数重载</h2><p>同一个范围内对相同的函数名有多个定义。函数的定义必须彼此不同，可以是参数列表中的参数类型不同，也可以是参数个数不同。不能重载只有返回类型不同的函数声明。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">void print(int i)</span><br><span class="line">     &#123;</span><br><span class="line">        Console.WriteLine(&quot;Printing int: &#123;0&#125;&quot;, i );</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     void print(double f)</span><br><span class="line">     &#123;</span><br><span class="line">        Console.WriteLine(&quot;Printing float: &#123;0&#125;&quot; , f);</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="动态多态性"><a href="#动态多态性" class="headerlink" title="动态多态性"></a>动态多态性</h2><p>C# 允许您使用关键字 <strong>abstract</strong> 创建抽象类，用于提供接口的部分类的实现。当一个派生类继承自该抽象类时，实现即完成。<strong>抽象类</strong>包含抽象方法，抽象方法可被派生类实现。派生类具有更专业的功能。</p>
-<ul>
-<li>您不能创建一个抽象类的实例。</li>
-<li>您不能在一个抽象类外部声明一个抽象方法。</li>
-<li>通过在类定义前面放置关键字 <strong>sealed</strong>，可以将类声明为<strong>密封类</strong>。当一个类被声明为 <strong>sealed</strong> 时，它不能被继承。抽象类不能被声明为 sealed。</li>
-</ul>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">abstract class Shape</span><br><span class="line">  &#123;</span><br><span class="line">     public abstract int area();</span><br><span class="line">  &#125;</span><br><span class="line">  class Rectangle:  Shape</span><br><span class="line">  &#123;</span><br><span class="line">     private int length;</span><br><span class="line">     private int width;</span><br><span class="line">     public Rectangle( int a=0, int b=0)</span><br><span class="line">     &#123;</span><br><span class="line">        length = a;</span><br><span class="line">        width = b;</span><br><span class="line">     &#125;</span><br><span class="line">     public override int area ()</span><br><span class="line">     &#123; </span><br><span class="line">        Console.WriteLine(&quot;Rectangle 类的面积：&quot;);</span><br><span class="line">        return (width * length); </span><br><span class="line">     &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-
+            <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>​    在三维动画，交互设计等等的课程实训，我掐指一算已经有两个月没有更新自己的笔记了，没办法，我也不知道为什么我这个专业的实训特别特别得多….其实早就放假啦，自己也摸鱼了一个星期恢复下元气。</p>
+<p>​    对于2019我感觉还行，虽然没有参加什么比赛，但是在实训课程的过程中还是学到了很多东西，做出来的成品也让我感到满意，所以希望下一年也再接再厉，希望寒假没有摸鱼，能找到实习就最好了，哈哈哈。</p>
+<p>​    加油！！！奥利给！！！</p>
 
         </div>
         
