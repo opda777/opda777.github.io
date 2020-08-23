@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 4.0.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>Static Batch,Dynamic Batch,GPU Instancing - Opda</title>
+
+
+    <meta name="description" content="1Title: 图形学复习  Static Batch,Dynamic Batch,GPU InstancingStatic Batch在运行开始阶段，将标明为Static的物体，合并成一个Mesh。对于使用了同一材质的物体，Unity只需要调用一个DrawCall就可以绘制全部物体。但是对于不同材质的物体，Unity还是要调用多个DrawCall，但可以减少DrawCall之间的状态切换，还是有">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Static Batch,Dynamic Batch,GPU Instancing">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2020&#x2F;08&#x2F;23&#x2F;Static%20Batch,Dynamic%20Batch,GPU%20Instancing&#x2F;index.html">
+<meta property="og:site_name" content="Opda">
+<meta property="og:description" content="1Title: 图形学复习  Static Batch,Dynamic Batch,GPU InstancingStatic Batch在运行开始阶段，将标明为Static的物体，合并成一个Mesh。对于使用了同一材质的物体，Unity只需要调用一个DrawCall就可以绘制全部物体。但是对于不同材质的物体，Unity还是要调用多个DrawCall，但可以减少DrawCall之间的状态切换，还是有">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
+<meta property="og:updated_time" content="2020-03-12T16:00:24.415Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/code.ico">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/game.svg" alt="Static Batch,Dynamic Batch,GPU Instancing" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">主页</a>
+                
+                <a class="navbar-item"
+                href="/archives">文章</a>
+                
+                <a class="navbar-item"
+                href="/categories">归档</a>
+                
+                <a class="navbar-item"
+                href="/tags">标志</a>
+                
+                <a class="navbar-item"
+                href="/about">关于</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/opda777">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-9-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-08-23T08:30:41.523Z">2020-08-23</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    23 分钟 读完 (大约 3407 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Static Batch,Dynamic Batch,GPU Instancing
+            
+        </h1>
+        <div class="content">
+            <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Title: 图形学复习</span><br></pre></td></tr></table></figure>
+
+<h1 id="Static-Batch-Dynamic-Batch-GPU-Instancing"><a href="#Static-Batch-Dynamic-Batch-GPU-Instancing" class="headerlink" title="Static Batch,Dynamic Batch,GPU Instancing"></a>Static Batch,Dynamic Batch,GPU Instancing</h1><h2 id="Static-Batch"><a href="#Static-Batch" class="headerlink" title="Static Batch"></a>Static Batch</h2><p>在运行开始阶段，将标明为Static的物体，合并成一个Mesh。<strong>对于使用了同一材质的物体，Unity只需要调用一个DrawCall就可以绘制全部物体。</strong>但是对于不同材质的物体，Unity还是要调用多个DrawCall，但可以减少DrawCall之间的状态切换，还是有益于性能。</p>
+<h3 id="内部实现"><a href="#内部实现" class="headerlink" title="内部实现"></a>内部实现</h3><p>Unity首先把静态物体变换到世界空间，然后为他们构建一个更大的顶点和索引缓存。</p>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><p>由于勾选了Static，所以不可以移动</p>
+<p>对于内存消耗很大，因为每一个物体都对应一个网格的复制体。</p>
+<h3 id="无法参与批处理情况"><a href="#无法参与批处理情况" class="headerlink" title="无法参与批处理情况"></a>无法参与批处理情况</h3><p> 改变Renderer.material将会造成一份材质的拷贝，因此会打断批处理，你应该使用Renderer.sharedMaterial来保证材质的共享状态。</p>
+<h2 id="Dynamic-Batch"><a href="#Dynamic-Batch" class="headerlink" title="Dynamic Batch"></a>Dynamic Batch</h2><p>将使用同一材质的Mesh进行合并，并且每帧进行合并。利用一个DrawCall绘制全部物体</p>
+<h3 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h3><p>能进行Dynamic Batch的网格顶点属性规模要小于900.</p>
+<p>使用光照纹理的物体需要小心处理</p>
+<p>多Pass的Shader会中断处理。</p>
+<h2 id="GPU-Instancing"><a href="#GPU-Instancing" class="headerlink" title="GPU Instancing"></a>GPU Instancing</h2><p>在使用<strong>相同材质球、相同Mesh(预设体的实例会自动地使用相同的网格模型和材质)</strong>的情况下，Unity会在运行时对于<strong>正在视野中</strong>的符合要求的所有对象使用<strong>Constant Buffer</strong><a href="#ref_5">[5]</a>将其位置、缩放、uv偏移、<em>lightmapindex</em>等相关信息保存在显存中的<strong>“统一/常量缓冲器”</strong><a href="#ref_6">[6]</a>中，然后从中抽取一个对象作为实例送入渲染流程，当在执行DrawCall操作后，从显存中取出实例的部分共享信息与从GPU常量缓冲器中取出对应对象的相关信息一并传递到下一渲染阶段，与此同时，不同的着色器阶段可以从缓存区中直接获取到需要的常量，不用设置两次常量。</p>
+<p>我们可以将这些静态的物件如植被等全部从场景中剔除，而保存其位置、缩放、uv偏移、<em>lightmapindex</em>等相关信息，在需要渲染的时候，根据其保存的信息，通过<strong><em>Instance</em></strong>来渲染，这能够减少那些因为内存原因而不能合批的大批量相同物件的渲染时间。</p>
+<h1 id="各种着色器作用"><a href="#各种着色器作用" class="headerlink" title="各种着色器作用"></a>各种着色器作用</h1><h2 id="顶点着色器"><a href="#顶点着色器" class="headerlink" title="顶点着色器"></a>顶点着色器</h2><p>最主要的是把模型空间的位置转换到裁剪空间。同时处理顶点颜色。</p>
+<h2 id="曲面细分"><a href="#曲面细分" class="headerlink" title="曲面细分"></a>曲面细分</h2><p>这个阶段细分图元用的。比如实现LOD效果，加顶点实现更细节的动画，用低模加细分在运行的时候实现高模效果。</p>
+<h2 id="几何着色器"><a href="#几何着色器" class="headerlink" title="几何着色器"></a>几何着色器</h2><p>几何着色器主要是添加或者减少图元。</p>
+<h2 id="裁剪"><a href="#裁剪" class="headerlink" title="裁剪"></a>裁剪</h2><p>在裁剪坐标系（其次坐标系）下裁减掉不在视野外的图元。</p>
+<h2 id="屏幕映射"><a href="#屏幕映射" class="headerlink" title="屏幕映射"></a>屏幕映射</h2><p>每个图元的X和Y坐标转换到二维的屏幕坐标系。</p>
+<h2 id="三角形设置"><a href="#三角形设置" class="headerlink" title="三角形设置"></a>三角形设置</h2><p>计算三角网格表示数据的过程。</p>
+<h2 id="三角形遍历"><a href="#三角形遍历" class="headerlink" title="三角形遍历"></a>三角形遍历</h2><p>检查每个像素是否被三角网格覆盖，是的话就生成一个片元。并且对信息进行插值</p>
+<h2 id="片元着色器"><a href="#片元着色器" class="headerlink" title="片元着色器"></a>片元着色器</h2><p>对片元进行效果颜色的最终计算</p>
+<h2 id="逐片元操作"><a href="#逐片元操作" class="headerlink" title="逐片元操作"></a>逐片元操作</h2><p>先进行测试工作，比如模版测试-&gt;深度测试-&gt;透明测试。如果通过所有测试还要进行颜色混合。当然如果没有透明的话片元测试会在片元着色器前面。最后输出像素到颜色缓冲区。</p>
+<h2 id="屏幕图像"><a href="#屏幕图像" class="headerlink" title="屏幕图像"></a>屏幕图像</h2><p>利用双缓冲技术，将颜色打印到屏幕上</p>
+<h1 id="人物描边的方法"><a href="#人物描边的方法" class="headerlink" title="人物描边的方法"></a>人物描边的方法</h1><p>一.屏幕后处理方法。先用获取深度图，再比较点和周围八个点的Normal和Depth是否大于一定的阀值，如果是则是边，添加颜色。</p>
+<p>二.视角和法线的点积，进行描边。</p>
+<p>三.写两个Pass, 然后第一个pass的顶点根据法线外移一定的量进行描边。</p>
+<h1 id="屏幕模糊处理"><a href="#屏幕模糊处理" class="headerlink" title="屏幕模糊处理"></a>屏幕模糊处理</h1><p>一.压缩像素模糊。获取屏幕图片，然后放在低像素的RT进行压缩，再放回到原像素。</p>
+<p>二.快速模糊。获取屏幕图片，像素点取周围4或8个点的颜色累加，然后再除以4或8。</p>
+<p>三.卷积核模糊（高斯模糊）。获取屏幕图片，按照周围的点用一定的卷积核（按权系数）进行平均颜色。</p>
+<p>四.运动模糊1。储存多帧图片。图片按权融合作为最后的屏幕图片，累计缓存</p>
+<p>五.运动模糊2。获取上一帧和当前帧的深度纹理。建立当前片元的NDC。当前的世界坐标*上一帧的VP再除以上一帧的齐次坐标的w，得到上一帧数的lastNDC，再lastNDC-ndc=&gt;speed,沿speed方向进行多次采样。作为颜色，</p>
+<p>六．深度模糊（景深DOF）。思路是首先渲染一张模糊的图，然后在深度图中找到聚焦点对应的深度，该深度附近用原图，其他地方渐变至模糊图。</p>
+<h1 id="HDR"><a href="#HDR" class="headerlink" title="HDR"></a>HDR</h1><p>高动态范围，指用远远高于8位的精度去存储亮度信息。最后还是要通过ToneMapping映射会LDR内。</p>
+<h1 id="全局光照"><a href="#全局光照" class="headerlink" title="全局光照"></a>全局光照</h1><p>模拟光线在场景中的传播，其实就是计算间接光照。无论是Bake全局光照，还是预计算实时全局光照，都只对Static物体有效。</p>
+<h1 id="伽马校正"><a href="#伽马校正" class="headerlink" title="伽马校正"></a>伽马校正</h1><p>就是把像素写入颜色缓冲时进行抵消显示伽马的处理。</p>
+<p>在伽马空间，整体颜色会比较暗，因为受到了显示伽马的转换。</p>
+<p>在线性空间，因为进行了抵消显示伽马的处理，所以会比较亮。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/2372757-0855e7cab7a16e9a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/800/format/webp" alt="img">)<img src="https://pic3.zhimg.com/v2-35dcfe1f3fb1509a9157539063b783be_b.jpg" alt="img"></p>
+<p>美术输出资源时都是在sRGB空间的，但Normal Map等其他电脑计算出来的纹理则一般在线性空间，即Linear Texture。</p>
+<p>所有需要人眼参与被创作出来的纹理，都应是sRGB（如美术画出来的图）。所有通过计算机计算出来的纹理（如噪声，Mask，LightMap）都应是Linear。</p>
+<h2 id="Unity中的Color-Space"><a href="#Unity中的Color-Space" class="headerlink" title="Unity中的Color Space"></a><strong>Unity中的Color Space</strong></h2><p><img src="https://pic1.zhimg.com/v2-d2409cb886f3c8ec596b0d75a550149c_b.jpg" alt="img"></p>
+<p>Gamma，那Unity不会对输入和输出做任何处理，换句话说，Remove Gamma Correction 、Gamma Correction都不会发生，除非你自己手动实现。</p>
+<p>Linear，那么就是上文提到的统一线性空间的流程了。对于sRGB纹理，Unity在进行纹理采样之前会自动进行Remove Gamma Correction，对于Linear纹理则没有这一步。而在输出前，Unity会自动进行Gamma Correction再让显示器输出。</p>
+<h1 id="ShadowMap的实现"><a href="#ShadowMap的实现" class="headerlink" title="ShadowMap的实现"></a>ShadowMap的实现</h1><p>在灯的位置用相机渲染一个LightMode 为ShadowCaster Pass通道来得到可投射阴影的光源的阴影映射纹理以及摄像机的深度纹理，利用这两个纹理来得到屏幕空间的阴影图，如果摄像机的深度图中记录的表面深度大于转换到阴影映射纹理中的深度值，则说明该表面是可见的但是却处于阴影当中。</p>
+<h2 id="使用Unity内置的阴影三剑客"><a href="#使用Unity内置的阴影三剑客" class="headerlink" title="使用Unity内置的阴影三剑客"></a>使用Unity内置的阴影三剑客</h2><p>接受阴影直接用Unity 的Shadow_Coords、Transfer_Shadow和 Shadow_Attenuation。光照衰减用Unity_Light_Attenuation</p>
+<h1 id="Shader的优化"><a href="#Shader的优化" class="headerlink" title="Shader的优化"></a>Shader的优化</h1><p>使用Shader的LOD技术，只有Shader的LOD值小于某个值，Shader才能使用。</p>
+<p>将计算放在顶点函数上，计算顶点数&lt;像素数。</p>
+<p>尽可能用低精度的浮点数运算。float适合顶点坐标，half适合纹理坐标，标量，fixed适合颜色变量。</p>
+<p>尽可能用少的插值变量，例如我们可以把两个纹理坐标打包在一个四维变量内。</p>
+<p>把多个屏幕后特效合并到一个Shader里面。</p>
+<p>不要使用分支语句和循环语句。</p>
+<p>不要进行Sin，cos等复杂的数学运算，可以用查找表代替。</p>
+<p>尽量不要Discard操作，会影响某些硬件优化。</p>
+<h1 id="不同几种剔除-Culling-在渲染流程中的使用总结"><a href="#不同几种剔除-Culling-在渲染流程中的使用总结" class="headerlink" title="不同几种剔除(Culling)在渲染流程中的使用总结"></a>不同几种剔除(Culling)在渲染流程中的使用总结</h1><h2 id="视椎体剔除"><a href="#视椎体剔除" class="headerlink" title="视椎体剔除"></a>视椎体剔除</h2><p>发生在应用程序阶段(Application Stage),运行在CPU上。<strong>裁剪的依据主要是根据摄像机的视野(field of view)以及近裁减面和远裁剪面的距离，将可视范围外的物体排除出渲染，被剔除的物体将不会进入渲染的几何阶段(Geometry Stage)。</strong></p>
+<h2 id="遮挡剔除"><a href="#遮挡剔除" class="headerlink" title="遮挡剔除"></a>遮挡剔除</h2><p>发生在应用程序阶段(Application Stage)，运行在CPU上。<strong>根据场景中Static物体的位置预先生成场景OcclusionCulling数据，运行时就可以剔除对应静态物体之后的其他物体。</strong></p>
+<h2 id="视口剔除"><a href="#视口剔除" class="headerlink" title="视口剔除"></a>视口剔除</h2><p>发生在几何阶段(Geometry Stage)后期，投影变换之后屏幕映射之前，是渲染管线的必要一环。通过视口剔除可以将视口外的图元舍弃掉，减小光栅化阶段的消耗。</p>
+<h2 id="背面剔除"><a href="#背面剔除" class="headerlink" title="背面剔除"></a>背面剔除</h2><p>背面剔除即是将背向视点的图元剔除，因为它们对最终渲染的图像没有贡献。</p>
+<p><img src="https://docs.unity3d.com/uploads/SL/PipelineCullDepth.png" alt="image"></p>
+<h1 id="Shader后处理"><a href="#Shader后处理" class="headerlink" title="Shader后处理"></a>Shader后处理</h1><h2 id="屏幕模糊处理-1"><a href="#屏幕模糊处理-1" class="headerlink" title="屏幕模糊处理"></a>屏幕模糊处理</h2><h3 id="降采样模糊"><a href="#降采样模糊" class="headerlink" title="降采样模糊"></a>降采样模糊</h3><p>获取屏幕图片，放到低分辨率的RT图中，然后放回屏幕上。</p>
+<h3 id="快速模糊"><a href="#快速模糊" class="headerlink" title="快速模糊"></a>快速模糊</h3><p>获取屏幕图片，采样周边4或8个像素的值，取平均。</p>
+<h3 id="高斯模糊-卷积核模糊"><a href="#高斯模糊-卷积核模糊" class="headerlink" title="高斯模糊(卷积核模糊)"></a>高斯模糊(卷积核模糊)</h3><p>获取屏幕图片，分两个Pass，分别进行竖直方向和水平方向的卷积核处理。</p>
+<h3 id="运动模糊（累积缓冲）"><a href="#运动模糊（累积缓冲）" class="headerlink" title="运动模糊（累积缓冲）"></a>运动模糊（累积缓冲）</h3><p>存储多帧照片，然后进行融合。</p>
+<h3 id="运动模糊（运动缓冲）"><a href="#运动模糊（运动缓冲）" class="headerlink" title="运动模糊（运动缓冲）"></a>运动模糊（运动缓冲）</h3><p>构建当前帧的NDC，然后获取深度纹理，根据深度图重构世界坐标，得到世界坐标后，与上一帧的VP矩阵相乘，得到上一帧的NDC位置，CurrentNDC - LastNdc得到速度方向，按照速度方向进行多次采样。</p>
+<h2 id="Bloom-全屏后处理"><a href="#Bloom-全屏后处理" class="headerlink" title="Bloom(全屏后处理)"></a>Bloom(全屏后处理)</h2><p>获取屏幕图片，第一Pass获取提取亮度区域，第二，三Pass进行高斯模糊，第四Pass进行Bloom和原图叠加。</p>
+<h2 id="Glow-选择区域Bloom"><a href="#Glow-选择区域Bloom" class="headerlink" title="Glow(选择区域Bloom)"></a>Glow(选择区域Bloom)</h2><p>第一种方法：利用人物的Alpha通道进行存储要Bloom的区域，然后进行后处理</p>
+<p>第二种方法：设置与主摄像机一致专门用于渲染要Bloom的物体的摄像机，在C#利用Shader的RenderType 用RenderWithShader 替换要发亮的Shader 然后再在C#中进混合。</p>
+<h2 id="景深"><a href="#景深" class="headerlink" title="景深"></a>景深</h2><p>首先得到一张高斯模糊的图片，然后利用深度图重构世界坐标，根据深度减去阈值进行lerp（原图，模糊图）。</p>
+<h1 id="雾的做法"><a href="#雾的做法" class="headerlink" title="雾的做法"></a>雾的做法</h1><p>利用深度图重构世界坐标，计算雾效系数，作为雾颜色和原始颜色的混合。三种计算方式：</p>
+<p>线性，指数，指数平方</p>
+<h1 id="Mipmap"><a href="#Mipmap" class="headerlink" title="Mipmap"></a>Mipmap</h1><p>多级渐远纹理，预先计算好图片缩小后的图片，每一层都是对上一层图片降采样的结果，当物体原理摄像机就可以直接使用较小的纹理，空间换时间。如果不是用Mipmap就会出现失真状况。</p>
+<h1 id="色彩空间"><a href="#色彩空间" class="headerlink" title="色彩空间"></a>色彩空间</h1><p><img src="https://uploader.shimo.im/f/jxaAc567YBwZNFSR.png!thumbnail" alt="img"></p>
+<h1 id="调整亮度，饱和度，对比度"><a href="#调整亮度，饱和度，对比度" class="headerlink" title="调整亮度，饱和度，对比度"></a>调整亮度，饱和度，对比度</h1><p>首先利用亮度公式得到像素的亮度值：luminance = 0.2125 * R+0.7154 * G + 0.0721 * B。</p>
+<p>利用亮度值创建一个饱和度为0的颜色值：(luminance,luminance,luminance),进行插值</p>
+<p>创建一个对比度为0的颜色值(各分量为0.5)：再进行插值。</p>
+<h1 id="四元数和旋转"><a href="#四元数和旋转" class="headerlink" title="四元数和旋转"></a>四元数和旋转</h1><h2 id="欧拉旋转"><a href="#欧拉旋转" class="headerlink" title="欧拉旋转"></a>欧拉旋转</h2><p>Unity的旋转顺序是ZXY们，还有两种旋转时所用的旋转坐标：</p>
+<p>1.绕坐标系E下的Z轴旋转α，绕坐标系E下的Y轴旋转β，绕坐标系E下的X轴旋转r，即进行一次旋转时不一起旋转当前坐标系；</p>
+<p>2.绕坐标系E下的Z轴旋转α，绕坐标系E在绕Z轴旋转α后的新坐标系E’下的Y轴旋转β，绕坐标系E’在绕Y轴旋转β后的新坐标系E’’下的X轴旋转r， 即在旋转时，把坐标系一起转动；</p>
+<p>在第一种情况下、按ZXY顺序旋转和在第二种情况下、按YXZ顺序旋转是一样的。</p>
+<p><strong>Unity选择使用的是第一种</strong></p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/images/Alipay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/images/Wechat.jpg" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2020/08/23/UE4--%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">UE4--材质大师课程笔记</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/08/23/C++%E9%87%8D%E7%82%B9/">
+                <span class="level-item">C++重点</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        
+<div id="comment-container"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+	var gitment = new Gitment({
+		id: 'b4323468245b541a7ed759a5b80bfbf1',
+		owner: 'opda777',
+		repo: 'opda777.github.io',
+		oauth: {
+			client_id: '0822f10c39cf53501e46',
+			client_secret: 'd37395506104a8a584de6f051a6084e1e2086f5d',
+		},
+	})
+	gitment.render('comment-container')
+</script>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left is-sticky">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/opda.jpg" alt="opda">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        opda
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        想提前退休的有志青年
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>广州 中国</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        22
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        4
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        4
+                    </p>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/opda777" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        
+    </div>
+</div>
+    
+        
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/game.svg" alt="Static Batch,Dynamic Batch,GPU Instancing" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 Opda&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/opda777">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+<script>
+var IcarusThemeSettings = {
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+    
+    
+<script src="/js/animation.js"></script>
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+    
+    
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/" target="_blank" rel="noopener">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+    
+    
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/unitychan.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true}});</script></body>
+</html>

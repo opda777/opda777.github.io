@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 4.0.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>C++重点 - Opda</title>
+
+
+    <meta name="description" content="C++对象的内存模型当对象被创建时，编译器会为每个对象分配内存空间，包括成员变量和成员函数。 直观直观的认识是，如果定义了10个对象，那么就要分别为这10个对象的变量和函数分配内存空间，如下图所示：  虽然每个对象的成员变量不同，但是成员函数的代码却是一样的，上面的内存模型保存了10份相同的代码片段，浪费了很多空间。 事实事实上，编译器会将成员变量和成员函数分开存储：分别为每个对象的成员变量分配内">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++重点">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2020&#x2F;08&#x2F;23&#x2F;C++%E9%87%8D%E7%82%B9&#x2F;index.html">
+<meta property="og:site_name" content="Opda">
+<meta property="og:description" content="C++对象的内存模型当对象被创建时，编译器会为每个对象分配内存空间，包括成员变量和成员函数。 直观直观的认识是，如果定义了10个对象，那么就要分别为这10个对象的变量和函数分配内存空间，如下图所示：  虽然每个对象的成员变量不同，但是成员函数的代码却是一样的，上面的内存模型保存了10份相同的代码片段，浪费了很多空间。 事实事实上，编译器会将成员变量和成员函数分开存储：分别为每个对象的成员变量分配内">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
+<meta property="og:updated_time" content="2020-03-14T17:28:11.023Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/code.ico">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/game.svg" alt="C++重点" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">主页</a>
+                
+                <a class="navbar-item"
+                href="/archives">文章</a>
+                
+                <a class="navbar-item"
+                href="/categories">归档</a>
+                
+                <a class="navbar-item"
+                href="/tags">标志</a>
+                
+                <a class="navbar-item"
+                href="/about">关于</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/opda777">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-9-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-08-23T08:30:41.502Z">2020-08-23</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    1 小时 读完 (大约 7207 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                C++重点
+            
+        </h1>
+        <div class="content">
+            <h1 id="C-对象的内存模型"><a href="#C-对象的内存模型" class="headerlink" title="C++对象的内存模型"></a>C++对象的内存模型</h1><p>当对象被创建时，编译器会为每个对象分配内存空间，包括成员变量和成员函数。</p>
+<h2 id="直观"><a href="#直观" class="headerlink" title="直观"></a>直观</h2><p>直观的认识是，如果定义了10个对象，那么就要分别为这10个对象的变量和函数分配内存空间，如下图所示：</p>
+<p><img src="http://c.biancheng.net/cpp/uploads/allimg/150909/1-150Z9134434637.png" alt="img"></p>
+<p>虽然每个对象的成员变量不同，但是成员函数的代码却是一样的，上面的内存模型保存了10份相同的代码片段，浪费了很多空间。</p>
+<h2 id="事实"><a href="#事实" class="headerlink" title="事实"></a>事实</h2><p>事实上，编译器会将成员变量和成员函数分开存储：分别为每个对象的成员变量分配内存，但是所有对象都共享同一段函数代码。如下图所示：</p>
+<p><img src="http://c.biancheng.net/cpp/uploads/allimg/150909/1-150Z9135223356.png" alt="img"></p>
+<p>对象的大小只受成员变量的影响，和成员函数没有关系。成员函数在代码区分配内存，而不是在栈区。</p>
+<h1 id="C-函数编译原理和成员函数的实现"><a href="#C-函数编译原理和成员函数的实现" class="headerlink" title="C++函数编译原理和成员函数的实现"></a>C++函数编译原理和成员函数的实现</h1><p>C++中的函数在编译时会根据它所在的命名空间、它所属的类、以及它的参数列表（也叫参数签名）等信息进行重新命名，形成一个新的函数名。这个新的函数名只有编译器知道，对用户是不可见的。<strong>名字编码（Name Mangling）</strong></p>
+<h2 id="成员函数的调用"><a href="#成员函数的调用" class="headerlink" title="成员函数的调用"></a>成员函数的调用</h2><p>成员函数最终被编译成与对象无关的全局函数。成员变量的作用域不是全局，不经任何处理就无法在函数内部访问。</p>
+<p>C++规定，编译成员函数时要额外添加一个参数，把当前对象的指针传递进去，通过指针来访问成员变量。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">//编译前</span><br><span class="line">void Demo::display()&#123;</span><br><span class="line">cout&lt;&lt;a&lt;&lt;endl;</span><br><span class="line">cout&lt;&lt;b&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//编译后</span><br><span class="line">void new_function_name(Demo * const p)&#123;</span><br><span class="line">//通过指针p来访问a、b</span><br><span class="line">cout&lt;&lt;p-&gt;a&lt;&lt;endl;</span><br><span class="line">cout&lt;&lt;p-&gt;b&lt;&lt;endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样通过传递对象指针就完成了成员函数和成员变量的关联。这与我们从表明上看到的刚好相反，通过对象调用成员函数时，不是通过对象找函数，而是通过函数找对象。</p>
+<h1 id="对象数组"><a href="#对象数组" class="headerlink" title="对象数组"></a>对象数组</h1><p>所谓对象数组，指每一个数组元素都是对象的数组，即若一个类有若干个对象，我们把这一系列的对象用一个数组来存放。</p>
+<h2 id="构造函数有0或1个参数"><a href="#构造函数有0或1个参数" class="headerlink" title="构造函数有0或1个参数"></a>构造函数有0或1个参数</h2><p>如果构造函数只有1个参数，在定义对象数组时可以直接在等号后面的花括号内提供实参来实现初始化。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exam ob1[4]=&#123;11,22,33,44&#125;;  //用只有1个参数的构造函数给对象数组赋值</span><br></pre></td></tr></table></figure>
+
+<h1 id="C-成员对象和封闭类详解"><a href="#C-成员对象和封闭类详解" class="headerlink" title="C++成员对象和封闭类详解"></a>C++成员对象和封闭类详解</h1><p>一个类的成员变量如果是另一个类的对象，就称之为“成员对象”。包含成员对象的类叫封闭类（enclosed class）。</p>
+<h2 id="封闭类构造函数的初始化列表"><a href="#封闭类构造函数的初始化列表" class="headerlink" title="封闭类构造函数的初始化列表"></a>封闭类构造函数的初始化列表</h2><p>当封闭类的对象生成并初始化时，它包含的成员对象也需要被初始化，这就会引发成员对象构造函数的调用。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">class CTyre  //轮胎类</span><br><span class="line">&#123;</span><br><span class="line">private:</span><br><span class="line">    int radius;  //半径</span><br><span class="line">    int width;  //宽度</span><br><span class="line">public:</span><br><span class="line">    CTyre(int r, int w) : radius(r), width(w) &#123; &#125;</span><br><span class="line">&#125;;</span><br><span class="line">class CEngine  //引擎类</span><br><span class="line">&#123;</span><br><span class="line">&#125;;</span><br><span class="line">class CCar &#123;  //汽车类</span><br><span class="line">private:</span><br><span class="line">    int price;  //价格</span><br><span class="line">    CTyre tyre;</span><br><span class="line">    CEngine engine;</span><br><span class="line">public:</span><br><span class="line">    CCar(int p, int tr, int tw);</span><br><span class="line">&#125;;</span><br><span class="line">CCar::CCar(int p, int tr, int tw) : price(p), tyre(tr, tw)</span><br><span class="line">&#123;</span><br><span class="line">&#125;;</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    CCar car(20000, 17, 225);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>生成封闭类对象的语句一定要让编译器能够弄明白其成员对象是如何初始化的</p>
+<h2 id="执行顺序"><a href="#执行顺序" class="headerlink" title="执行顺序"></a>执行顺序</h2><p>封闭类对象生成时，先执行所有成员对象的构造函数，然后才执行封闭类自己的构造函数。成员对象构造函数的执行次序和成员对象在类定义中的次序一致，与它们在构造函数初始化列表中出现的次序无关。</p>
+<p>当封闭类对象消亡时，先执行封闭类的析构函数，然后再执行成员对象的析构函数，成员对象析构函数的执行次序和构造函数的执行次序相反，即先构造的后析构</p>
+<p><strong>思考：为什么封闭类对象消亡时，要先执行封闭类的析构函数，然后才执行成员对象的析构函数</strong></p>
+<p><strong>答：是因为可能封闭类中析构函数会调用成员对象</strong></p>
+<h2 id="封闭类的复制构造函数"><a href="#封闭类的复制构造函数" class="headerlink" title="封闭类的复制构造函数"></a>封闭类的复制构造函数</h2><p>封闭类的对象，如果是用默认复制构造函数初始化的，那么它包含的成员对象也会用复制构造函数初始化。</p>
+<h1 id="静态成员变量"><a href="#静态成员变量" class="headerlink" title="静态成员变量"></a>静态成员变量</h1><p>静态成员变量是一种特殊的成员变量，它被关键字<code>static</code>修饰</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">static int m_total;  //静态成员变量</span><br></pre></td></tr></table></figure>
+
+<p>static 成员变量属于类，不属于某个具体的对象，即使创建多个对象，也只为 m_total 分配一份内存，所有对象使用的都是这份内存中的数据。当某个对象修改了 m_total，也会影响到其他对象。</p>
+<p><strong>注意：static 成员变量不占用对象的内存，而是在所有对象之外开辟内存，即使不创建对象也可以访问。具体来说，static 成员变量和普通的 static 变量类似，都在内存分区中的全局数据区分配内存</strong></p>
+<h1 id="静态成员函数"><a href="#静态成员函数" class="headerlink" title="静态成员函数"></a>静态成员函数</h1><p><strong>静态成员函数与普通成员函数的根本区别在于：普通成员函数有 this 指针，可以访问类中的任意成员；而静态成员函数没有 this 指针，只能访问静态成员（包括静态成员变量和静态成员函数）。</strong></p>
+<h1 id="Const成员变量和成员函数"><a href="#Const成员变量和成员函数" class="headerlink" title="Const成员变量和成员函数"></a>Const成员变量和成员函数</h1><p>在类中，如果你不希望某些数据被修改，可以使用<code>const</code>关键字加以限定。const 可以用来修饰成员变量和成员函数。</p>
+<h2 id="const成员变量"><a href="#const成员变量" class="headerlink" title="const成员变量"></a>const成员变量</h2><p>初始化 const 成员变量只有一种方法，就是通过构造函数的初始化列表</p>
+<h2 id="const成员函数（常成员函数）"><a href="#const成员函数（常成员函数）" class="headerlink" title="const成员函数（常成员函数）"></a>const成员函数（常成员函数）</h2><p>const 成员函数可以使用类中的所有成员变量，但是不能修改它们的值，这种措施主要还是为了保护数据而设置的。</p>
+<h3 id="const的位置"><a href="#const的位置" class="headerlink" title="const的位置"></a>const的位置</h3><p>最后再来区分一下 const 的位置：</p>
+<ul>
+<li>函数开头的 const 用来修饰函数的返回值，表示返回值是 const 类型，也就是不能被修改，例如<code>const char * getname()</code>。</li>
+<li>函数头部的结尾加上 const 表示常成员函数，这种函数只能读取成员变量的值，而不能修改成员变量的值，例如<code>char * getname() const</code>。</li>
+</ul>
+<h1 id="Const对象"><a href="#Const对象" class="headerlink" title="Const对象"></a>Const对象</h1><p>一旦将对象定义为常对象之后，不管是哪种形式，该对象就只能访问被 const 修饰的成员了（包括 const 成员变量和 const 成员函数），因为非 const 成员可能会修改对象的数据（编译器也会这样假设），C++禁止这样做。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const Student stu(&quot;小明&quot;, 15, 90.6);</span><br></pre></td></tr></table></figure>
+
+<h1 id="C-函数参数为什么要使用const引用"><a href="#C-函数参数为什么要使用const引用" class="headerlink" title="C++函数参数为什么要使用const引用"></a>C++函数参数为什么要使用const引用</h1><p><strong>const引用可以初始化为不同类型的对象或者初始化为右值</strong>,普通的const引用则只能绑定到与该引用同类型的对象。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">class Foo &#123;</span><br><span class="line">public:</span><br><span class="line">    Foo() &#123;&#125;</span><br><span class="line">    ~Foo() &#123;&#125;</span><br><span class="line">    int a;</span><br><span class="line">&#125;;</span><br><span class="line">void do_not_optimize(Foo &amp;v)</span><br><span class="line">&#123;</span><br><span class="line">    std::cout &lt;&lt; v.a &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line">void do_not_optimize2(const Foo &amp;v)</span><br><span class="line">&#123;</span><br><span class="line">    std::cout &lt;&lt; v.a &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    const int&amp; a = 10; //编译通过</span><br><span class="line">    // int &amp;b = 20; //，编译错误，字面常量是右值</span><br><span class="line">    // do_not_optimize(Foo()); //compile error,函数返回值是临时变量，是右值</span><br><span class="line">    do_not_optimize2(Foo());</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当传递进函数参数的类型不对的时候，C++会进行自动的类型转换，生成一个临时变量，这样为右值。</p>
+<h1 id="友元函数和友元类"><a href="#友元函数和友元类" class="headerlink" title="友元函数和友元类"></a>友元函数和友元类</h1><p>借助友元（friend），可以使得其他类中的成员函数以及全局范围内的函数访问当前类的 private 成员。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">friend void show(Student *pstu);  //将show()声明为友元函数</span><br></pre></td></tr></table></figure>
+
+<h2 id="将其他类的成员函数声明为友元函数"><a href="#将其他类的成员函数声明为友元函数" class="headerlink" title="将其他类的成员函数声明为友元函数"></a>将其他类的成员函数声明为友元函数</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//声明Student类</span><br><span class="line">public:</span><br><span class="line">    void show(Address *addr);</span><br><span class="line"></span><br><span class="line">//声明Address类</span><br><span class="line">//将Student类中的成员函数show()声明为友元函数</span><br><span class="line">    friend void Student::show(Address *addr);</span><br></pre></td></tr></table></figure>
+
+<h2 id="友元类"><a href="#友元类" class="headerlink" title="友元类"></a>友元类</h2><p>不仅可以将一个函数声明为一个类的“朋友”，还可以将整个类声明为另一个类的“朋友”，这就是友元类。友元类中的所有成员函数都是另外一个类的友元函数。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//将Student类声明为Address类的友元类</span><br><span class="line">    friend class Student;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="浅析C-类的作用域"><a href="#浅析C-类的作用域" class="headerlink" title="浅析C++类的作用域"></a>浅析C++类的作用域</h1><h1 id="class和struct到底有什么区别"><a href="#class和struct到底有什么区别" class="headerlink" title="class和struct到底有什么区别"></a>class和struct到底有什么区别</h1><ul>
+<li>使用 class 时，类中的成员默认都是 private 属性的；而使用 struct 时，结构体中的成员默认都是 public 属性的。</li>
+<li>class 继承默认是 private 继承，而 struct 继承默认是 public 继承</li>
+<li>class 可以使用模板，而 struct 不能</li>
+</ul>
+<p><strong>建议：在编写C++代码时，我强烈建议使用 class 来定义类，而使用 struct 来定义结构体，这样做语义更加明确。</strong></p>
+<h1 id="C-引用"><a href="#C-引用" class="headerlink" title="C++引用"></a>C++引用</h1><p>一种比指针更加便捷的传递聚合类型数据的方式，那就是<strong>引用（Reference）</strong>。</p>
+<p><strong>引用可以看做是数据的一个别名，通过这个别名和原来的名字都能够找到这份数据。</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type &amp;name = data;</span><br></pre></td></tr></table></figure>
+
+<p><strong>引用必须在定义的同时初始化，并且以后也要从一而终，不能再引用其它数据.</strong></p>
+<p><strong>注意，引用在定义时需要添加<code>&amp;</code>，在使用时不能添加<code>&amp;</code>，使用时添加<code>&amp;</code>表示取地址。</strong></p>
+<h2 id="C-引用作为函数返回值"><a href="#C-引用作为函数返回值" class="headerlink" title="C++引用作为函数返回值"></a>C++引用作为函数返回值</h2><p>不能返回局部数据（例如局部变量、局部对象、局部数组等）的引用，因为当函数调用完成后局部数据就会被销毁</p>
+<h1 id="C-引用在本质上是什么，它和指针到底有什么区别？"><a href="#C-引用在本质上是什么，它和指针到底有什么区别？" class="headerlink" title="C++引用在本质上是什么，它和指针到底有什么区别？"></a>C++引用在本质上是什么，它和指针到底有什么区别？</h1><p><strong>相同点：都是地址的概念；</strong></p>
+<p><strong>指针指向一块内存，它的内容是所指内存的地址；而引用则是某块内存的别名。</strong></p>
+<p>**不同点：</p>
+<p>指针是一个实体，而引用仅是个别名；</p>
+<p>引用只能在定义时被初始化一次，之后不可变；指针可变；引用“从一而终”，指针可以“见异思迁”；</p>
+<p>//引用没有const，指针有const，const的指针不可变；</p>
+<p>引用不能为空，指针可以为空</p>
+<p>“sizeof 引用”得到的是所指向的变量(对象)的大小，而“sizeof 指针”得到的是指针本身的大小；</p>
+<p>引用是类型安全的，而指针不是 (引用比指针多了类型检查</p>
+<p>指针和引用的自增(++)运算意义不一样；</p>
+<h1 id="C-引用为什么不能绑定到临时数据"><a href="#C-引用为什么不能绑定到临时数据" class="headerlink" title="C++引用为什么不能绑定到临时数据"></a>C++引用为什么不能绑定到临时数据</h1><p><strong>临时变量的定义：临时变量通常在函数参数传递发生类型转换以及函数返回值时被创建。</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">void uppercasify(const string&amp; str)</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(int argc, char* argv[])</span><br><span class="line">&#123;</span><br><span class="line">   char subtleBookPlug[] = &quot;Effective C++&quot;;</span><br><span class="line"></span><br><span class="line">   uppercasify(subtleBookPlug);  // 此处有类型转换</span><br><span class="line"></span><br><span class="line">   return 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>函数uppercasify需要const string&amp;类型的参数，而实参类型为char *，故编译器会尝试着进行类型转换。此时一个string类型的临时变量将被创建，并用subtleBookPlug来初始化对象，最后将临时变量传给函数uppercasify。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">void uppercasify(string&amp; str)  // 参数类型改为string &amp;</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(int argc, char* argv[])</span><br><span class="line">&#123;</span><br><span class="line">   char subtleBookPlug[] = &quot;Effective C++&quot;;</span><br><span class="line"></span><br><span class="line">   uppercasify(subtleBookPlug);</span><br><span class="line"></span><br><span class="line">   return 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果创建了一个临时变量，那函数所修改的对象为临时变量，而不是用户所期待的subtleBookPlug了，从而容易引起误操作。</p>
+<h1 id="C-继承时的名字遮蔽问题"><a href="#C-继承时的名字遮蔽问题" class="headerlink" title="C++继承时的名字遮蔽问题"></a>C++继承时的名字遮蔽问题</h1><p>如果派生类中的成员（包括成员变量和成员函数）和基类中的成员重名，那么就会遮蔽从基类继承过来的成员。所谓遮蔽，就是在派生类中使用该成员（包括在定义派生类时使用，也包括通过派生类对象访问该成员）时，实际上使用的是派生类新增的成员，而不是从基类继承来的。</p>
+<p><strong>基类成员函数和派生类成员函数不构成重载</strong></p>
+<h1 id="C-类继承时的作用域嵌套"><a href="#C-类继承时的作用域嵌套" class="headerlink" title="C++类继承时的作用域嵌套"></a>C++类继承时的作用域嵌套</h1><p>在继承情况下，<strong>派生类的作用域嵌套在基类作用域中</strong>：如果不能在派生类作用域中确定名字，就在外围基类作用域中查找该名字的定义。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Bulk_item bulk;</span><br><span class="line"> </span><br><span class="line">cout &lt;&lt; bulk.book() &lt;&lt; endl;</span><br></pre></td></tr></table></figure>
+
+<p>名字book的使用将这样确定[先派生-&gt;后基类]：</p>
+<h1 id="C-继承时的对象模型"><a href="#C-继承时的对象模型" class="headerlink" title="C++继承时的对象模型"></a>C++继承时的对象模型</h1><h2 id="没有继承时的内存模型"><a href="#没有继承时的内存模型" class="headerlink" title="没有继承时的内存模型"></a>没有继承时的内存模型</h2><ul>
+<li>对象的内存中只包含成员变量，存储在栈区或堆区（使用 new 创建对象）；</li>
+<li>成员函数与对象内存分离，存储在代码区。</li>
+</ul>
+<h2 id="继承时的内存模型"><a href="#继承时的内存模型" class="headerlink" title="继承时的内存模型"></a>继承时的内存模型</h2><p>有继承关系时，派生类的内存模型可以看成是基类成员变量和新增成员变量的总和，所有成员函数仍在另外一个区域——代码区，由所有对象共享。</p>
+<p><img src="http://c.biancheng.net/cpp/uploads/allimg/150911/1-15091110245Y51.png" alt="img"></p>
+<p>可以发现，基类的成员变量排在前面，派生类的排在后面。</p>
+<h2 id="有成员变量遮蔽时的内存分布"><a href="#有成员变量遮蔽时的内存分布" class="headerlink" title="有成员变量遮蔽时的内存分布"></a>有成员变量遮蔽时的内存分布</h2><p>当基类A、B的成员变量被遮蔽，仍然会留在派生类对象 obj_c 的内存中，C 类新增的成员变量始终排在基类A、B的后面。</p>
+<p><img src="http://c.biancheng.net/cpp/uploads/allimg/150911/1-15091111125L06.png" alt="img"></p>
+<h1 id="C-多继承时的对象内存模型"><a href="#C-多继承时的对象内存模型" class="headerlink" title="C++多继承时的对象内存模型"></a>C++多继承时的对象内存模型</h1><h2 id="无虚函数时"><a href="#无虚函数时" class="headerlink" title="无虚函数时"></a><strong>无虚函数时</strong></h2><p>排列顺序：</p>
+<p>继承自父类的成员变量排在当前类所有成员变量之前</p>
+<p>继承自多个父类的成员变量按照类继承列表中的声明顺序依次排列每个父类中的成员变量</p>
+<p><img src="https://img-blog.csdn.net/20160904184331565" alt="KTestClass的实例内存模型"></p>
+<h1 id="C-虚继承和虚基类详解"><a href="#C-虚继承和虚基类详解" class="headerlink" title="C++虚继承和虚基类详解"></a>C++虚继承和虚基类详解</h1><p><img src="http://c.biancheng.net/uploads/allimg/190214/1F53T141-0.jpg" alt="img"></p>
+<p>类 A 派生出类 B 和类 C，类 D 继承自类 B 和类 C，这个时候类 A 中的成员变量和成员函数继承到类 D 中变成了两份，一份来自 A–&gt;B–&gt;D 这条路径，另一份来自 A–&gt;C–&gt;D 这条路径。</p>
+<h2 id="虚继承"><a href="#虚继承" class="headerlink" title="虚继承"></a>虚继承</h2><p>为了解决多继承时的命名冲突和冗余数据问题，<a href="http://c.biancheng.net/cplus/" target="_blank" rel="noopener">C++</a> 提出了虚继承，使得在派生类中只保留一份间接基类的成员。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//直接基类B</span><br><span class="line">class B: virtual public A&#123;  //虚继承</span><br><span class="line">protected:</span><br><span class="line">    int m_b;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码使用虚继承重新实现了上图所示的菱形继承，这样在派生类 D 中就只保留了一份成员变量 m_a，直接访问就不会再有歧义了。</p>
+<p><img src="http://c.biancheng.net/uploads/allimg/190214/1F53S160-1.jpg" alt="img"></p>
+<p>这个被共享的基类就称为虚基类（Virtual Base Class）</p>
+<h1 id="虚继承时的构造函数"><a href="#虚继承时的构造函数" class="headerlink" title="虚继承时的构造函数"></a>虚继承时的构造函数</h1><p><strong>在虚继承中，虚基类是由最终的派生类初始化的，换句话说，最终派生类的构造函数必须要调用虚基类的构造函数。</strong></p>
+<p><strong>在普通继承中，派生类构造函数中只能调用直接基类的构造函数，不能调用间接基类的。</strong></p>
+<h1 id="C-虚继承下的内存模型"><a href="#C-虚继承下的内存模型" class="headerlink" title="C++虚继承下的内存模型"></a>C++虚继承下的内存模型</h1><p>举例：假设有虚继承结构如下，虚基类A中有int成员a_；B1虚继承自A，有int成员b1_；B2虚继承自A，有int成员b2_；D继承自B1、B2，有int成员d_。</p>
+<p><img src="https://images0.cnblogs.com/i/596926/201403/082218036598320.jpg" alt="img"></p>
+<h2 id="分析：B1类对象内存模型"><a href="#分析：B1类对象内存模型" class="headerlink" title="分析：B1类对象内存模型"></a><strong>分析：B1类对象内存模型</strong></h2><p><img src="https://images0.cnblogs.com/i/596926/201403/082349002536834.jpg" alt="img"></p>
+<p>该对象的内存分为B1部分和虚基类部分。从B1部分的首地址开始的4个字节存放的是一个vbptr（B1部分的虚基类表指针），该指针指向了一个虚基类表（virtual base table of B1）</p>
+<h2 id="分析：D类对象内存模型"><a href="#分析：D类对象内存模型" class="headerlink" title="分析：D类对象内存模型"></a><strong>分析：D类对象内存模型</strong></h2><p><img src="https://images0.cnblogs.com/i/596926/201403/090013366283893.jpg" alt="img"></p>
+<h1 id="C-向上转型"><a href="#C-向上转型" class="headerlink" title="C++向上转型"></a>C++向上转型</h1><p>类其实也是一种数据类型，也可以发生数据类型转换，不过这种转换只有在基类和派生类之间才有意义，并且只能将派生类赋值给基类，包括将派生类对象赋值给基类对象、将派生类<a href="http://c.biancheng.net/c/80/" target="_blank" rel="noopener">指针</a>赋值给基类指针、将派生类引用赋值给基类引用，这在 C++ 中称为向上转型（Upcasting）。相应地，将基类赋值给派生类称为向下转型（Downcasting）。</p>
+<h2 id="将派生类对象赋值给基类对象"><a href="#将派生类对象赋值给基类对象" class="headerlink" title="将派生类对象赋值给基类对象"></a>将派生类对象赋值给基类对象</h2><p>赋值的本质是将现有的数据写入已分配好的内存中，对象的内存只包含了成员变量，所以对象之间的赋值是成员变量的赋值，成员函数不存在赋值问题。</p>
+<p><img src="http://c.biancheng.net/uploads/allimg/190214/1G45K0C-0.png" alt="img"></p>
+<p><strong>这种转换关系是不可逆的，只能用派生类对象给基类对象赋值，而不能用基类对象给派生类对象赋值。理由很简单，基类不包含派生类的成员变量，无法对派生类的成员变量赋值。同理，同一基类的不同派生类对象之间也不能赋值。</strong></p>
+<h2 id="将派生类指针赋值给基类指针"><a href="#将派生类指针赋值给基类指针" class="headerlink" title="将派生类指针赋值给基类指针"></a>将派生类指针赋值给基类指针</h2><p><img src="http://c.biancheng.net/uploads/allimg/190214/1G45IP6-1.jpg" alt="img"></p>
+<p>概括起来说就是：编译器通过指针来访问成员变量，指针指向哪个对象就使用哪个对象的数据；编译器通过指针的类型来访问成员函数，指针属于哪个类的类型就使用哪个类的函数。</p>
+<h1 id="将派生类指针赋值给基类指针时到底发生了什么？（未解决）"><a href="#将派生类指针赋值给基类指针时到底发生了什么？（未解决）" class="headerlink" title="将派生类指针赋值给基类指针时到底发生了什么？（未解决）"></a>将派生类指针赋值给基类指针时到底发生了什么？（未解决）</h1><p>C++帮你进行了隐式转换</p>
+<h1 id="多态与虚函数"><a href="#多态与虚函数" class="headerlink" title="多态与虚函数"></a>多态与虚函数</h1><p>面向对象程序设计语言有封装、继承和多态三种机制，这三种机制能够有效提高程序的可读性、可扩充性和可重用性。</p>
+<p>为了让基类指针能够访问派生类的成员函数，<a href="http://c.biancheng.net/cplus/" target="_blank" rel="noopener">C++</a> 增加了<strong>虚函数（Virtual Function）</strong>。使用虚函数非常简单，只需要在函数声明前面增加 virtual 关键字。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//基类People</span><br><span class="line">public:</span><br><span class="line">    People(char *name, int age);</span><br><span class="line">    virtual void display();  //声明为虚函数</span><br><span class="line">    </span><br><span class="line">//派生类Teacher</span><br><span class="line">public:</span><br><span class="line">    Teacher(char *name, int age, int salary);</span><br><span class="line">    virtual void display();  //声明为虚函数</span><br></pre></td></tr></table></figure>
+
+<p>有了虚函数，基类指针指向基类对象时就使用基类的成员（包括成员函数和成员变量），指向派生类对象时就使用派生类的成员。换句话说，基类指针可以按照基类的方式来做事，也可以按照派生类的方式来做事，它有多种形态，或者说有多种表现方式，我们将这种现象称为<strong>多态（Polymorphism）</strong>。</p>
+<p><strong>C++提供多态的目的是：可以通过基类指针对所有派生类（包括直接派生和间接派生）的成员变量和成员函数进行“全方位”的访问，尤其是成员函数。如果没有多态，我们只能访问成员变量。</strong></p>
+<h2 id="多态的用途"><a href="#多态的用途" class="headerlink" title="多态的用途"></a>多态的用途</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">//军队</span><br><span class="line">class Troops&#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void fight()&#123; cout&lt;&lt;&quot;Strike back!&quot;&lt;&lt;endl; &#125;</span><br><span class="line">&#125;;</span><br><span class="line">//陆军</span><br><span class="line">class Army: public Troops&#123;</span><br><span class="line">public:</span><br><span class="line">    void fight()&#123; cout&lt;&lt;&quot;--Army is fighting!&quot;&lt;&lt;endl; &#125;</span><br><span class="line">&#125;;</span><br><span class="line">//99A主战坦克</span><br><span class="line">class _99A: public Army&#123;</span><br><span class="line">public:</span><br><span class="line">    void fight()&#123; cout&lt;&lt;&quot;----99A(Tank) is fighting!&quot;&lt;&lt;endl; &#125;</span><br><span class="line">&#125;;</span><br><span class="line">//武直10武装直升机</span><br><span class="line">class WZ_10: public Army&#123;</span><br><span class="line">public:</span><br><span class="line">    void fight()&#123; cout&lt;&lt;&quot;----WZ-10(Helicopter) is fighting!&quot;&lt;&lt;endl; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main()&#123;</span><br><span class="line">    Troops *p = new Troops;</span><br><span class="line">    p -&gt;fight();</span><br><span class="line">    //陆军</span><br><span class="line">    p = new Army;</span><br><span class="line">    p -&gt;fight();</span><br><span class="line">    p = new _99A;</span><br><span class="line">    p -&gt; fight();</span><br><span class="line">    p = new WZ_10;</span><br><span class="line">    p -&gt; fight();</span><br><span class="line">    p = new CJ_10;</span><br><span class="line">    p -&gt; fight();</span><br><span class="line">    //空军</span><br><span class="line">    p = new AirForce;</span><br><span class="line">    p -&gt; fight();</span><br><span class="line">    p = new J_20;</span><br><span class="line">    p -&gt; fight();</span><br><span class="line">    p = new CH_5;</span><br><span class="line">    p -&gt; fight();</span><br><span class="line">    p = new H_6K;</span><br><span class="line">    p -&gt; fight();</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有了多态，只需要一个指针变量 p 就可以调用所有派生类的虚函数。</p>
+<h1 id="C-虚函数注意事项以及构成多态的条件"><a href="#C-虚函数注意事项以及构成多态的条件" class="headerlink" title="C++虚函数注意事项以及构成多态的条件"></a>C++虚函数注意事项以及构成多态的条件</h1><h2 id="构成多态的条件"><a href="#构成多态的条件" class="headerlink" title="构成多态的条件"></a>构成多态的条件</h2><ul>
+<li>必须存在继承关系；</li>
+<li>继承关系中必须有同名的虚函数，并且它们是覆盖关系（函数原型相同）。</li>
+<li>存在基类的指针，通过该指针调用虚函数。</li>
+</ul>
+<h1 id="虚函数指针"><a href="#虚函数指针" class="headerlink" title="虚函数指针"></a>虚函数指针</h1><p>总结：<strong>当使用类的指针调用成员函数时，普通函数由指针类型决定，而虚函数由指针指向的实际类型决定</strong></p>
+<h2 id="一般继承（无虚函数覆盖）"><a href="#一般继承（无虚函数覆盖）" class="headerlink" title="一般继承（无虚函数覆盖）"></a>一般继承（无虚函数覆盖）</h2><p><img src="https://p-blog.csdn.net/images/p_blog_csdn_net/haoel/15190/o_Drawing3.jpg" alt="img"></p>
+<p><img src="https://p-blog.csdn.net/images/p_blog_csdn_net/haoel/15190/o_vtable2.JPG" alt="img"></p>
+<h2 id="一般继承（有虚函数覆盖）"><a href="#一般继承（有虚函数覆盖）" class="headerlink" title="一般继承（有虚函数覆盖）"></a><em>一般继承（有虚函数覆盖）</em></h2><p><img src="https://p-blog.csdn.net/images/p_blog_csdn_net/haoel/15190/o_Drawing4.jpg" alt="img"></p>
+<p><img src="https://p-blog.csdn.net/images/p_blog_csdn_net/haoel/15190/o_vtable3.JPG" alt="img"></p>
+<h2 id="多重继承（无虚函数覆盖）"><a href="#多重继承（无虚函数覆盖）" class="headerlink" title="多重继承（无虚函数覆盖）"></a><em>多重继承（无虚函数覆盖）</em></h2><p><img src="https://p-blog.csdn.net/images/p_blog_csdn_net/haoel/15190/o_Drawing1.jpg" alt="img"></p>
+<p><img src="https://p-blog.csdn.net/images/p_blog_csdn_net/haoel/15190/o_vtable4.JPG" alt="img"></p>
+<h2 id="多重继承（有虚函数覆盖）"><a href="#多重继承（有虚函数覆盖）" class="headerlink" title="多重继承（有虚函数覆盖）"></a><em>多重继承（有虚函数覆盖）</em></h2><p><img src="https://p-blog.csdn.net/images/p_blog_csdn_net/haoel/15190/o_Drawing2.jpg" alt="img"></p>
+<p><img src="https://p-blog.csdn.net/images/p_blog_csdn_net/haoel/15190/o_vtable5.jpg" alt="img"></p>
+<h1 id="虚析构函数的必要性"><a href="#虚析构函数的必要性" class="headerlink" title="虚析构函数的必要性"></a>虚析构函数的必要性</h1><p>虚析构函数使得在删除指向子类对象的基类指针时可以调用子类的析构函数达到释放子类中堆内存的目的，而防止内存泄露的.</p>
+<p>顺序：先析构子类然后析构基类。</p>
+<h1 id="纯虚函数和抽象类"><a href="#纯虚函数和抽象类" class="headerlink" title="纯虚函数和抽象类"></a>纯虚函数和抽象类</h1><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">virtual 返回值类型 函数名 (函数参数) = 0;</span><br></pre></td></tr></table></figure>
+
+<p>纯虚函数没有函数体，只有函数声明，在虚函数声明的结尾加上<code>=0</code>，表明此函数为纯虚函数。</p>
+<p><strong>包含纯虚函数的类称为抽象类（Abstract Class）。</strong></p>
+<p><strong>抽象基类除了约束派生类的功能，还可以实现多态。</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">int main()&#123;</span><br><span class="line">    Line *p = new Cuboid(10, 20, 30);</span><br><span class="line">    cout&lt;&lt;&quot;The area of Cuboid is &quot;&lt;&lt;p-&gt;area()&lt;&lt;endl;</span><br><span class="line">    cout&lt;&lt;&quot;The volume of Cuboid is &quot;&lt;&lt;p-&gt;volume()&lt;&lt;endl;</span><br><span class="line">  </span><br><span class="line">    p = new Cube(15);</span><br><span class="line">    cout&lt;&lt;&quot;The area of Cube is &quot;&lt;&lt;p-&gt;area()&lt;&lt;endl;</span><br><span class="line">    cout&lt;&lt;&quot;The volume of Cube is &quot;&lt;&lt;p-&gt;volume()&lt;&lt;endl;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="C-运算符重载"><a href="#C-运算符重载" class="headerlink" title="C++运算符重载"></a>C++运算符重载</h1><p><strong>也就是说，运算符重载是通过函数实现的，它本质上是函数重载。</strong></p>
+<h2 id="格式"><a href="#格式" class="headerlink" title="格式"></a>格式</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">返回值类型 operator 运算符名称 (形参表列)&#123;</span><br><span class="line">    //TODO:</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="在全局范围内重载运算符"><a href="#在全局范围内重载运算符" class="headerlink" title="在全局范围内重载运算符"></a>在全局范围内重载运算符</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//声明为友元函数</span><br><span class="line">    friend complex operator+(const complex &amp;A, const complex &amp;B);</span><br><span class="line">    </span><br><span class="line">//在全局范围内重载+</span><br><span class="line">complex operator+(const complex &amp;A, const complex &amp;B)&#123;</span><br><span class="line">    complex C;</span><br><span class="line">    C.m_real = A.m_real + B.m_real;</span><br><span class="line">    C.m_imag = A.m_imag + B.m_imag;</span><br><span class="line">    return C;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运算符重载函数不是 complex 类的成员函数，但是却用到了 complex 类的 private 成员变量，所以必须在 complex 类中将该函数声明为友元函数。</p>
+<h1 id="C-运算符重载时要遵循的规则"><a href="#C-运算符重载时要遵循的规则" class="headerlink" title="C++运算符重载时要遵循的规则"></a>C++运算符重载时要遵循的规则</h1><p>1) 并不是所有的运算符都可以重载。</p>
+<p>2) 重载不能改变运算符的优先级和结合性。</p>
+<p>3) 重载不会改变运算符的用法，原有有几个操作数、操作数在左边还是在右边，这些都不会改变。</p>
+<p>4) 运算符重载函数不能有默认的参数，否则就改变了运算符操作数的个数，这显然是错误的。</p>
+<p>5) 运算符重载函数既可以作为类的成员函数，也可以作为全局函数。</p>
+<p><strong>将运算符重载函数作为类的成员函数时，二元运算符的参数只有一个，一元运算符不需要参数。之所以少一个参数，是因为这个参数是隐含的。</strong></p>
+<p><strong>将运算符重载函数作为全局函数时，一般都需要在类中将该函数声明为友元函数。原因很简单，该函数大部分情况下都需要使用类的 private 成员。</strong></p>
+<h2 id="以全局函数-友元函数-形式重载"><a href="#以全局函数-友元函数-形式重载" class="headerlink" title="以全局函数(友元函数)形式重载"></a>以全局函数(友元函数)形式重载</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/以全局函数的形式重载</span><br><span class="line">    friend Complex operator+(const Complex &amp;c1, const Complex &amp;c2);</span><br><span class="line">    friend Complex operator-(const Complex &amp;c1, const Complex &amp;c2);</span><br></pre></td></tr></table></figure>
+
+<h2 id="以成员函数的形式重载"><a href="#以成员函数的形式重载" class="headerlink" title="以成员函数的形式重载"></a>以成员函数的形式重载</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Complex &amp; operator+=(const Complex &amp;c);</span><br><span class="line">Complex &amp; operator-=(const Complex &amp;c);</span><br></pre></td></tr></table></figure>
+
+<h2 id="友元函数和成员函数重载的区别"><a href="#友元函数和成员函数重载的区别" class="headerlink" title="友元函数和成员函数重载的区别"></a>友元函数和成员函数重载的区别</h2><p><strong>成员函数</strong>：单目运算符作为类成员函数重载时没有型参（除了后置自增（自减）有一个整型参数：</p>
+<p>双目运算符作为类成员函数重载时只有一个型参，作为运算符的右操作数，其左操作数就是本对象自己，也就是this。</p>
+<p><strong>友元函数</strong>：需要定义两个参数来运算（对于双目运算符）；这样就可以使用交换律。</p>
+<p> 友元可以像类成员一样访问类的成员和函数，但是使用不慎会造成破坏类的封装性。</p>
+<h1 id="C-重载-gt-gt-和-lt-lt"><a href="#C-重载-gt-gt-和-lt-lt" class="headerlink" title="C++重载&gt;&gt;和&lt;&lt;"></a>C++重载&gt;&gt;和&lt;&lt;</h1><p>cout 是 ostream 类的对象，cin 是 istream 类的对象，要想达到这个目标，就必须以全局函数（友元函数）的形式重载<code>&lt;&lt;</code>和<code>&gt;&gt;</code></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">friend istream &amp; operator&gt;&gt;(istream &amp; in, complex &amp; A);</span><br><span class="line">friend ostream &amp; operator&lt;&lt;(ostream &amp; out, complex &amp; A);</span><br><span class="line">    </span><br><span class="line">//重载输入运算符</span><br><span class="line">istream &amp; operator&gt;&gt;(istream &amp; in, complex &amp; A)&#123;</span><br><span class="line">    in &gt;&gt; A.m_real &gt;&gt; A.m_imag;</span><br><span class="line">    return in;</span><br><span class="line">&#125;</span><br><span class="line">//重载输出运算符</span><br><span class="line">ostream &amp; operator&lt;&lt;(ostream &amp; out, complex &amp; A)&#123;</span><br><span class="line">    out &lt;&lt; A.m_real &lt;&lt;&quot; + &quot;&lt;&lt; A.m_imag &lt;&lt;&quot; i &quot;;;</span><br><span class="line">    return out;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="C-重载-（下标运算符"><a href="#C-重载-（下标运算符" class="headerlink" title="C++重载[]（下标运算符)"></a>C++重载[]（下标运算符)</h1><p><a href="http://c.biancheng.net/cplus/" target="_blank" rel="noopener">C++</a> 规定，下标运算符<code>[ ]</code>必须以成员函数的形式进行重载。</p>
+<p>格式</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">返回值类型 &amp; operator[ ] (参数);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const 返回值类型 &amp; operator[ ] (参数) const;</span><br></pre></td></tr></table></figure>
+
+<p>第一种声明方式，<code>[ ]</code>不仅可以访问元素，还可以修改元素。</p>
+<p>使用第二种声明方式，<code>[ ]</code>只能访问而不能修改元素。</p>
+<p>在实际开发中，我们应该同时提供以上两种形式，这样做是为了适应 const 对象，因为<a href="http://c.biancheng.net/view/2232.html" target="_blank" rel="noopener">通过 const 对象只能调用 const 成员函数</a>，如果不提供第二种形式，那么将无法访问 const 对象的任何元素。</p>
+<h1 id="C-重载-和–（自增和自减运算符）"><a href="#C-重载-和–（自增和自减运算符）" class="headerlink" title="C++重载++和–（自增和自减运算符）"></a>C++重载++和–（自增和自减运算符）</h1><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">stopwatch operator++();  //++i，前置形式</span><br><span class="line">stopwatch operator++(int);  //i++，后置形式</span><br></pre></td></tr></table></figure>
+
+<p>在这个函数中参数n是没有任何意义的，它的存在只是为了区分是前置形式还是后置形式。</p>
+<h1 id="C-重载new和delete运算符"><a href="#C-重载new和delete运算符" class="headerlink" title="C++重载new和delete运算符"></a>C++重载new和delete运算符</h1><p>内存管理运算符 new、new[]、delete 和 delete[] 也可以进行重载，其重载形式既可以是类的成员函数，也可以是全局函数。一般情况下，内建的内存管理运算符就够用了，只有在需要自己管理内存时才会重载。</p>
+<h1 id="C-模板"><a href="#C-模板" class="headerlink" title="C++模板"></a>C++模板</h1><h1 id="C-异常处理入门，C-try-catch入门"><a href="#C-异常处理入门，C-try-catch入门" class="headerlink" title="C++异常处理入门，C++ try catch入门"></a>C++异常处理入门，C++ try catch入门</h1><p>程序的错误大致可以分为三种，分别是语法错误、逻辑错误和运行时错误</p>
+<p><strong>C++ 提供了异常（Exception）机制，让我们能够捕获运行时错误，给程序一次“起死回生”的机会，或者至少告诉用户发生了什么再终止程序。</strong></p>
+<h2 id="捕获异常"><a href="#捕获异常" class="headerlink" title="捕获异常"></a>捕获异常</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">try&#123;</span><br><span class="line">    // 可能抛出异常的语句</span><br><span class="line">&#125;catch(exceptionType variable)&#123;</span><br><span class="line">    // 处理异常的语句</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>catch 告诉 try：你去检测一下程序有没有错误，有错误的话就告诉我，我来处理，没有的话就不要理我！</strong></p>
+<h2 id="处理流程"><a href="#处理流程" class="headerlink" title="处理流程"></a>处理流程</h2><p>抛出（Throw）–&gt; 检测（Try） –&gt; 捕获（Catch）</p>
+<h1 id="C-多维数组和指针"><a href="#C-多维数组和指针" class="headerlink" title="C++多维数组和指针"></a>C++多维数组和指针</h1><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">数组与指针的关系是因为数组下标操作符[]，比如，int a[3][2]相当于*(*(a+3)+2) 。</span><br></pre></td></tr></table></figure>
+
+<h2 id="一维数组与数组指针"><a href="#一维数组与数组指针" class="headerlink" title="一维数组与数组指针"></a><strong>一维数组与数组指针</strong></h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">char a[3];</span><br></pre></td></tr></table></figure>
+
+<p>数组一共有3个元素，元素的类型为char，如果想定义一个指针指向该数组，也就是如果想把数组名a赋值给一个指针变量。一个数组的数组名代表其首元素的首地址，也就是相当于&amp;a[0]，而a[0]的类型为char，因此&amp;a[0]类型为char *。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">char * p = a;//相当于char * p = &amp;a[0]</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://images2015.cnblogs.com/blog/592743/201602/592743-20160227110509240-1709127045.png" alt="img"></p>
+<p>a和&amp;a[0]代表的都是数组首元素的首地址，而如果你将&amp;a的值打印出来，会发现<strong>该值也等于数组首元素的首地址</strong>。&amp;a虽然在数值上也等于数组首元素首地址的值，但是其类型并不是数组首元素首地址类型，也就是char *p = &amp;a是错误的。</p>
+<p>对数组名进行取地址操作，其类型为整个数组，因此，&amp;a的类型是char (*)[3]</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">char (*p)[3] = &amp;a;</span><br></pre></td></tr></table></figure>
+
+<h2 id="二维数组与数组指针"><a href="#二维数组与数组指针" class="headerlink" title="二维数组与数组指针"></a><strong>二维数组与数组指针</strong></h2><p>二维数组</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">char a[3][2];</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://images2015.cnblogs.com/blog/592743/201602/592743-20160227122557865-606035369.png" alt="img"></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">char (*p)[2]  = a;//a为第一维数组的数组名，类型为char (*)[2]</span><br><span class="line"></span><br><span class="line"> char * p = a[0];//a[0]维第二维数组的数组名，类型为char *</span><br></pre></td></tr></table></figure>
+
+<p>对a取地址操作代表整个数组的首地址，类型为数组类型(请允许我暂且这么称呼)，也就是char (*)[3][2]</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">char (*p)[3][2] = &amp;a;</span><br></pre></td></tr></table></figure>
+
+<h2 id="多级指针"><a href="#多级指针" class="headerlink" title="多级指针"></a><strong>多级指针</strong></h2><p>所谓的多级指针，就是一个指向指针的指针</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">char *p = &quot;my name is chenyang.&quot;;</span><br><span class="line"></span><br><span class="line">      char **pp = &amp;p;//二级指针</span><br><span class="line"></span><br><span class="line">      char ***ppp = &amp;pp;//三级指针</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://images2015.cnblogs.com/blog/592743/201602/592743-20160227170007552-1245431061.png" alt="img"></p>
+<h1 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h1><p>unique_ptr:</p>
+<p>不允许多个指针共享资源，就是不能指向同一个内存地址，但可以用Move函数转移内存地址给另一个指针，但原指针会失效，Move的作用就是将左值转换为了右值。</p>
+<p>shared_ptr:</p>
+<p>多个指针共享资源</p>
+<p>weak_ptr:</p>
+<p>可以复制shared_ptr，但其构造和释放对资源不造成影响</p>
+<h1 id="Vector对象"><a href="#Vector对象" class="headerlink" title="Vector对象"></a>Vector对象</h1><p>C++标准模板库里的类模板，比数组更加安全和方便，能容纳任何类型的数组，只要使用前说明类型。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vector&lt;int&gt; arr(5);</span><br><span class="line">建立大小为5的int数组</span><br></pre></td></tr></table></figure>
+
+<h2 id="配合auto进行for循环"><a href="#配合auto进行for循环" class="headerlink" title="配合auto进行for循环"></a>配合auto进行for循环</h2><p><img src="/2020/08/23/C++%E9%87%8D%E7%82%B9/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200314160416461.png" alt="image-20200314160416461"></p>
+<h1 id="深层复制和浅层复制"><a href="#深层复制和浅层复制" class="headerlink" title="深层复制和浅层复制"></a>深层复制和浅层复制</h1><h2 id="浅层复制"><a href="#浅层复制" class="headerlink" title="浅层复制"></a>浅层复制</h2><p>实现对象间数据元素的一一对应复制，默认的复制构造方法是浅层复制</p>
+<h2 id="深层复制"><a href="#深层复制" class="headerlink" title="深层复制"></a>深层复制</h2><p>当被复制的对象数据成员是指针类型时，不是复制该指针成员本身，而是将指针所指对象进行复制</p>
+<h1 id="移动构造"><a href="#移动构造" class="headerlink" title="移动构造"></a>移动构造</h1><p>源对象资源的控制权全部交给目标对象</p>
+<p><img src="/2020/08/23/C++%E9%87%8D%E7%82%B9/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200314165658107.png" alt="image-20200314165658107"></p>
+<h2 id="函数返回含有指针成员的对象"><a href="#函数返回含有指针成员的对象" class="headerlink" title="函数返回含有指针成员的对象"></a>函数返回含有指针成员的对象</h2><p><img src="https://upload-images.jianshu.io/upload_images/9850446-3f9869bc5f2db90e?imageMogr2/auto-orient/strip%7CimageView2/2/w/640/format/webp" alt="img"></p>
+<p>版本一（使用深层复制构造函数）：返回时构造临时对象，动态分配将临时对象返回到Main函数，然后删除临时对象</p>
+<p><img src="/2020/08/23/C++%E9%87%8D%E7%82%B9/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200314171555229.png" alt="image-20200314171555229"></p>
+<p>在这里，由于a在getNum函数完成之后会消亡，但又为了Return回a对象，所以需要创建临时变量存储a对象，这时候就用到了深层复制构造函数。</p>
+<p>版本二（使用移动构造函数）：将要返回的局部对象转移到主调函数，避免了内存的无谓拷贝。</p>
+<p><img src="/2020/08/23/C++%E9%87%8D%E7%82%B9/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200314171959524.png" alt="image-20200314171959524"></p>
+<p>&amp;&amp;为右值引用，临时变量为右值</p>
+<p>移动操作必须确保移动后源对象可以被销毁且销毁后不会影响新创建的对象，例如如果源对象中有数据成员是指针，则必须置为空，否则在源对象执行析构函数时，会将新创建对象中的指针指向的资源释放掉。</p>
+<h1 id="字符串常量"><a href="#字符串常量" class="headerlink" title="字符串常量"></a>字符串常量</h1><p><img src="/2020/08/23/C++%E9%87%8D%E7%82%B9/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200314174017836.png" alt="image-20200314174017836"></p>
+<h1 id="C风格字符串"><a href="#C风格字符串" class="headerlink" title="C风格字符串"></a>C风格字符串</h1><p><img src="/2020/08/23/C++%E9%87%8D%E7%82%B9/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200314174106184.png" alt="image-20200314174106184"></p>
+<h2 id="String类"><a href="#String类" class="headerlink" title="String类"></a>String类</h2><p><img src="/2020/08/23/C++%E9%87%8D%E7%82%B9/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200314175836702.png" alt="image-20200314175836702"></p>
+<h1 id="C-函数指针"><a href="#C-函数指针" class="headerlink" title="C++函数指针"></a>C++函数指针</h1><p>一种特殊的指针，它指向函数的入口；</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">/*</span><br><span class="line">* 定义一个函数指针p，只能指向返回值为int，形参为两个int的函数</span><br><span class="line">*/</span><br><span class="line">int (*p)(int,int);</span><br></pre></td></tr></table></figure>
+
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/images/Alipay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/images/Wechat.jpg" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2020/08/23/Static%20Batch,Dynamic%20Batch,GPU%20Instancing/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Static Batch,Dynamic Batch,GPU Instancing</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/08/23/C#%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B/">
+                <span class="level-item">C#基本类型</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        
+<div id="comment-container"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+	var gitment = new Gitment({
+		id: '90ac05ed761242bbc5b2ad86d572194d',
+		owner: 'opda777',
+		repo: 'opda777.github.io',
+		oauth: {
+			client_id: '0822f10c39cf53501e46',
+			client_secret: 'd37395506104a8a584de6f051a6084e1e2086f5d',
+		},
+	})
+	gitment.render('comment-container')
+</script>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left is-sticky">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/opda.jpg" alt="opda">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        opda
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        想提前退休的有志青年
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>广州 中国</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        22
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        4
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        4
+                    </p>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/opda777" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        
+    </div>
+</div>
+    
+        
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/game.svg" alt="C++重点" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 Opda&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/opda777">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+<script>
+var IcarusThemeSettings = {
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+    
+    
+<script src="/js/animation.js"></script>
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+    
+    
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/" target="_blank" rel="noopener">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+    
+    
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/unitychan.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true}});</script></body>
+</html>

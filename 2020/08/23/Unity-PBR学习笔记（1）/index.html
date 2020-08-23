@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8" />
+
+<meta name="generator" content="Hexo 4.0.0" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+<title>Unity PBR学习笔记（1） - Opda</title>
+
+
+    <meta name="description" content="前言在知乎看到大佬的翻译文章，通过Unity学习PBR算法，在这里做一下笔记。 什么是PBR(基于物理渲染)PBR是指基于物理的渲染((Physically Based Rendering)，指在不同程度上都基于与现实世界物理原理更相符的渲染技术集合，使用了一种更符合物理学规律的方式来模拟光线，所以和phong或者Blinn-Phong光照模型更加真实。 判断PBR光照模型是否基于物理PBR模型只">
+<meta name="keywords" content="Unity">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unity PBR学习笔记（1）">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2020&#x2F;08&#x2F;23&#x2F;Unity-PBR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%881%EF%BC%89&#x2F;index.html">
+<meta property="og:site_name" content="Opda">
+<meta property="og:description" content="前言在知乎看到大佬的翻译文章，通过Unity学习PBR算法，在这里做一下笔记。 什么是PBR(基于物理渲染)PBR是指基于物理的渲染((Physically Based Rendering)，指在不同程度上都基于与现实世界物理原理更相符的渲染技术集合，使用了一种更符合物理学规律的方式来模拟光线，所以和phong或者Blinn-Phong光照模型更加真实。 判断PBR光照模型是否基于物理PBR模型只">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
+<meta property="og:updated_time" content="2020-03-16T04:39:08.499Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/code.ico">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+
+    
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+    
+    
+    
+    
+    
+    
+    
+    <link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+    
+    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/game.svg" alt="Unity PBR学习笔记（1）" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">主页</a>
+                
+                <a class="navbar-item"
+                href="/archives">文章</a>
+                
+                <a class="navbar-item"
+                href="/categories">归档</a>
+                
+                <a class="navbar-item"
+                href="/tags">标志</a>
+                
+                <a class="navbar-item"
+                href="/about">关于</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/opda777">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-9-widescreen has-order-2 column-main">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-08-23T08:30:41.683Z">2020-08-23</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    35 分钟 读完 (大约 5254 个字)
+                </span>
+                
+                
+                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
+                    <i class="far fa-eye"></i>
+                    <span id="busuanzi_value_page_pv">0</span>次访问
+                </span>
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                Unity PBR学习笔记（1）
+            
+        </h1>
+        <div class="content">
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在知乎看到大佬的翻译文章，通过Unity学习PBR算法，在这里做一下笔记。</p>
+<h1 id="什么是PBR-基于物理渲染"><a href="#什么是PBR-基于物理渲染" class="headerlink" title="什么是PBR(基于物理渲染)"></a>什么是PBR(基于物理渲染)</h1><p>PBR是指基于物理的渲染((Physically Based Rendering)，指在不同程度上都基于与现实世界物理原理更相符的渲染技术集合，使用了一种更符合物理学规律的方式来模拟光线，所以和phong或者Blinn-Phong光照模型更加真实。</p>
+<h2 id="判断PBR光照模型是否基于物理"><a href="#判断PBR光照模型是否基于物理" class="headerlink" title="判断PBR光照模型是否基于物理"></a>判断PBR光照模型是否基于物理</h2><p>PBR模型只是对现实世界的一种近似，所以它是基于物理的着色而非物理着色，判断一种PBR光照模型是否基于物理，必须满足一下三个条件：</p>
+<p>1.基于微平面的表面模型</p>
+<p>2.能量守恒</p>
+<p>3.应用于基于物理的BRDF(双向反射分布函数)</p>
+<h2 id="微平面模型"><a href="#微平面模型" class="headerlink" title="微平面模型"></a>微平面模型</h2><p>当光纤照在一个绝对平滑的表面，它回一个完美的轨迹反射出去，但光照射到粗糙平面。它将无法以相似的方式反射出去。这就是微平面。</p>
+<p><img src="https://learnopengl-cn.github.io/img/07/01/microfacets.png" alt="img"></p>
+<p>可以看出，一个平面越是粗糙，微平面排列越是混乱，入射光线更趋向于向完全不同的方向发散开来，进而产生更广泛的镜面反射。与之相反的是，对于一个光滑的平面，光纤大体回更趋向于同一个方向反射，造成更小更锐利的反射。</p>
+<p><img src="https://learnopengl-cn.github.io/img/07/01/microfacets_light_rays.png" alt="img"></p>
+<p>在微观尺度，没有任何平面是完全光滑的。然而由于微平面已经微小到无法逐像素进行区分，所以我们只有假设一个粗糙度(Roughness)参数，来粗略估算微平面的粗糙程度。</p>
+<p><img src="https://learnopengl-cn.github.io/img/07/01/ndf.png" alt="img"></p>
+<p>较高的粗糙度值显示出来的镜面反射的轮廓要更大一些。与之相反地，较小的粗糙值显示出的镜面反射轮廓则更小更锐利。</p>
+<h2 id="能量守恒"><a href="#能量守恒" class="headerlink" title="能量守恒"></a>能量守恒</h2><p>微平面使用了能量守恒(Energy Conservation)，出射光线的能量永远不能超过入射光线的能量（发光面除外）。如图示我们可以看到，随着粗糙度的上升镜面反射区域的会增加，但是镜面反射的亮度却会下降。如果不管反射轮廓的大小而让每个像素的镜面反射强度(Specular Intensity)都一样的话，那么粗糙的平面就会放射出过多的能量，而这样就违背了能量守恒定律。</p>
+<p>​    为了遵守能量守恒定律，我们需要对漫反射光和镜面反射光进行区分，当一束光线碰撞到一个表面时，会分成折射部分和反射部分。反射部分：直接反射而不会进入平面的部分光线，这就是镜面反射。折射部分：余下的会进入表面并被吸收的部分光线，这就是漫反射光线。</p>
+<p><img src="https://learnopengl-cn.github.io/img/07/01/surface_reaction.png" alt="img"></p>
+<h3 id="次表面反射"><a href="#次表面反射" class="headerlink" title="次表面反射"></a>次表面反射</h3><p>一般来说，并非所有能量都会被全部吸收，光线也会沿着随机的方向发散，然后而其他粒子碰撞直到能量完全耗尽或者再次离开表面，而光线脱离物体表面后将会协同构成该表面的（漫反射）颜色。但是在基于物理的渲染中进行了简化，折射光全部会被完全吸收而不会散开。</p>
+<p>但是次表面散射(Subsurface Scattering)把这个问题考虑进去，显著提升了皮肤，大理石等视觉效果，有一种晶莹剔透的感觉。</p>
+<p><img src="https://dss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1742464515,166263312&fm=26&gp=0.jpg" alt="img"></p>
+<h3 id="金属表面"><a href="#金属表面" class="headerlink" title="金属表面"></a>金属表面</h3><p>对于金属表面，遵从反射与折射原理，但是所有的折射光都会被直接吸收而不会散开，只留下发射光，也就是说，金属表面不会显示出漫反射颜色。</p>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>我们可以知道反射光和折射光两者的关系是互斥的。无论哪种光线，被气材质表面所反射的能量将无法再被材质吸收。因此，折射光余下进入表面的能量正好是计算完发射之后剩下的能量。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">float kS = calculateSpecularComponent(...); // 反射/镜面 部分</span><br><span class="line">float kD = 1.0 - ks;                        // 折射/漫反射 部分</span><br></pre></td></tr></table></figure>
+
+<p>这样就遵循了能量守恒定律，反射和折射加起来的总份额就不会超过1.0。</p>
+<h2 id="反射率方程"><a href="#反射率方程" class="headerlink" title="反射率方程"></a>反射率方程</h2><p>反射率方程是某些大佬自己想出来的绝妙方程，是用来模拟光照视觉效果的最好模型。</p>
+<p><img src="/2020/08/23/Unity-PBR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%881%EF%BC%89/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5C%E5%8F%8D%E5%B0%84%E7%8E%87%E6%96%B9%E7%A8%8B.png" alt="反射率方程"></p>
+<h3 id="辐射通量"><a href="#辐射通量" class="headerlink" title="辐射通量"></a>辐射通量</h3><p>辐射通量表示一个光源所输出的能量，以瓦特为单位。<strong>光是由多种不同波长的能量所集合而成，每种波长与一种特定的可见的颜色相关</strong>。所以一个光源所输出的能量可以被视作为<strong>这个光源包含的所有波长的一个函数</strong>。</p>
+<p><img src="https://learnopengl-cn.github.io/img/07/01/daylight_spectral_distribution.png" alt="日光中不同波长的光所具有的能量"></p>
+<p>辐射通量$\Phi$将会计算这个不同波长构成的函数的总面积。但是将这个计量输入有点不切实际，所以我们不直接使用波长的强度而是使用<strong>RGB</strong>作为辐射通量的简化。所以RGB可以表示光的颜色。</p>
+<h3 id="立体角"><a href="#立体角" class="headerlink" title="立体角"></a>立体角</h3><p>立体角用ω表示，投射到单位球体上的一个截面的大小或者面积，是一个带有体积的方向。</p>
+<p><img src="https://learnopengl-cn.github.io/img/07/01/solid_angle.png" alt="img"></p>
+<h3 id="辐射强度"><a href="#辐射强度" class="headerlink" title="辐射强度"></a>辐射强度</h3><p>辐射强度表示一个光源向每单位立体角所投送的辐射通量。</p>
+<p><img src="https://learnopengl-cn.github.io/img/07/01/radiant_intensity.png" alt="img"></p>
+<p>计算辐射强度的公式如下<img src="/2020/08/23/Unity-PBR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%881%EF%BC%89/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5C%E8%AE%A1%E7%AE%97%E8%BE%90%E5%B0%84%E5%BC%BA%E5%BA%A6.png" alt="计算辐射强度"></p>
+<p>其实$I$表示辐射通量$\Phi$除以立体角$\omega$。</p>
+<h3 id="辐射率方程"><a href="#辐射率方程" class="headerlink" title="辐射率方程"></a>辐射率方程</h3><p>表示一个拥有辐射强度的光源在单位面积或单位立体角上辐射的总能量。这个方程表示，一个拥有辐射强度$\Phi$的光源在单位面积$A$，单位立体角$\omega$上辐射出的总能量：</p>
+<p><img src="/2020/08/23/Unity-PBR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%881%EF%BC%89/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5C%E8%BE%90%E5%B0%84%E7%8E%87%E6%96%B9%E7%A8%8B.png" alt="辐射率方程"></p>
+<p><img src="https://learnopengl-cn.github.io/img/07/01/radiance.png" alt="img"></p>
+<p>辐射率是辐射度量学上表示<strong>一个区域平面上光线总量的物理量</strong>。它受到入射光线和平面法线的夹角的余弦值影响：与我们的漫反射光照的概念相似，其实就是**光线的方向向量和平面法向量的点积。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">float cosTheta = dot(lightDir,N);</span><br></pre></td></tr></table></figure>
+
+<p>其中辐射率方程原本为<img src="https://upload-images.jianshu.io/upload_images/5994163-f59fdf0aa421703d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1200/format/webp" alt="img"></p>
+<p>dA⊥ 是dA投影在一个假想的垂直于w的平面，dA 要乘上cos theta后才是真正垂直的投影面积。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/5994163-5f83de35b6109b5c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1200/format/webp" alt="img"></p>
+<p>如果我们把立体角$\omega$和面积$A$看做是无穷小的，那么我们就能用辐射率表示单束光线通过空间的一个点的通量。我们实际上将立体角$\omega$转变为方向向量$\omega$然后把面$A$转换为点$p$，这样就能在着色器中使用辐射率来计算单束光线对每个片段的作用。</p>
+<p>事实上，我们通常关心的是所有投射到点P上的光线总和，这个和就为<strong>辐射照度</strong>或者<strong>辐照度</strong>。</p>
+<p>现在回过头来看反射率方程：</p>
+<p><img src="/2020/08/23/Unity-PBR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%881%EF%BC%89/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5C%E5%8F%8D%E5%B0%84%E7%8E%87%E6%96%B9%E7%A8%8B.png" alt="反射率方程"></p>
+<p>在渲染方程中L代表通过某个无限小的立体角$$\omega_i$$在某个点上的辐射率，而立体角可以视作为入射方向向量$$\omega_i$$，<strong>注意我们利用光线和平面间的入射角的的余弦值$$ \cos{\theta} $$来计算能量，则是$$n * \omega_i$$ **。用$$\omega_o$$表示</strong>观察方向<strong>，也就是</strong>出射方向<strong>，反射率公式计算了点$P$在$$\omega_o$$方向上被反射出来的辐射率$$L_o(p,\omega_o)$$的总和。</strong>也就是说$$L_o$$表示从$$w_o$$方向上观察，光线投射到点$p$上反射出来的辐照度**。</p>
+<p>基于反射率公式是围绕所有<strong>入射辐射率</strong>的总和，也就是<strong>辐照度</strong>来计算，所以需要计算的不只是单一方向的入射光，而是一个以点$p$为半球领域$\Omega$内所有方向的入射光。</p>
+<p><img src="https://learnopengl-cn.github.io/img/07/01/hemisphere.png" alt="半球领域"></p>
+<p>为了计算半球领域$\Omega$，就需要用到积分，简单来说就是在半球领域$\Omega$中按一定的步长将反射率方程分散求解，然后再按照步长大小将所得到的结果平均化。（Riemann sum方法）</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">int steps = 100;</span><br><span class="line">float sum = 0.0f;</span><br><span class="line">vec3 P    = ...;</span><br><span class="line">vec3 Wo   = ...;</span><br><span class="line">vec3 N    = ...;</span><br><span class="line">float dW  = 1.0f / steps;</span><br><span class="line">for(int i = 0; i &lt; steps; ++i) </span><br><span class="line">&#123;</span><br><span class="line">    vec3 Wi = getNextIncomingLightDir(i);</span><br><span class="line">    sum += Fr(p, Wi, Wo) * L(p, Wi) * dot(N, Wi) * dW;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里利用dw所有的离散部分进行缩放，和最后就等于积分函数的总面积，我们可以通过增加离散部分的数量来提高准确度。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>反射率方程概括了在半球领域$\Omega$内，碰撞到点$p$上所有入射方向$$w_i$$上的光线辐射率，并且受到$$f_r$$的约束，然后返回观察方向上反射光的$$L_o$$。入射光辐射率可以从光源获取，也可以用环境贴图来计算所有入射方向上的辐射率。</p>
+<p>现在剩下的未知符号就是$$f_r$$，它就是<strong>BDRF</strong>(双向反射分布函数)，作用就是**基于表面材质属性对入射辐射率进行缩放或者加权。</p>
+<h2 id="BRDF"><a href="#BRDF" class="headerlink" title="BRDF"></a>BRDF</h2><p>BRDF接受入射光方向$$w_i$$，出射观察方向$$w_o$$，平面法线$$n$$和表示微平面粗糙程度的参数$$a$$作为函数的输入参数。BRDF可以近似求出每束光线对于一个给点了材质属性的平面最终反射出来光线所作的贡献程度。如，如果有一个完全光滑的表面（比如镜面），那么只有一束与出射光线$$w_o$$拥有相同角度的光线会得到1.0返回值，其余都是0。</p>
+<p>几乎所有实时渲染管线使用的都是一种被称为Cook-Torrance BRDF模型。</p>
+<p>Cook-Torrance BRDF兼有漫反射和镜面反射两个部分：</p>
+<p><img src="/2020/08/23/Unity-PBR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%881%EF%BC%89/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CBRDF.png" alt="BRDF"></p>
+<p>$$k_d$$这里指的是<strong>被折射部分</strong>所占的比率，而$$k_s$$是<strong>被反射部分</strong>的比率，BRDF左侧表示漫反射，指$$f_{lambert}$$，被称为Lambertian漫反射，公式为：</p>
+<p><img src="/2020/08/23/Unity-PBR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%881%EF%BC%89/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5CLambertian%E6%BC%AB%E5%8F%8D%E5%B0%84.png" alt="Lambertian漫反射"></p>
+<p>$$c$$表示表面颜色，处以$$\pi$$是为了对漫反射光进行标准化，因为反射率积分方程受$$\pi$$影响。</p>
+<h3 id="Lambertian漫反射与其他漫反射的关系"><a href="#Lambertian漫反射与其他漫反射的关系" class="headerlink" title="Lambertian漫反射与其他漫反射的关系"></a>Lambertian漫反射与其他漫反射的关系</h3><p>之前们使用表面法向量与光照方向向量进行点成，然后将结果与表面颜色相乘得到漫反射参数，点乘依然还在，但不在BRDF中，而是转换为$$L_o$$积分公式的$$n*w_i$$。</p>
+<h3 id="Cook-Torrance-BRDF的镜面反射部分"><a href="#Cook-Torrance-BRDF的镜面反射部分" class="headerlink" title="Cook-Torrance BRDF的镜面反射部分"></a>Cook-Torrance BRDF的镜面反射部分</h3><p><img src="/2020/08/23/Unity-PBR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%881%EF%BC%89/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5C%E9%95%9C%E9%9D%A2%E5%8F%8D%E5%B0%84BRDF.png" alt="镜面反射BRDF"></p>
+<p>镜面部分包含三个函数，此外分母部分还有一个标准化因子。$$D$$表示法线分布函数(Normal <strong>D</strong>istribution Function)，菲涅尔方程(<strong>F</strong>resnel Rquation)，几何函数(<strong>G</strong>eometry Function)。</p>
+<p>D使用Trowbridge-Reitz GGX，F使用Fresnel-Schlick近似(Fresnel-Schlick Approximation)，而G使用Smith’s Schlick-GGX。</p>
+<h3 id="法线分布函数"><a href="#法线分布函数" class="headerlink" title="法线分布函数"></a>法线分布函数</h3><p>从统计学上近似的表示与中间向量$$h$$取向一致的微平面比率。<strong>举例，假设给定向量$$h$$,微平面中有35%与向量$$h$$取向一致，那么发现分布函数会返回0.35。</strong>公式如下：</p>
+<p><img src="/2020/08/23/Unity-PBR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%881%EF%BC%89/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5C%E6%B3%95%E7%BA%BF%E5%88%86%E5%B8%83%E5%87%BD%E6%95%B0.png" alt="法线分布函数"></p>
+<p>$$n$$表示微平面的法向量，$$h$$表示用来与法向量做比较的中间向量，$$a$$表示表面粗糙度。</p>
+<p>不同粗糙度下，效果也不一样。</p>
+<p><img src="https://learnopengl-cn.github.io/img/07/01/ndf.png" alt="img"></p>
+<p>这里使用的GLSL编写法线分布函数</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">float D_GGX_TR(vec3 N, vec3 H, float a)</span><br><span class="line">&#123;</span><br><span class="line">    float a2     = a*a;</span><br><span class="line">    float NdotH  = max(dot(N, H), 0.0);</span><br><span class="line">    float NdotH2 = NdotH*NdotH;</span><br><span class="line"></span><br><span class="line">    float nom    = a2;</span><br><span class="line">    float denom  = (NdotH2 * (a2 - 1.0) + 1.0);</span><br><span class="line">    denom        = PI * denom * denom;</span><br><span class="line"></span><br><span class="line">    return nom / denom;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="几何函数"><a href="#几何函数" class="headerlink" title="几何函数"></a>几何函数</h3><p>几何函数求得了微平面相互遮蔽的比率，相互遮蔽户会损耗光线能量。</p>
+<p><img src="https://learnopengl-cn.github.io/img/07/01/geometry_shadowing.png" alt="img"></p>
+<p>几何函数采用材质的粗糙度$$a$$作为输入参数，**粗糙度越高的表面相互遮蔽的概率就越高。Schlick-GGX公式如下：</p>
+<p><img src="/2020/08/23/Unity-PBR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%881%EF%BC%89/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5C%E5%87%A0%E4%BD%95%E5%87%BD%E6%95%B0.png" alt="几何函数"></p>
+<p>$$k$$是$$a$$基于几何函数是针对<strong>直接光照</strong>还是针对IBL光照的重映射(Remapping):</p>
+<p><img src="/2020/08/23/Unity-PBR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%881%EF%BC%89/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5C%E9%87%8D%E6%98%A0%E5%B0%84.png" alt="重映射"></p>
+<p>我们还需要将几何遮蔽(Geometry Obstruction)和几何阴影(Geometry Shadowing)）都考虑进去。使用史密斯法将两者都纳入其中。</p>
+<p><img src="/2020/08/23/Unity-PBR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%881%EF%BC%89/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5C%E5%8F%B2%E5%AF%86%E6%96%AF%E6%B3%95.png" alt="史密斯法"></p>
+<p>不同粗糙度，效果如下</p>
+<p><img src="https://learnopengl-cn.github.io/img/07/01/geometry.png" alt="img"></p>
+<p>GLSL编写的几何函数如下：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">float GeometrySchlickGGX(float NdotV, float k)</span><br><span class="line">&#123;</span><br><span class="line">    float nom   = NdotV;</span><br><span class="line">    float denom = NdotV * (1.0 - k) + k;</span><br><span class="line"></span><br><span class="line">    return nom / denom;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">float GeometrySmith(vec3 N, vec3 V, vec3 L, float k)</span><br><span class="line">&#123;</span><br><span class="line">    float NdotV = max(dot(N, V), 0.0);</span><br><span class="line">    float NdotL = max(dot(N, L), 0.0);</span><br><span class="line">    float ggx1 = GeometrySchlickGGX(NdotV, k);</span><br><span class="line">    float ggx2 = GeometrySchlickGGX(NdotL, k);</span><br><span class="line"></span><br><span class="line">    return ggx1 * ggx2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="菲涅尔方程"><a href="#菲涅尔方程" class="headerlink" title="菲涅尔方程"></a>菲涅尔方程</h3><p>此方程表示的是被反射的光线对比被折射光线的所占比率，比率会随着我们观察角度不同而不同。</p>
+<p>菲涅尔方程可以用Fresnel-Schlick近似法求得近似解：</p>
+<p><img src="/2020/08/23/Unity-PBR%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%881%EF%BC%89/D:%5C360MoveData%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CDesktop%5C%E8%8F%B2%E6%B6%85%E5%B0%94%E6%96%B9%E7%A8%8B.png" alt="菲涅尔方程"></p>
+<p>$$F_o$$是平面的基础反射率，当我们的视线和表面法线的夹角接近90度，菲涅尔现象就越明显，<strong>反光越强</strong>：</p>
+<p><img src="https://learnopengl-cn.github.io/img/07/01/fresnel.png" alt="img"></p>
+<h4 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h4><p>Fresnel-Schlick仅仅对非金属表面有定义。对于金属，使用折射指数计算基础折射率不能得到正确结果。所以我们要预先处理$$F_0$$，对于金属来说，基础反射率一般是带有颜色的，所以$$F_0$$要用RGB表示，这种现象只能在金属表面观察到，而对于非金属表面，由于$$F_0$$值较小，即使乘了表面颜色也影响不大。</p>
+<p>所以我么还需要一个金属度(Metalness)参数作为输入参数，金属度用来描述一个材质表面时金属的还是非金属的。</p>
+<p><strong>如果是金属表面的话，我们就需要对基础反射率添加色彩，这里用了线性插值</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vec3 F0 = vec3(0.04);</span><br><span class="line">F0      = mix(F0, surfaceColor.rgb, metalness);</span><br></pre></td></tr></table></figure>
+
+<p>Fresnel Schlick近似可以用代码表示为：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vec3 fresnelSchlick(float cosTheta, vec3 F0)</span><br><span class="line">&#123;</span><br><span class="line">    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>cosTheta</code>是表面法向量n与观察方向v的点乘的结果。</p>
+<h2 id="间接光"><a href="#间接光" class="headerlink" title="间接光"></a>间接光</h2><p>PBR并不是只有直接光照，PBR还有间接光照，这一部分由IBL(Image-Based-Light)实现，原理就是Cubemap(环境贴图)。</p>
+<p>间接光的总公式如下，使用的也是和直接光相同的BRDF方程，但是与直接光不同的是，直接光可以按步长进行拆分，最后加起来平均，间接光是真的要解积分。</p>
+<p><img src="https://pic4.zhimg.com/80/v2-b29d34cbc0ff03ec67029cb6a3d02063_hd.png" alt="img"></p>
+<p>其实就是分为了两部分，间接光漫反射和间接光高光反射。</p>
+<h3 id="间接光漫反射"><a href="#间接光漫反射" class="headerlink" title="间接光漫反射"></a>间接光漫反射</h3><p>可以从上面的公式看出这是个半球积分，不可能采样整个半球的数据，再算一次BRDF。所以我们会直接把计算结果存在CubeMap里面，我们直接采样CubeMap获得光照数据，最后代入PBR公式算出结果即可。</p>
+<p>间接光漫反射不用太复杂，直接弄出一张很模糊的环境图,再采样得到颜色值即可。</p>
+<p><img src="https://pic4.zhimg.com/80/v2-151dca9845132ffff644906ab4e22e9b_hd.jpg" alt="img"></p>
+<h3 id="间接光高光反射"><a href="#间接光高光反射" class="headerlink" title="间接光高光反射"></a>间接光高光反射</h3><p>高光部分有粗糙度$$a$$参数，所以我们必须要烘焙出多个粗糙度下的环境贴图，主要是模糊程度不同，生成下图：</p>
+<p><img src="https://pic2.zhimg.com/80/v2-396607237406fef9d0a03242b6c9bbf1_hd.jpg" alt="img"></p>
+<p>然后合并到一张cubemap的多个mipMap层级上，再利用cubeTexLod函数，根据粗糙度选择特定层级的两个mipMap层级进行三线插值，就能近似得到需要半球积分过的光照颜色值。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">float lod             = getMipLevelFromRoughness(roughness);</span><br><span class="line">vec3 prefilteredColor = textureCubeLod(PrefilteredEnvMap, refVec, lod);</span><br></pre></td></tr></table></figure>
+
+<h1 id="UnityStander工作流"><a href="#UnityStander工作流" class="headerlink" title="UnityStander工作流"></a>UnityStander工作流</h1><h2 id="金属工作流"><a href="#金属工作流" class="headerlink" title="金属工作流"></a>金属工作流</h2><p><strong>Albedo：</strong>非金属表示颜色贴图，金属表示基础反射率(base reflectivity)。跟diffuse贴图的区别是，albedo贴图不应该包含局部阴影信息（交给AO贴图），而只包含纯颜色信息（或折射吸收系数）</p>
+<p><strong>Normal：</strong>普通法线贴图。</p>
+<p><strong>Metallic：</strong>金属度贴图，每个像素的金属度，可以使0或1，或者0-1之间的灰度值。从概念上来说金属度应该是一个0或1的二元值，要么是金属要么是非金属，但将金属度设置为0-1之间的灰度值可以让美术做出一些其他比较好的效果，比如金属上的划痕之类的。</p>
+<p><strong>Roughness：</strong>粗糙度贴图，像素的roughness表示其微平面朝向的一致性，越粗糙越凌乱，反射光线区域大且模糊，反之则集中且清晰。有的引擎会使用smoothness光弧度贴图，这样在美术上可能更直观，smoothness = 1 - roughtness。</p>
+<p><strong>AO：</strong>环境光遮蔽贴图，ambient occusion，局部阴影信息，AO贴图可以明显地提升渲染效果。AO贴图要么手动生成，要么在3D建模时就计算好。</p>
+<h2 id="高光反射工作流"><a href="#高光反射工作流" class="headerlink" title="高光反射工作流"></a>高光反射工作流</h2><p><strong>Albedo：</strong>控制了漫反射颜色。</p>
+<p><strong>Specular：</strong>控制了高光反射的颜色。</p>
+<p>举个例子：对于金属材质，我们的Albedo应该是全黑的，应该金属材质几乎不存在此表面散射的现象。</p>
+<h2 id="各自的优点和缺点"><a href="#各自的优点和缺点" class="headerlink" title="各自的优点和缺点"></a>各自的优点和缺点</h2><p>1， Specular Workflow 工作流:</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1.1 优点</span><br><span class="line">      1. Diffusion 和reflectance有分别的明确的输入，这对于有传统shader贴图绘制工作的美术更可取。</span><br><span class="line">      2. 提供一个完整的色彩输入，能更好地控制非金属的反射值（实际上不用区分金属非金属，按材质取值）。</span><br><span class="line">   1.2 缺点</span><br><span class="line">       1.容易对reflectance赋予错误的值，造成错误的结果,因为容易违反能量守恒原则。</span><br><span class="line">       2.占用更多的存储空间。</span><br></pre></td></tr></table></figure>
+
+<p>2, Metalness</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">  2.1 缺点</span><br><span class="line">   1.金属非金属过度区域有白边。</span><br><span class="line">2.对于非金属的反射值缺乏控制和表现。</span><br><span class="line">3.如果不理解工作流，容易为metalness map 错误复制，造成错误结果。</span><br><span class="line">  2.2 优点</span><br><span class="line">   1.Albedo Map 就是物体的固有色，完全不用去区分到底是什么材质，需要处理好。</span><br><span class="line">2.简单底将材质分为金属和非金属两类，但也可能对于非现实材质（比如卡通）的表现造成困难。</span><br><span class="line">3.占用更少的存储空间。</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://pic3.zhimg.com/80/v2-48b83cecbb1905669af422c257ed5b7a_720w.jpg" alt="img"></p>
+
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Unity/" rel="tag">Unity</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/images/Alipay.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/images/Wechat.jpg" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2020/08/23/Unity-PBR%E5%AE%9E%E7%8E%B0_%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">Unity PBR实现_学习笔记</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/08/23/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/">
+                <span class="level-item">UE4材质大师课程笔记(二)---RenderTarget</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        
+<div id="comment-container"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+	var gitment = new Gitment({
+		id: '2cffec7607826eb69869df558e8e3d0a',
+		owner: 'opda777',
+		repo: 'opda777.github.io',
+		oauth: {
+			client_id: '0822f10c39cf53501e46',
+			client_secret: 'd37395506104a8a584de6f051a6084e1e2086f5d',
+		},
+	})
+	gitment.render('comment-container')
+</script>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left is-sticky">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered" style="flex-shrink: 1">
+                <div>
+                    
+                    <figure class="image is-128x128 has-mb-6">
+                        <img class="" src="/images/opda.jpg" alt="opda">
+                    </figure>
+                    
+                    <p class="is-size-4 is-block">
+                        opda
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        想提前退休的有志青年
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>广州 中国</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        22
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        4
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        4
+                    </p>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/opda777" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        
+    </div>
+</div>
+    
+        
+
+    <div class="card widget" id="toc">
+        <div class="card-content">
+            <div class="menu">
+                <h3 class="menu-label">
+                    目录
+                </h3>
+                <ul class="menu-list"><li>
+        <a class="is-flex" href="#前言">
+        <span class="has-mr-6">1</span>
+        <span>前言</span>
+        </a></li><li>
+        <a class="is-flex" href="#什么是PBR-基于物理渲染">
+        <span class="has-mr-6">2</span>
+        <span>什么是PBR(基于物理渲染)</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#判断PBR光照模型是否基于物理">
+        <span class="has-mr-6">2.1</span>
+        <span>判断PBR光照模型是否基于物理</span>
+        </a></li><li>
+        <a class="is-flex" href="#微平面模型">
+        <span class="has-mr-6">2.2</span>
+        <span>微平面模型</span>
+        </a></li><li>
+        <a class="is-flex" href="#能量守恒">
+        <span class="has-mr-6">2.3</span>
+        <span>能量守恒</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#次表面反射">
+        <span class="has-mr-6">2.3.1</span>
+        <span>次表面反射</span>
+        </a></li><li>
+        <a class="is-flex" href="#金属表面">
+        <span class="has-mr-6">2.3.2</span>
+        <span>金属表面</span>
+        </a></li><li>
+        <a class="is-flex" href="#结论">
+        <span class="has-mr-6">2.3.3</span>
+        <span>结论</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#反射率方程">
+        <span class="has-mr-6">2.4</span>
+        <span>反射率方程</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#辐射通量">
+        <span class="has-mr-6">2.4.1</span>
+        <span>辐射通量</span>
+        </a></li><li>
+        <a class="is-flex" href="#立体角">
+        <span class="has-mr-6">2.4.2</span>
+        <span>立体角</span>
+        </a></li><li>
+        <a class="is-flex" href="#辐射强度">
+        <span class="has-mr-6">2.4.3</span>
+        <span>辐射强度</span>
+        </a></li><li>
+        <a class="is-flex" href="#辐射率方程">
+        <span class="has-mr-6">2.4.4</span>
+        <span>辐射率方程</span>
+        </a></li><li>
+        <a class="is-flex" href="#总结">
+        <span class="has-mr-6">2.4.5</span>
+        <span>总结</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#BRDF">
+        <span class="has-mr-6">2.5</span>
+        <span>BRDF</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#Lambertian漫反射与其他漫反射的关系">
+        <span class="has-mr-6">2.5.1</span>
+        <span>Lambertian漫反射与其他漫反射的关系</span>
+        </a></li><li>
+        <a class="is-flex" href="#Cook-Torrance-BRDF的镜面反射部分">
+        <span class="has-mr-6">2.5.2</span>
+        <span>Cook-Torrance BRDF的镜面反射部分</span>
+        </a></li><li>
+        <a class="is-flex" href="#法线分布函数">
+        <span class="has-mr-6">2.5.3</span>
+        <span>法线分布函数</span>
+        </a></li><li>
+        <a class="is-flex" href="#几何函数">
+        <span class="has-mr-6">2.5.4</span>
+        <span>几何函数</span>
+        </a></li><li>
+        <a class="is-flex" href="#菲涅尔方程">
+        <span class="has-mr-6">2.5.5</span>
+        <span>菲涅尔方程</span>
+        </a></li></ul></li><li>
+        <a class="is-flex" href="#间接光">
+        <span class="has-mr-6">2.6</span>
+        <span>间接光</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#间接光漫反射">
+        <span class="has-mr-6">2.6.1</span>
+        <span>间接光漫反射</span>
+        </a></li><li>
+        <a class="is-flex" href="#间接光高光反射">
+        <span class="has-mr-6">2.6.2</span>
+        <span>间接光高光反射</span>
+        </a></li></ul></li></ul></li><li>
+        <a class="is-flex" href="#UnityStander工作流">
+        <span class="has-mr-6">3</span>
+        <span>UnityStander工作流</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#金属工作流">
+        <span class="has-mr-6">3.1</span>
+        <span>金属工作流</span>
+        </a></li><li>
+        <a class="is-flex" href="#高光反射工作流">
+        <span class="has-mr-6">3.2</span>
+        <span>高光反射工作流</span>
+        </a></li><li>
+        <a class="is-flex" href="#各自的优点和缺点">
+        <span class="has-mr-6">3.3</span>
+        <span>各自的优点和缺点</span>
+        </a></li></ul></li></ul>
+            </div>
+        </div>
+    </div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+        </div>
+    
+</div>
+
+                
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/game.svg" alt="Unity PBR学习笔记（1）" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 Opda&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                <br>
+                <span id="busuanzi_container_site_uv">
+                共<span id="busuanzi_value_site_uv">0</span>个访客
+                </span>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/opda777">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+<script>
+var IcarusThemeSettings = {
+    article: {
+        highlight: {
+            clipboard: true,
+            fold: 'unfolded'
+        }
+    }
+};
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+
+
+
+    
+    
+<script src="/js/animation.js"></script>
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+<script src="/js/gallery.js" defer></script>
+
+    
+    
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/" target="_blank" rel="noopener">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+    
+    
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/unitychan.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true}});</script></body>
+</html>

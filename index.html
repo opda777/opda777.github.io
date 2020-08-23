@@ -132,17 +132,13 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2020-01-09T12:57:32.552Z">2020-01-09</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/UE4/">UE4</a>
-                </div>
+                <time class="level-item has-text-grey" datetime="2020-08-23T08:30:41.793Z">2020-08-23</time>
                 
                 
                 <span class="level-item has-text-grey">
                     
                     
-                    6 分钟 读完 (大约 921 个字)
+                    17 分钟 读完 (大约 2602 个字)
                 </span>
                 
                 
@@ -151,119 +147,87 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/">UE4材质大师课程笔记(二)---RenderTarget</a>
+                <a class="has-link-black-ter" href="/2020/08/23/%E6%9C%AA%E5%91%BD%E5%90%8D/">未命名</a>
             
         </h1>
         <div class="content">
-            <h1 id="RenderTarget"><a href="#RenderTarget" class="headerlink" title="RenderTarget"></a>RenderTarget</h1><p>UE4的RenderTarget感觉和Unity的差不多，都是获得一个摄像机的渲染结果，然后存在RenderTarget里面进行读取使用。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
+            <h1 id="C-的内存格局"><a href="#C-的内存格局" class="headerlink" title="C++的内存格局"></a>C++的内存格局</h1><p>1.全局数据区(data area)静态数据和常量</p>
+<p>2.代码区(code area)所有类成员函数和非成员函数代码</p>
+<p>3.栈区(stack area)</p>
+<p>4.堆区(heap area)自由存储区，我们的类实例化在存储在这里</p>
+<h1 id="成员函数的调用"><a href="#成员函数的调用" class="headerlink" title="成员函数的调用"></a>成员函数的调用</h1><p>由于成员函数是不存在类实例的内存中的，是最终被编译成与对象无关的全局函数。如果成员函数需要调用成员变量，C++会把当前对象的指针传递进去。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">//编译前</span><br><span class="line">void Demo::display()&#123;</span><br><span class="line">cout&lt;&lt;a&lt;&lt;endl;</span><br><span class="line">cout&lt;&lt;b&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//编译后</span><br><span class="line">void new_function_name(Demo * const p)&#123;</span><br><span class="line">//通过指针p来访问a、b</span><br><span class="line">cout&lt;&lt;p-&gt;a&lt;&lt;endl;</span><br><span class="line">cout&lt;&lt;p-&gt;b&lt;&lt;endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h1 id="函数的重载"><a href="#函数的重载" class="headerlink" title="函数的重载"></a>函数的重载</h1><p>在实际开发当中，我们需要实现几个功能类似的函数，但是有些细节不同，比如是传递的参数不同，这时候就能用到函数重载。</p>
+<h2 id="规则"><a href="#规则" class="headerlink" title="规则"></a>规则</h2><ul>
+<li><p>函数名称必须相同。</p>
+</li>
+<li><p>参数列表必须不同（个数不同、类型不同、参数排列顺序不同等）。</p>
+</li>
+<li><p>函数的返回类型可以相同也可以不相同。</p>
+</li>
+<li><p>仅仅返回类型不同不足以成为函数的重载。</p>
+</li>
+</ul>
+<h1 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h1><p>  一个类必须有构造函数，要么用户定义，要么编译器自动生成。一旦用于自定了构造函数，那么编译器便不会自动生成默认构造函数。</p>
+<h2 id="构造函数初始化列表"><a href="#构造函数初始化列表" class="headerlink" title="构造函数初始化列表"></a>构造函数初始化列表</h2><p>主要目的是为了代码的简洁。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//采用初始化列表</span><br><span class="line">Student::Student(char *name, int age, float score): m_name(name), m_age(age), m_score(score)&#123;</span><br><span class="line">    //TODO:</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h2 id="初始化const成员变量"><a href="#初始化const成员变量" class="headerlink" title="初始化const成员变量"></a>初始化const成员变量</h2><p>构造函数初始化列表还有一个很重要的作用，就是初始化Const变量。初始化 const 成员变量的唯一方法就是使用初始化列表。</p>
+<h1 id="内联函数"><a href="#内联函数" class="headerlink" title="内联函数"></a>内联函数</h1><p>内联函数适用于函数体较少的函数，可以增加效率，并且完全可以代替#define 宏。</p>
+<h1 id="析构函数"><a href="#析构函数" class="headerlink" title="析构函数"></a>析构函数</h1><p>在销毁对象时使用</p>
+<h2 id="执行时机"><a href="#执行时机" class="headerlink" title="执行时机"></a>执行时机</h2><p>对象销毁时机与所在内存区域有关</p>
+<p>在所有函数之外创建的对象是全局对象，它和全局变量类似，位于内存分区中的全局数据区，程序在结束执行时会调用这些对象的析构函数。</p>
+<p>在函数内部创建的对象是局部对象，它和局部变量类似，位于栈区，函数执行结束时会调用这些对象的析构函数。</p>
+<p>new 创建的对象位于堆区，通过 delete 删除时才会调用析构函数；如果没有 delete，析构函数就不会被执行。</p>
+<h1 id="对象数组"><a href="#对象数组" class="headerlink" title="对象数组"></a>对象数组</h1><p>所谓对象数组，指每一个数组元素都是对象的数组，即若一个类有若干个对象，我们把这一系列的对象用一个数组来存放。对象数组的元素是对象，不仅具有数据成员，而且还有函数成员。</p>
+<h2 id="构造函数有0个或1个参数"><a href="#构造函数有0个或1个参数" class="headerlink" title="构造函数有0个或1个参数"></a>构造函数有0个或1个参数</h2><p>如果构造函数只有1个参数，在定义对象数组时可以直接在等号后面的花括号内提供实参来实现初始化。</p>
+<h2 id="构造函数有多个参数"><a href="#构造函数有多个参数" class="headerlink" title="构造函数有多个参数"></a>构造函数有多个参数</h2><p>如果构造函数有多个参数，在定义对象数组时只需在花括号中分别写出构造函数并指定实参即可实现初始化。</p>
+<h1 id="成员对象和封闭类"><a href="#成员对象和封闭类" class="headerlink" title="成员对象和封闭类"></a>成员对象和封闭类</h1><p>一个类的成员变量如果是另一个类的对象，就称之为“成员对象”。包含成员对象的类叫封闭类（enclosed class）。</p>
+<p>初始化列表中的成员变量既可以是成员对象，也可以是基本类型的成员变量。</p>
+<p>总之，生成封闭类对象的语句一定要让编译器能够弄明白其成员对象是如何初始化的，否则就会编译错误。</p>
+<h2 id="执行顺序"><a href="#执行顺序" class="headerlink" title="执行顺序"></a>执行顺序</h2><p>封闭类对象生成时，先执行所有成员对象的构造函数，然后才执行封闭类自己的构造函数。</p>
+<p>当封闭类对象消亡时，先执行封闭类的析构函数，然后再执行成员对象的析构函数</p>
+<h1 id="this指针"><a href="#this指针" class="headerlink" title="this指针"></a>this指针</h1><ul>
+<li><p>this 是 const 指针，它的值是不能被修改的，一切企图修改该指针的操作，如赋值、递增、递减等都是不允许的。</p>
+</li>
+<li><p>this 只能在成员函数内部使用，用在其他地方没有意义，也是非法的。</p>
+</li>
+<li><p>只有当对象被创建后 this 才有意义，因此不能在 static 成员函数中使用（后续会讲到 static 成员）。</p>
+</li>
+</ul>
+<h1 id="静态成员变量"><a href="#静态成员变量" class="headerlink" title="静态成员变量"></a>静态成员变量</h1><p>在多个对象之间共享数据，static 成员变量属于类，不属于某个具体的对象，即使创建多个对象，也只为 m_total 分配一份内存，所有对象使用的都是这份内存中的数据。</p>
+<p>初始化时可以赋初值，也可以不赋值。如果不赋值，那么会被默认初始化为 0。全局数据区的变量都有默认的初始值 0，而动态数据区（堆区、栈区）变量的默认值是不确定的，一般认为是垃圾值。</p>
+<h1 id="静态成员函数"><a href="#静态成员函数" class="headerlink" title="静态成员函数"></a>静态成员函数</h1><p>静态成员函数与普通成员函数的根本区别在于：普通成员函数有 this 指针，可以访问类中的任意成员；而静态成员函数没有 this 指针，只能访问静态成员（包括静态成员变量和静态成员函数）。</p>
+<h1 id="const成员函数"><a href="#const成员函数" class="headerlink" title="const成员函数"></a>const成员函数</h1><p>const 成员函数可以使用类中的所有成员变量，但是不能修改它们的值，这种措施主要还是为了保护数据而设置的。const 成员函数也称为常成员函数。</p>
+<p>需要强调的是，必须在成员函数的声明和定义处同时加上 const 关键字。</p>
+<h2 id="const的位置"><a href="#const的位置" class="headerlink" title="const的位置"></a>const的位置</h2><ul>
+<li>函数开头的 const 用来修饰函数的返回值，表示返回值是 const 类型，也就是不能被修改，例如<code>const char * getname()</code>。</li>
+<li>函数头部的结尾加上 const 表示常成员函数，这种函数只能读取成员变量的值，而不能修改成员变量的值，例如<code>char * getname() const</code>。</li>
+</ul>
+<h1 id="const对象"><a href="#const对象" class="headerlink" title="const对象"></a>const对象</h1><p>在 <a href="http://c.biancheng.net/cplus/" target="_blank" rel="noopener">C++</a> 中，const 也可以用来修饰对象，称为常对象。一旦将对象定义为常对象之后，就只能调用类的 const 成员（包括 const 成员变量和 const 成员函数）了</p>
+<h1 id="友元函数"><a href="#友元函数" class="headerlink" title="友元函数"></a>友元函数</h1><p>借助友元（friend），可以使得其他类中的成员函数以及全局范围内的函数访问当前类的 private 成员。</p>
+<p>友元函数可以是不属于任何类的非成员函数，也可以是其他类的成员函数。</p>
+<p>注意，友元函数不同于类的成员函数，在友元函数中不能直接访问类的成员，必须要借助对象。</p>
+<h2 id="将其他类的成员函数声明为友元函数"><a href="#将其他类的成员函数声明为友元函数" class="headerlink" title="将其他类的成员函数声明为友元函数"></a>将其他类的成员函数声明为友元函数</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//将Student类中的成员函数show()声明为友元函数</span><br><span class="line">    friend void Student::show(Address *addr);</span><br></pre></td></tr></table></figure>
 
+<p>一个函数可以被多个类声明为友元函数，这样就可以访问多个类中的 private 成员。</p>
+<h1 id="友元类"><a href="#友元类" class="headerlink" title="友元类"></a>友元类</h1><p>类 B 声明为类 A 的友元类，那么类 B 中的所有成员函数都是类 A 的友元函数</p>
+<p>友元的关系是单向的而不是双向的。友元的关系不能传递。</p>
+<h1 id="C-类的作用域"><a href="#C-类的作用域" class="headerlink" title="C++类的作用域"></a>C++类的作用域</h1><h1 id="class和struct到底有什么区别"><a href="#class和struct到底有什么区别" class="headerlink" title="class和struct到底有什么区别"></a>class和struct到底有什么区别</h1><p>C++中的 struct 和 class 基本是通用的，唯有几个细节不同：</p>
+<ul>
+<li>使用 class 时，类中的成员默认都是 private 属性的；而使用 struct 时，结构体中的成员默认都是 public 属性的。</li>
+<li>class 继承默认是 private 继承，而 struct 继承默认是 public 继承（《<a href="http://c.biancheng.net/cpp/biancheng/cpp/rumen_11/" target="_blank" rel="noopener">C++继承与派生</a>》一章会讲解继承）。</li>
+<li>class 可以使用模板，而 struct 不能（《<a href="http://c.biancheng.net/cpp/biancheng/cpp/rumen_14/" target="_blank" rel="noopener">模板、字符串和异常</a>》一章会讲解模板）。</li>
+</ul>
+<h1 id="String"><a href="#String" class="headerlink" title="String"></a>String</h1><p>变量 s2 在定义的同时被初始化为<code>&quot;c plus plus&quot;</code>。与C风格的字符串不同，string 的结尾没有结束标志<code>&#39;\0&#39;</code>。由于 string 的末尾没有<code>&#39;\0&#39;</code>字符，所以 length() 返回的是字符串的真实长度，而不是长度 +1。</p>
+<h1 id="C-的string内部原理"><a href="#C-的string内部原理" class="headerlink" title="C++的string内部原理"></a>C++的string内部原理</h1><h1 id="C-引用"><a href="#C-引用" class="headerlink" title="C++引用"></a>C++引用</h1><p>引用可以看做是数据的一个别名，通过这个别名和原来的名字都能够找到这份数据。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type &amp;name = data;</span><br></pre></td></tr></table></figure>
 
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2020-01-07T08:47:07.643Z">2020-01-07</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/UE4/">UE4</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    7 分钟 读完 (大约 1002 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2020/01/07/UE4--%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/">UE4--材质大师课程笔记</a>
-            
-        </h1>
-        <div class="content">
-            <h2 id="压缩和内存"><a href="#压缩和内存" class="headerlink" title="压缩和内存"></a>压缩和内存</h2><p>一般来说纹理导入UE4都是经过压缩的，压缩方式有BC(Block Compression块压缩)/DXTC(Directx Texture Compression DirectX纹理压缩)两种，其实都是用于PC的Directx平台的格式。但是法线贴图有点特殊，是无法通过这两种方式进行压缩的。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2020/01/07/UE4--%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2020-01-07T06:58:36.763Z">2020-01-07</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    1 分钟 读完 (大约 196 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2020/01/07/2019%E5%B9%B4---%E5%B0%8F%E8%AE%B0/">2019年---小记</a>
-            
-        </h1>
-        <div class="content">
-            <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>​    在三维动画，交互设计等等的课程实训，我掐指一算已经有两个月没有更新自己的笔记了，没办法，我也不知道为什么我这个专业的实训特别特别得多….其实早就放假啦，自己也摸鱼了一个星期恢复下元气。</p>
-<p>​    对于2019我感觉还行，虽然没有参加什么比赛，但是在实训课程的过程中还是学到了很多东西，做出来的成品也让我感到满意，所以希望下一年也再接再厉，希望寒假没有摸鱼，能找到实习就最好了，哈哈哈。</p>
-<p>​    加油！！！奥利给！！！</p>
+<p>type 是被引用的数据的类型，name 是引用的名称，data 是被引用的数据。引用必须在定义的同时初始化，并且以后也要从一而终，不能再引用其它数据，这有点类似于常量（const 变量）。</p>
+<p>注意，引用在定义时需要添加<code>&amp;</code>，在使用时不能添加<code>&amp;</code>，使用时添加<code>&amp;</code>表示取地址。</p>
+<h2 id="引用传参"><a href="#引用传参" class="headerlink" title="引用传参"></a>引用传参</h2><p>从以上代码的编写中可以发现，按引用传参在使用形式上比指针更加直观。在以后的 C++ 编程中，我鼓励读者大量使用引用，它一般可以代替指针（当然指针在C++中也不可或缺），C++ 标准库也是这样做的。</p>
+<h2 id="引用作为函数返回值"><a href="#引用作为函数返回值" class="headerlink" title="引用作为函数返回值"></a>引用作为函数返回值</h2><p>在将引用作为函数返回值时应该注意一个小问题，就是不能返回局部数据（例如局部变量、局部对象、局部数组等）的引用，因为当函数调用完成后局部数据就会被销毁，有可能在下次使用时数据就不存在了，C++ 编译器检测到该行为时也会给出警告。</p>
 
         </div>
         
@@ -286,7 +250,679 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-12-13T05:51:32.222Z">2019-12-13</time>
+                <time class="level-item has-text-grey" datetime="2020-08-23T08:30:41.791Z">2020-08-23</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    1 分钟 读完 (大约 143 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2020/08/23/%E5%BB%BA%E8%AE%AE%E5%90%8E%E5%A4%84%E7%90%86%E6%8F%8F%E8%BE%B9%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%80%9D%E8%B7%AF%EF%BC%9A%E5%88%A9%E7%94%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B7%B1%E5%BA%A6%E8%BF%9B%E8%A1%8C%E4%B8%8A%E4%B8%8B%E5%B7%A6%E5%8F%B34%E5%83%8F%E7%B4%A0%E6%8F%8F%E8%BE%B9/">建议后处理描边，主要思路：利用自定义深度进行上下左右4像素描边</a>
+            
+        </h1>
+        <div class="content">
+            <hr>
+<hr>
+<p>建议后处理描边，主要思路：利用自定义深度进行上下左右4像素描边，并且利用CustomDepth实现了遮挡发光。</p>
+<p><a href="https://zhuanlan.zhihu.com/p/81310476" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/81310476</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/81755071" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/81755071</a></p>
+<p>简易后处理描边，主要思路：利用自定义深度进行周边8像素描边</p>
+<p><a href="http://www.uejoy.com/?p=347" target="_blank" rel="noopener">http://www.uejoy.com/?p=347</a></p>
+<p>发光描边，youtube做法，利用场景深度SceneDepth进行比较，然后利用CustomDepth进行发光物的选择，利用CustomStencil进行发光颜色的选择</p>
+<p><a href="https://www.bilibili.com/video/av79974250?from=search&amp;seid=11481119403927745359" target="_blank" rel="noopener">https://www.bilibili.com/video/av79974250?from=search&amp;seid=11481119403927745359</a></p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-08-23T08:30:41.788Z">2020-08-23</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    1 小时 读完 (大约 12126 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/">什么是渲染流水线</a>
+            
+        </h1>
+        <div class="content">
+            <h1 id="什么是渲染流水线"><a href="#什么是渲染流水线" class="headerlink" title="什么是渲染流水线"></a>什么是渲染流水线</h1><p>应用阶段：在CPU中运行，主要有三个任务：1.准备好场景数据 2.进行剔除（culling）3.设置好模型的渲染状态</p>
+<p>几何阶段：在GPU中运行，和每个渲染图元打交道，进行逐顶点，逐多边形操作。</p>
+<p>光栅化阶段：在GPU中运行，主要任务：决定每个渲染图形中哪些像素被绘制在屏幕上，对几何阶段得到的逐顶点数据进行插值，再逐像素处理。</p>
+<h1 id="CPU和GPU的通信"><a href="#CPU和GPU的通信" class="headerlink" title="CPU和GPU的通信"></a>CPU和GPU的通信</h1><p><strong>应用阶段的任务：</strong></p>
+<p>把数据加载到显存：把渲染所需要的数据从<strong>硬盘</strong>到<strong>系统内存</strong>最后到<strong>显存</strong></p>
+<p>设置渲染状态：定义了场景中的网格如何被渲染，例如用什么Shader。</p>
+<p>调用DrawCall：CPU通过DrawCall告知GPU去计算一个需要被渲染的图元列表。</p>
+<h1 id="GPU流水线"><a href="#GPU流水线" class="headerlink" title="GPU流水线"></a>GPU流水线</h1><p><img src="http://static.zybuluo.com/candycat/jundxsf604yuoy2zr3r1qkzp/GPU%E6%B5%81%E6%B0%B4%E7%BA%BF.png" alt="GPU流水线.png-82.2kB"></p>
+<p>顶点着色器：主要任务坐标变换（把顶点坐标从模型空间转换到齐次裁剪空间），转换后由硬件进行透视除法，最后得到NDC。逐顶点光照。</p>
+<p>裁剪：把不在摄像机视野范围的物体不需要被处理</p>
+<p>屏幕映射：把裁剪后的每个图元的x和y坐标转换到屏幕坐标系，跟屏幕的分辨率有关，屏幕坐标和z坐标构成了<strong>窗口坐标系</strong></p>
+<p>三角形设置：计算一个三角网格边界的数据坐标信息，为三角形遍历做准备。</p>
+<p>三角形遍历：检查每一个像素，为了三角网格覆盖的像素生成<strong>片元</strong>，找到哪些像素被三角网格覆盖的过程就是三角形遍历，也叫<strong>扫描变换</strong>，并进行数据插值</p>
+<p>片元着色器：前面的光栅化并不影响屏幕上每个像素的颜色，而是产生数据用于表达一个三角网格如何覆盖每个像素。这一阶段可以完成很多渲染操作，比如纹理采样。</p>
+<p>逐片元操作：主要任务：</p>
+<p>（1）决定每个片元的可见性，比如<strong>深度测试，模板测试</strong></p>
+<p>（2）如果片元通过测试，则片元的颜色值和颜色缓冲区进行混合</p>
+<p><img src="http://static.zybuluo.com/candycat/epejev04t6vudwsyo2el8rp0/Per-fragment%20Operations.png" alt="Per-fragment Operations.png-23.1kB"></p>
+<p>在Unity的渲染流水线中，深度测试是在片元着色器之前，被<strong>Early-Z</strong>技术</p>
+<p>双缓冲技术：前置缓冲是之前在屏幕上的图像，后置缓冲是幕后的渲染。</p>
+<h1 id="CPU和GPU如何并行工作"><a href="#CPU和GPU如何并行工作" class="headerlink" title="CPU和GPU如何并行工作"></a>CPU和GPU如何并行工作</h1><p>利用<strong>命令缓冲区</strong>（CommandBuffer）进行并行工作，命令缓冲区包含了一个命令队列，CPU往里面加命令，GPU从里面读取命令</p>
+<h1 id="DrawCall多了会影响帧率"><a href="#DrawCall多了会影响帧率" class="headerlink" title="DrawCall多了会影响帧率"></a>DrawCall多了会影响帧率</h1><p>因为每次调用DrawCall前，CPU要往GPU发送数据，比如检查渲染状态，如果DrawCall数量太多，CPU就会花费大量时间去提交DrawCall</p>
+<h1 id="如何减少DrawCall"><a href="#如何减少DrawCall" class="headerlink" title="如何减少DrawCall"></a>如何减少DrawCall</h1><p>思路：把很多小DrawCall合并成大DrawCall，就是<strong>批处理了（Batching）</strong></p>
+<p>注意：要在CPU内存中合并网格需要耗费时间，所以批处理更适合静态物体，只要合并一次即可。对于动态物体我们每一帧重新合并再发送给GPU。</p>
+<p><img src="http://static.zybuluo.com/candycat/d6cxj75dc7hnzwd2jlcqlj4j/Batching.png" alt="Batching.png-70.3kB"></p>
+<p>注意：利用批处理，CPU在RAM把多个网格合并成一个更大的网格，再发送给GPU，然后在一个Draw Call中渲染它们。但要注意的是，使用批处理合并的网格将会使用同一种渲染状态。也就是说，如果网格之间需要使用不同的渲染状态，那么就无法使用批处理技术</p>
+<h1 id="Unity的内置Shader"><a href="#Unity的内置Shader" class="headerlink" title="Unity的内置Shader"></a>Unity的内置Shader</h1><p>Unlit Shader：一个不包含光照但包含雾效的基本顶点片元着色器。</p>
+<p>Image Effect Shader：实现各种屏幕后特效的基本模板</p>
+<p>Compute Shader:一个GPU计算的Shader</p>
+<h1 id="Unity-Shader结构"><a href="#Unity-Shader结构" class="headerlink" title="Unity Shader结构"></a>Unity Shader结构</h1><p><strong>1.Shader名字</strong></p>
+<p>Shader “Custom/MyShader”</p>
+<p><strong>2.Properties属性</strong></p>
+<p>Properties{</p>
+<p>_Color(“Color”,Color)=(1,1,1,1);</p>
+<p>}</p>
+<p><strong>3.SubShader语义块</strong></p>
+<p>SubShader{</p>
+<p>​    [Tags]//标签</p>
+<p>​    [RenderSetup]//状态</p>
+<p>​    Pass{</p>
+<p>​    }</p>
+<p>​    //other Passes</p>
+<p>}</p>
+<p><strong>4.常见渲染状态</strong></p>
+<p>再SubShader中设置了渲染状态，会被应用到所有的Pass</p>
+<table>
+<thead>
+<tr>
+<th>状态名称</th>
+<th>设置指令</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cull</td>
+<td>Cull Back|Front|Off</td>
+<td>设置剔除模式：剔除背面|正面|关闭剔除</td>
+</tr>
+<tr>
+<td>ZTese</td>
+<td>ZTest Less Greater|LEqual|GEqual|Equal|NotEqual|Always</td>
+<td>设置深度测试时使用的函数</td>
+</tr>
+<tr>
+<td>ZWrite</td>
+<td>ZWrite On|Off</td>
+<td>开启/关闭深度写入</td>
+</tr>
+<tr>
+<td>Blend</td>
+<td>Blend SrcFactor DstFactor</td>
+<td>开启并设置混合模式</td>
+</tr>
+</tbody></table>
+<p><strong>5.SubShader的标签</strong></p>
+<p>用于告诉Unity的渲染引擎，SubShader希望怎么以及何时渲染这个对象。</p>
+<p>结构如下：</p>
+<p>Tags {“TagName1” = “Value1”}</p>
+<p>支持的类型：</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200225221037818.png" alt="image-20200225221037818"></p>
+<p><strong>6.Pass语义块</strong></p>
+<p>结构如下</p>
+<p>Pass{</p>
+<p>​    [Name]</p>
+<p>​    [Tags]</p>
+<p>​    [RenderSetup]</p>
+<p>}</p>
+<p>定义该Pass名称，通过这个名称就可以进行Pass的复用，注意要全部大写</p>
+<p>Name “MyPassName”</p>
+<p>复用：UsePass “MyShader/MYPASSNAME”</p>
+<p><strong>7.Pass的标签</strong></p>
+<p>同样是用来告诉Unity我们希望怎么渲染物体</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200225221707769.png" alt="image-20200225221707769"></p>
+<p>除了普通的Pass定义外，Unity ShaderLab还支持一些特殊的Pass，以便进行代码的复用和更复杂的效果.</p>
+<p><strong>UsePass</strong>:Pass的复用。</p>
+<p><strong>GrabPass</strong>：该Pass负责抓取屏幕并将结果存储在一张纹理中，以便后续的Pass处理。</p>
+<p><strong>8.留一条后路</strong></p>
+<p>如果上面所有的SubShader在这显卡上不可用，就用最低级的Shader</p>
+<p>结构如下:</p>
+<p>Fallback “Nmae”</p>
+<p>//或者</p>
+<p>Fallback Off</p>
+<p>Fallback还会影响阴影投射，在渲染阴影纹理时，Unity会在每个Unity Shader中寻找一个阴影投射的Pass，而Fallback内置Shader中就包含一个通用的Pass。</p>
+<h1 id="Shader数学基础（未解决）"><a href="#Shader数学基础（未解决）" class="headerlink" title="Shader数学基础（未解决）"></a>Shader数学基础（未解决）</h1><p><strong>1.Unity使用的坐标系</strong></p>
+<p>右侧，上侧，前侧分别对应X,Y,Z的正方向，Unity使用的是左手坐标系。但是在观察空间，Unity使用的是右手坐标系，则摄像机的前向是Z轴的负方向。</p>
+<p><img src="http://static.zybuluo.com/candycat/lrhkf34n8p5fz7mzyro7r72m/unity_camera_cartesian.png" alt="unity_camera_cartesian.png-25.1kB"></p>
+<p><strong>2.矢量的点积</strong></p>
+<p><strong>从三维矢量的方向看</strong></p>
+<p>性质1：点积可以结合标量乘法，也就是说<strong>对点积中一个矢量进行缩放，也是对最后点积结果的缩放</strong></p>
+<p>性质2：点积可以结合矢量加法和减法</p>
+<p>性质3：一个矢量和本身进行点积的结果，<strong>就是该矢量的模的平方，很多情况下，我们比较两个矢量的长度大小，可以直接使用点积结果，因为开平方需要消耗一定性能。</strong></p>
+<p><strong>从三角代数方面看，更有几何意义</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200225231358509.png" alt="image-20200225231358509"></p>
+<p>如果矢量ab都为归一化向量，我们就可以得到两个矢量中的夹角角度</p>
+<p><strong>3.矢量的叉积</strong>（未解决）</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200225231545049.png" alt="image-20200225231545049"></p>
+<p>叉积不满足交换律，对两个矢量进行叉积的结果是得到一个同时垂直于这两个矢量的新矢量。<strong>新矢量的模长等于ab向量模长的面积,方向和左手右手坐标系有关</strong></p>
+<p><strong>4.矩阵复合变换</strong></p>
+<p>由于矩阵乘法不满足交换律，所以我们约定变换的顺序是<strong>先缩放，再旋转，最后平移</strong></p>
+<p>旋转角度是，旋转顺序是zxy。</p>
+<h1 id="坐标空间的变换"><a href="#坐标空间的变换" class="headerlink" title="坐标空间的变换"></a>坐标空间的变换</h1><p><strong>注意在观察空间中摄像机是右手坐标系，摄像机的前方是负Z轴</strong></p>
+<p>模型空间（model space）–&gt;世界空间（world space） 模型变换（model transform）</p>
+<p>世界空间（world space）–&gt;观察空间（view space）观察变换（view transform）</p>
+<p>观察空间（view space）–&gt;裁剪空间（clip space，齐次裁剪空间）用于变换的矩阵被称为<strong>裁剪矩阵（clip matrix）</strong>，也叫<strong>投影矩阵（projection matrix）</strong></p>
+<p>裁剪空间的目标是为了能够更方便地对渲染图元进行裁剪，空间由<strong>视锥体</strong>决定，也分为<strong>正交投影，透视投影</strong></p>
+<p><strong>投影矩阵的目的</strong>：</p>
+<p>1.为后面真正的投影做准备，经过投影矩阵的变换后，顶点的w分量具有特殊的意义</p>
+<p>2.对x,y,z分量进行缩放，因为直接使用视锥体的6个裁剪平面进行裁剪会很麻烦，经过投影矩阵的变换后，<strong>我们直接w分量作为一个范围值，如果x,y,z都在这个范围内，就说明顶点在裁剪空间</strong></p>
+<p>裁剪空间（clip space，齐次裁剪空间） –&gt;屏幕空间（screen space）</p>
+<p><strong>步骤</strong>：</p>
+<p>1.进行齐次除法，就是用w分量除以x,y,z分量，得到归一化的设备坐标NDC。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/2372757-7747ccd9b4518c1c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1000/format/webp" alt="img"></p>
+<p>2.经过齐次除法后，视锥体都变换到一个相同的立方体内，我么根据变换后的x，y坐标来映射输出窗口的像素坐标。</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200226152711601.png" alt="image-20200226152711601"></p>
+<p><strong>总结</strong></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/2372757-086b3c9a54858a01.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/600/format/webp" alt="img"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/2372757-e3e4eb20a421d7d7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/300/format/webp" alt="img"></p>
+<h1 id="法线变换（P87）"><a href="#法线变换（P87）" class="headerlink" title="法线变换（P87）"></a>法线变换（P87）</h1><p>进行非统一缩放时，如果使用和变换顶点相同的变换矩阵来变换法线，就会得到错误的结果，即变换后的法线方向与平面不再垂直</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/2372757-171a97eb8aef557b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/800/format/webp" alt="img"></p>
+<h1 id="数学答疑解惑"><a href="#数学答疑解惑" class="headerlink" title="数学答疑解惑"></a>数学答疑解惑</h1><p><strong>1.使用3x3还是4x4的变换矩阵</strong></p>
+<p>对于线性变换（旋转和缩放），3x3足以</p>
+<p>如果存在平移变换，4x4</p>
+<p>对于顶点变换，我们通常使用4x4，对于方向矢量变换，3x3足够，因为平移变换对于方向矢量没有任何影响</p>
+<p><strong>2.CG矩阵</strong></p>
+<p>CG使用的是行优先填充矩阵，但是在Unity API中Matrix4x4采用的是列优先。</p>
+<p><strong>3.获取片元的屏幕坐标</strong></p>
+<p>1.使用语义vpos</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">fixed4 frag(float4 sp:VPOS) : SV_Target&#123;</span><br><span class="line">	//用屏幕坐标除以屏幕分辨率_ScreenParams.xy,得到视口空间的坐标</span><br><span class="line">	return fixed4(so.xy/_ScreenParams.xy,0.0,1.0);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2.使用ComputeScreenPos，自己手动完成屏幕映射，先齐次除法，再映射到视口空间</p>
+<h1 id="Shader入门篇"><a href="#Shader入门篇" class="headerlink" title="Shader入门篇"></a>Shader入门篇</h1><p><strong>1.POSITION,TANGENT,NORMAL这些语义的数据由该材质的MeshRender组件提供，每帧调用DrawCall时，MeshRender会把他负责渲染的模型数据发送给Unity Shader。</strong></p>
+<p><strong>2.ShaderLab属性和CG变量类型</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200226163955835.png" alt="image-20200226163955835"></p>
+<p>uniform关键字，在Unity Shader中可以省略</p>
+<p><strong>3.引入头文件</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CGPROGRAM</span><br><span class="line">//...</span><br><span class="line">#include &quot;UnityCG.cginc&quot;</span><br><span class="line">//...</span><br><span class="line">ENDCG</span><br></pre></td></tr></table></figure>
+
+<p>常用文件</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200226164902995.png" alt="image-20200226164902995"></p>
+<p>可以直接使用UnityCG.cginc中预定义的结构体</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200226164953756.png" alt="image-20200226164953756"></p>
+<p>UnityCG.cginc中常用的函数</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200226165027541.png" alt="image-20200226165027541"></p>
+<h1 id="渲染平台的差异"><a href="#渲染平台的差异" class="headerlink" title="渲染平台的差异"></a>渲染平台的差异</h1><p>当我们同时处理多张渲染图像时（前提时开启了抗锯齿），例如同时处理屏幕图像和法线纹理，在DirectX平台上就会出现<strong>图像在竖直方向朝向不同</strong>，我们就需要在顶点着色器进行纹理的反转</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//判断是否时DirectX平台</span><br><span class="line">#if UNITY_UV_STARTS_AT_TOP</span><br><span class="line">//判断在这样的平台下是否开启了抗锯齿，如果开启了抗锯齿，纹素竖直方向会变为负值</span><br><span class="line">if(_MainTex_TexelSize.y&lt;0)</span><br><span class="line">	uv.y = 1-uv.y;</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+
+<h1 id="Shader整洁高效之道"><a href="#Shader整洁高效之道" class="headerlink" title="Shader整洁高效之道"></a>Shader整洁高效之道</h1><p><strong>1.float half 还是fixed</strong></p>
+<p>根据需求不同进行选择</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200226170433032.png" alt="image-20200226170433032"></p>
+<p><strong>2.Shader Target</strong></p>
+<p>我们可以指定更高级的shader Target，提高shader model的等级，那样shader的能力就越大。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#pragma target4.0</span><br></pre></td></tr></table></figure>
+
+<p><strong>3.慎用分支和循环语句</strong></p>
+<p>因为会降低GPU的并行处理操作</p>
+<h1 id="Unity的基础光照"><a href="#Unity的基础光照" class="headerlink" title="Unity的基础光照"></a>Unity的基础光照</h1><p><strong>1.光源和物体相交的结果：散射（scattering）和吸收（absorption）</strong></p>
+<p>散射（scattering）：只改变光线的方向，但不改变光线的密度的和颜色。通常有两种方向：散射到物体内部，也被称为<strong>折射（refraction）</strong>，散射到物体外部，被称为<strong>反射（reflection）</strong>。</p>
+<p>吸收（absorption）：只改变光线密度和颜色，但不改变方向。</p>
+<p><strong>总的来说，可以用高光反射（specular）表示物体表面的反射，漫反射（diffuse）表示光线的折射，吸收和散射出表面。</strong></p>
+<h1 id="光照模型"><a href="#光照模型" class="headerlink" title="光照模型"></a>光照模型</h1><h2 id="BRDF光照模型"><a href="#BRDF光照模型" class="headerlink" title="BRDF光照模型"></a>BRDF光照模型</h2><p>当给定了入射光线的方向和辐照度，BRDF可以给出某个出射方向上的光照能量分布。</p>
+<h2 id="标准光照模型（Phong模型）"><a href="#标准光照模型（Phong模型）" class="headerlink" title="标准光照模型（Phong模型）"></a>标准光照模型（Phong模型）</h2><p>基本方法：把进入摄像机内的光线分为4部分。</p>
+<p>1.自发光（emissive）：需要全局光照(global illumination),才能照亮周围物体，否则只是自己本身看起来更亮了。</p>
+<p>2.高光反射（specular）：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/2372757-9f6fc6a9a7ee4e27.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/500/format/webp" alt="img"></p>
+<p>反射方向计算公式：<img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200226192402493.png" alt="image-20200226192402493"></p>
+<p>高光反射公式：<img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200226192438674.png" alt="image-20200226192438674"></p>
+<p>Clight：光源颜色，Mspecular：高光颜色，Mgloss：光泽度，用于控制高光的区域。</p>
+<p>3.漫反射（diffuse）：<img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200226174221760.png" alt="image-20200226174221760"></p>
+<p>n：表面法线。I：指向光源的单位矢量。Clight：光源颜色。Mdiffuse：材质颜色。</p>
+<p>4.环境光（ambient）：用于描述其他所有的间接光照。</p>
+<p><strong>5.Blinn模型</strong></p>
+<p>为了避免计算反射方向r，Blinn引入新的矢量h，是通过对v和i的取平均后归一化得到。</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200226192752019.png" alt="image-20200226192752019"></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200226192808894.png" alt="image-20200226192808894"></p>
+<p><img src="http://static.zybuluo.com/candycat/nntler7jilkso6zufrbw447c/Blinn.png" alt="Blinn.png-32.1kB"></p>
+<p><strong>总结</strong>：Phong模型和Blinn模型都是经验模型。</p>
+<h2 id="逐像素还是逐顶点"><a href="#逐像素还是逐顶点" class="headerlink" title="逐像素还是逐顶点"></a>逐像素还是逐顶点</h2><p>逐像素操作(Phong Shading)效果 &gt; 逐顶点操作（Gouraud Shading）</p>
+<p>逐像素操作计算量 &gt; 逐顶点操作</p>
+<p>因为顶点数目要远远小于像素数目，在逐顶点操作中由于有非线性的计算（比如计算高光反射），但后面线性插值就会破坏原计算的非线性关系。</p>
+<h2 id="半兰伯特模型"><a href="#半兰伯特模型" class="headerlink" title="半兰伯特模型"></a>半兰伯特模型</h2><p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200226194931124.png" alt="image-20200226194931124"></p>
+<p>这样我们就把点积的结果范围从【-1，1】映射到【0，1】解决了背面光照问题。</p>
+<h1 id="基础纹理"><a href="#基础纹理" class="headerlink" title="基础纹理"></a>基础纹理</h1><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">o.uv=v.texcoord.xy * _MainTex_ST.xy + _MainTex.zw;</span><br><span class="line">//也可以利用Unity内置宏</span><br><span class="line">//o.uv = TRANSFORM_TEX(v.texcoord,_MainTex);</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://static.zybuluo.com/candycat/nfnonexamcr821gvsqfwm0rc/texture_properties.png" alt="texture_properties.png-29kB"></p>
+<p><strong>1.Wrap Mode</strong></p>
+<p>Wrap Mode决定了当纹理坐标超过【0，1】范围后如何被平铺。</p>
+<p>分为两种模式：一种是Repeat，超过1部分整数被舍弃，直接用小数采样，这样纹理就会不断重复。</p>
+<p>另一种是Clamp，会自动截取到【0，1】之间。</p>
+<p><strong>2.Filter Mode</strong></p>
+<p>决定了纹理由于变换产生拉伸时会采用哪种滤波模式。</p>
+<p>支持3种模式：<strong>Point，Bilinera，Trilinear</strong>，得到的图片效果依次提升，但消耗的性能也依次增加。</p>
+<p>放大纹理时，三种Filter Mode效果。</p>
+<p><img src="http://static.zybuluo.com/candycat/e15n8gjm48ldr8eoavr7p7k1/magnification.png" alt="magnification.png-256.2kB"></p>
+<p><strong>3.多级渐远纹理（mipmapping）</strong></p>
+<p>多级渐远纹理技术将原纹理提前用滤波处理得到更小的图像，每一层都是对上一层降采样的结果。</p>
+<p><strong>当物体远离摄像机时，可以直接使用较小的纹理。缺点是空间换时间</strong></p>
+<p>开启Mipmap首先要将Texture Type选择成Advanced，然后勾选Generate Mip Maps。</p>
+<p><img src="http://static.zybuluo.com/candycat/jphpd33ux984u48qtrebzb93/minification.png" alt="minification.png-271.9kB"></p>
+<p>Point：使用<strong>最近邻滤波</strong>，采样像素通常只有一个</p>
+<p>Bilinear：使用<strong>线性滤波</strong>，找到4个邻近像素，进行像素插值</p>
+<p>Trlinear：与Bilinear相似，但会在多级MipMap中进行混合。</p>
+<p><strong>4.Format决定了存储纹理的格式</strong></p>
+<h1 id="凹凸映射"><a href="#凹凸映射" class="headerlink" title="凹凸映射"></a>凹凸映射</h1><p>目的：使用一张纹理来修改模型表面的法线，以提供更多的细节</p>
+<h2 id="高度纹理"><a href="#高度纹理" class="headerlink" title="高度纹理"></a>高度纹理</h2><p>高度图存储的是强度值，用于表示模型表面局部的海拔高度</p>
+<p><strong>优点</strong>：直观，可以明确知道模型表面的凹凸情况</p>
+<p><strong>缺点</strong>：计算复杂，在实时计算中不能直接得到表面法线。</p>
+<h2 id="法线纹理"><a href="#法线纹理" class="headerlink" title="法线纹理"></a>法线纹理</h2><p>法线纹理存储的就是表面的法线方向，<strong>法线方向的分量在【-1，1】，但像素范围是【0，1】</strong>，所以要进行映射</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200226212742452.png" alt="image-20200226212742452"></p>
+<p>这就要求，我们在shader中对法线纹理进行纹理采样后，还要反映射才能得到原先的法线方向。</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200226212904390.png" alt="image-20200226212904390"></p>
+<h3 id="模型空间的法线纹理"><a href="#模型空间的法线纹理" class="headerlink" title="模型空间的法线纹理"></a>模型空间的法线纹理</h3><p>模型空间下的法线纹理看起来是五颜六色，是因为所有的法线<strong>是同一个坐标空间，即模型空间</strong>，但是每个点存储的法线方向是各异的，所以造成了五颜六色。</p>
+<p><strong>优点</strong>：实现简单，更加直观，计算更少。</p>
+<p>在纹理坐标的缝合处和尖锐的边角部分，可见的突变缝隙较小。</p>
+<h3 id="切线空间的法线纹理"><a href="#切线空间的法线纹理" class="headerlink" title="切线空间的法线纹理"></a>切线空间的法线纹理</h3><p>对于每个模型的顶点都有自己的切线空间，<strong>原点是顶点本身，Z轴就是法线方向，X轴就是切线方向，Y轴由法线和切线叉积可得，就是副切线</strong>，如果说一个点的法线方向不变，也就是在切线空间中值为（0，0，1），映射到纹理就是（0.5，0.5，1）浅蓝色，<strong>蓝色也说明大部分顶点法线和模型本身法线一样，不需要改变</strong></p>
+<p>优点：自由度很高，<strong>模型空间中法线纹理是绝对法线信息</strong></p>
+<p>可以进行UV动画，可以通过移动纹理UV实现凹凸移动效果，但是在模型空间下的法线纹理是完全错误的。</p>
+<p>可以重用纹理。</p>
+<p>可以压缩，因为切线空间下的法线Z方向总是正方向，我们可以仅存储XY方向，推到出Z方向。</p>
+<h3 id="计算空间的选择"><a href="#计算空间的选择" class="headerlink" title="计算空间的选择"></a>计算空间的选择</h3><p><strong>1.在切线空间下进行光照计算，同时需要将光照方向和视角方向变换到切线空间</strong></p>
+<p><strong>2.在世界空间下进行光照计算，把采样得到的法线方向变换到世界空间下。</strong></p>
+<p>从效率上说，第一种方法优于第二种，因为在顶点着色器就完成对光照方向和视角方向的变换。第二种方法还要在片元着色器中完成矩阵计算。</p>
+<p>从通用性，第二种由于第一种，因为我们也要在世界空间上进行一些计算，例如Cubemap环境映射。</p>
+<h2 id="在切线空间下计算（未解决）"><a href="#在切线空间下计算（未解决）" class="headerlink" title="在切线空间下计算（未解决）"></a>在切线空间下计算（未解决）</h2><p>我们需要知道<strong>模型空间到切线空间的变换矩阵</strong>，详细看P149</p>
+<p>注意：Tangent与Normal不同，是float4类型，因为我们需要tangent.w来决定切线空间下副切线的方向性。</p>
+<p><strong>只有我们将法线纹理的类型设置未Normal map，才能使用Unity内置宏UnpackNormal（packedNormal），反映射法线。</strong></p>
+<h2 id="在世界空间下计算（未解决）"><a href="#在世界空间下计算（未解决）" class="headerlink" title="在世界空间下计算（未解决）"></a>在世界空间下计算（未解决）</h2><p><strong>思路：在顶点着色器计算出从切线空间到世界空间的变换矩阵，传递给片元着色器</strong></p>
+<p>变换矩阵的计算由<strong>顶点的切线，副切线和法线在世界空间下的表示得到</strong></p>
+<h2 id="法线纹理的类型"><a href="#法线纹理的类型" class="headerlink" title="法线纹理的类型"></a>法线纹理的类型</h2><p><img src="http://static.zybuluo.com/candycat/98ol95g0rx90mbdan3fiw4n7/texture_type_normal.png" alt="texture_type_normal.png-29.8kB"></p>
+<p>我们将纹理类型设置为Normal map<strong>Unity就会根据不同平台进行纹理的压缩（例如使用DXT5nm格式），我们就需要通过UnpackNormal对不同压缩格式的进行正确的采样</strong></p>
+<p><strong>1.DXT5nm</strong></p>
+<p>使用了DXT5nm格式，纹理的a通过对应法线的x分量，g通道对应了法线的y分量，纹理的r和b通道机会被舍弃，因为法线的Z分量可以通过推导得出。</p>
+<p><strong>2.从高度图里生成法线纹理</strong></p>
+<p><img src="http://static.zybuluo.com/candycat/nd93fm3dgv4obtkxjo6dg2sg/texture_type_heightmap.png" alt="texture_type_heightmap.png-293.4kB"></p>
+<p>将高度图导入Unity并设置Texture Type为Normal map，勾选Create from Grayscale，生成了法线贴图。</p>
+<p>Bumpiness：控制凹凸程度</p>
+<p>Filtering：使用那种方式计算凹凸程度。第一种Smooth，生成法线比较平滑。另一种Sobel滤波（边缘检测的滤波器）。</p>
+<h1 id="渐变纹理"><a href="#渐变纹理" class="headerlink" title="渐变纹理"></a>渐变纹理</h1><p>使用不同的渐变纹理控制漫反射光照</p>
+<p><img src="http://static.zybuluo.com/candycat/lqani27ay2sk4r52hgvz7fx1/ramp_texture.png" alt="ramp_texture.png-119.2kB"></p>
+<h1 id="遮罩纹理"><a href="#遮罩纹理" class="headerlink" title="遮罩纹理"></a>遮罩纹理</h1><p>人为的保护某些区域，避免被修改。</p>
+<p>通常我们会充分利用一张纹理的RGBA通道，用于存储不同的属性，例如高光强度存在R，边缘光强度存在G等等</p>
+<h1 id="透明效果"><a href="#透明效果" class="headerlink" title="透明效果"></a>透明效果</h1><p>实现透明的两种方法：</p>
+<p><strong>1.透明度测试</strong></p>
+<p>只要一个片元的透明度满足条件，该片元就被舍弃。否则将按普通的不透明物体处理。也就是说<strong>透明度测试不需要关闭深度写入</strong>，与其他不透明物体最大不同是根据透明度舍弃片元。<strong>无法得到真正的半透明效果</strong></p>
+<p><strong>2.透明度混合</strong></p>
+<p>与存储在颜色缓冲的颜色进行混合，并且需要<strong>关闭深度写入</strong>，但<strong>没有关闭深度测试</strong>。也就是说，对于透明度混合来说，深度缓冲只是只读。</p>
+<h2 id="渲染顺序"><a href="#渲染顺序" class="headerlink" title="渲染顺序"></a>渲染顺序</h2><p><strong>1.关闭深度写入的结果</strong></p>
+<p>如果不关闭深度写入，会导致后面的物体被剔除，因为深度测试的时候，半透明物体距离摄像机更近。<strong>所以我们就破坏了深度缓冲机制，这时候渲染顺序就很重要</strong>。</p>
+<p><strong>2.先渲染透明物体B，在渲染不透明物体A</strong></p>
+<p>正确的半透明效果</p>
+<p><img src="http://static.zybuluo.com/candycat/48l0aapqc57v0gn367tk2akx/render_order_0.png" alt="render_order_0.png-10.7kB"></p>
+<p><strong>3.先渲染透明物体A，再渲染透明物体B</strong></p>
+<p>错误的效果，B直接覆盖A的颜色。</p>
+<p><img src="http://static.zybuluo.com/candycat/5k524ddo8qib31j6s4mhkekh/render_order_1.png" alt="render_order_1.png-10.5kB"></p>
+<p><strong>4.引擎的解决方法</strong></p>
+<p>（1）先渲染所有的不透明物体，并开启他们的深度测试和深度写入</p>
+<p>（2）把不透明物体感召距离谁相机的远近及逆行排序，从后往前渲染半透明物体，并且开启<strong>深度测试，关闭深度写入</strong></p>
+<p><strong>注意</strong>：我们如何（2）<strong>按距离摄像机的远近进行排序</strong>，我们对单个物体级别进行排序，如果存在<strong>循环重叠</strong>情况，就永远无法得到正确的结果。</p>
+<p><img src="http://static.zybuluo.com/candycat/sl85989h54upaju75zstyv0y/render_order_3.png" alt="render_order_3.png-15.3kB"></p>
+<p><strong>解决方法</strong>：分割网格，尽量让模型是图面提，或者拆分成多个子物体。</p>
+<h2 id="Unity的渲染顺序"><a href="#Unity的渲染顺序" class="headerlink" title="Unity的渲染顺序"></a>Unity的渲染顺序</h2><p>Unity为了解决渲染顺序问题提供了<strong>渲染队列（render queue）</strong>，使用Queue标签决定我们的模型归于哪个渲染队列，数字越小渲染越早。</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227144923172.png" alt="image-20200227144923172"></p>
+<h2 id="透明度测试"><a href="#透明度测试" class="headerlink" title="透明度测试"></a>透明度测试</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//首先定义标签</span><br><span class="line">SubShader&#123;</span><br><span class="line">	Tags&#123;&quot;Queue&quot; = &quot;AlphaTest&quot; &quot;IgnoreProjector&quot;=&quot;True&quot; &quot;RenderType&quot;=&quot;TransparentCutout&quot;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里把渲染队列设置为AlphaTest，并且不受投影器（Projectors）影响，RenderType用于在C#中着色器替换功能。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//利用Clip函数进行片元舍弃</span><br><span class="line">clip(texColor.a-_Cutoff);</span><br><span class="line">//只要参数小于0，就舍弃。</span><br><span class="line">//discard指令也可以进行片元舍弃。</span><br></pre></td></tr></table></figure>
+
+<h2 id="透明度混合"><a href="#透明度混合" class="headerlink" title="透明度混合"></a>透明度混合</h2><p><strong>1.Blend渲染状态</strong></p>
+<p>Blend是Unity提供的混合模式的命令，与颜色缓冲进行混合。</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227150234445.png" alt="image-20200227150234445"></p>
+<p><strong>2.代码</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//定义标签</span><br><span class="line">SubShader&#123;</span><br><span class="line">	Tags&#123;&quot;Queue&quot; = &quot;Transparent&quot; &quot;IgnoreProjector&quot;=&quot;True&quot; &quot;RenderType&quot;=&quot;Transparent&quot;&#125;</span><br><span class="line">&#125;</span><br><span class="line">Pass&#123;</span><br><span class="line">	Tags&#123;&quot;LightMode&quot;=&quot;ForwardBase&quot;&#125;</span><br><span class="line">	//关闭深度写入</span><br><span class="line">	ZWrite Off</span><br><span class="line">	//开启颜色混合</span><br><span class="line">	Blend SrcAlpha OneMinusSrcAlpha</span><br><span class="line">	</span><br><span class="line">	//...</span><br><span class="line">	return fixed4(ambient+diffuse,texColor.a*_AlphaScale);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://static.zybuluo.com/candycat/5a1af3bgca3z399huyud2kwr/alpha_blend_0.png" alt="alpha_blend_0.png-138.7kB"></p>
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>一旦我们物体有复杂的遮挡关系，就会出现错误的透明效果，<strong>这是因为关闭了深度写入</strong>造成的，我们就无法对模型进行像素级别的深度排序。</p>
+<h3 id="解决方法，开启深入写入的半透明效果"><a href="#解决方法，开启深入写入的半透明效果" class="headerlink" title="解决方法，开启深入写入的半透明效果"></a>解决方法，开启深入写入的半透明效果</h3><p>使用<strong>两个Pass来渲染模型：第一个Pass开启深入写入，但不输出颜色，只是为了把深度值写入深度缓冲。第二个Pass进行正常的透明度混合。</strong></p>
+<p>缺点：使用了多个Pass，性能有一定的影响</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227151653498.png" alt="image-20200227151653498"></p>
+<p><strong>新的渲染命令ColorMask</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227151807483.png" alt="image-20200227151807483"></p>
+<p>ColorMask 0表示不会输出任何颜色</p>
+<h2 id="Shaderlap的混合命令"><a href="#Shaderlap的混合命令" class="headerlink" title="Shaderlap的混合命令"></a>Shaderlap的混合命令</h2><p>通过混合操作和混合因子命令，可以得到一些类似PhotoShop的混合效果</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227152917564.png" alt="image-20200227152917564"></p>
+<h2 id="双面渲染的透明效果"><a href="#双面渲染的透明效果" class="headerlink" title="双面渲染的透明效果"></a>双面渲染的透明效果</h2><p><strong>1.透密度测试的双面渲染</strong></p>
+<p>直接Cull Off，关闭剔除功能</p>
+<p><strong>2.透明度混合的双面渲染</strong></p>
+<p>分为两个Pass，第一个Pass只渲染背面，第二个Pass只渲染正面，这样就能保证背面总是在正面之前渲染。</p>
+<h1 id="Unity的渲染路径"><a href="#Unity的渲染路径" class="headerlink" title="Unity的渲染路径"></a>Unity的渲染路径</h1><p><strong>1.向前渲染路径(Forward Rendering Path)</strong></p>
+<p><strong>2.延迟渲染路径(Deferred Rending Path)</strong></p>
+<p>我们可以用给每个Pass使用标签来指定该Pass的渲染路径</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Pass&#123;</span><br><span class="line">	Tags&#123;&quot;LightMode&quot;=&quot;ForwardBase&quot;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227154332008.png" alt="image-20200227154332008"></p>
+<p>使用渲染路径的原因：告知Unity去准备相关的光照属性，否则光照变量不一定会被正确赋值。</p>
+<h2 id="前向渲染路径"><a href="#前向渲染路径" class="headerlink" title="前向渲染路径"></a>前向渲染路径</h2><h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227160938354.png" alt="image-20200227160938354"></p>
+<p>我们需要渲染该对象的渲染图元，并计算颜色，深度缓冲区的信息，如果片元可见，就更新缓冲区信息。</p>
+<p>假如场景有N个物体，每个物体受M个光源的影响，那么渲染整个场景就需要N*M个Pass。</p>
+<h3 id="Unity中的前向渲染（P186未解决）"><a href="#Unity中的前向渲染（P186未解决）" class="headerlink" title="Unity中的前向渲染（P186未解决）"></a>Unity中的前向渲染（P186未解决）</h3><p>在Unity中，前向渲染路径有3中处理光照（即照亮物体）的方式：<strong>逐顶点处理，逐像素处理，球谐函数（SH）处理</strong></p>
+<p>Unity会根据各个光源的设置以及对物体的影响程度，进行<strong>重要度排序</strong></p>
+<p><strong>一定数目按逐像素处理，最多4个光源逐顶点，剩下光源SH处理</strong></p>
+<p><img src="http://static.zybuluo.com/candycat/skolpwg0h7zzcey4gtl1rvc9/light_type_mode.png" alt="light_type_mode.png-30.6kB"></p>
+<p><strong>判断规则：</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227160009773.png" alt="image-20200227160009773"></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227160016320.png" alt="image-20200227160016320"></p>
+<p><img src="http://static.zybuluo.com/candycat/575lq2zgnsaop3nw2miyobt3/forward_rendering.png" alt="forward_rendering.png-175.5kB"></p>
+<h2 id="延迟渲染路径"><a href="#延迟渲染路径" class="headerlink" title="延迟渲染路径"></a>延迟渲染路径</h2><h3 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h3><p>延迟渲染路径包含了两个Pass，<strong>第一个Pass，不进行任何光照计算，仅仅计算哪些片元可见，就把相关信息存储到G缓冲区。第二个Pass，利用G缓冲区的各个片元信息，进行光照计算。</strong></p>
+<p><strong>总结：延迟渲染的效率不依赖场景的复杂度，而是和屏幕空间大小有关</strong></p>
+<h3 id="Unity的延迟渲染"><a href="#Unity的延迟渲染" class="headerlink" title="Unity的延迟渲染"></a>Unity的延迟渲染</h3><p>优点：<strong>适合场景中光源数目很多，并且延迟渲染中每个光源都可以逐像素处理。</strong></p>
+<p>缺点：<strong>不支持真正的抗锯齿功能。不能处理半透明物体。对显卡有一定要求</strong></p>
+<p>当我们使用延迟渲染时，Unity要求我们提供两个Pass</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227170100163.png" alt="image-20200227170100163"></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227170108969.png" alt="image-20200227170108969"></p>
+<h1 id="Unity的光源类型"><a href="#Unity的光源类型" class="headerlink" title="Unity的光源类型"></a>Unity的光源类型</h1><p><strong>1.平行光</strong></p>
+<p><strong>2.点光源</strong></p>
+<p><strong>3.聚光灯</strong></p>
+<h2 id="在前向渲染中处理不同光源类型"><a href="#在前向渲染中处理不同光源类型" class="headerlink" title="在前向渲染中处理不同光源类型"></a>在前向渲染中处理不同光源类型</h2><p>我们需要在Unity shader中访问5个属性：<strong>位置，方向，颜色，强度以及衰减</strong></p>
+<h3 id="BasePass"><a href="#BasePass" class="headerlink" title="BasePass"></a>BasePass</h3><p>（1）我们需要#pragma multi_compile_fwdbase指令保证光照变量能被正确赋值。</p>
+<p>（2）环境光只在BasePass计算一次，这样就不用再后面的Additional Pass再次计算，类似的还有物体自发光。</p>
+<p>（3）BasePass处理的逐像素光源一定是平行光。_WorldSpaceLightPos0获取平行光方向， _LightColor0获取颜色和强度。</p>
+<p>（4）平行光是没有衰减的。</p>
+<h3 id="Additional-Pass"><a href="#Additional-Pass" class="headerlink" title="Additional Pass"></a>Additional Pass</h3><p>这个Pass为了其他逐像素光源计算的。</p>
+<p>（1）定义好渲染路径和标签</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227173943056.png" alt="image-20200227173943056"></p>
+<p>（2）这个Pass处理的光源类型可能是平行光，点光源或者是聚光灯，所以要及进行区分</p>
+<p>区分方向</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227174116899.png" alt="image-20200227174116899"></p>
+<p>区分衰减</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227174145473.png" alt="image-20200227174145473"></p>
+<p><strong>首先获取光源空间下的坐标，然后利用该坐标对衰减纹理采样获得衰减值，这里利用了一张纹理作为查找表LUT</strong></p>
+<h1 id="Unity的光照衰减"><a href="#Unity的光照衰减" class="headerlink" title="Unity的光照衰减"></a>Unity的光照衰减</h1><h2 id="用于光照衰减的纹理"><a href="#用于光照衰减的纹理" class="headerlink" title="用于光照衰减的纹理"></a>用于光照衰减的纹理</h2><p>Unity使用一张纹理_LightTexture0作为查找表作为逐像素光照的衰减，如果该光源使用了cookie，那么就是 _LightTextureB0。</p>
+<p><strong>好处：不依赖数学的复杂性，只需要一个参数去纹理中采样就可以了</strong></p>
+<p><strong>缺点：需要预处理得到采样纹理，纹理的大小会影响衰减精度。</strong></p>
+<p><strong>不直观，而且无法使用其他数学公式计算衰减值</strong></p>
+<p>（1）需要将顶点从世界空间变换到光源空间。</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227175238592.png" alt="image-20200227175238592"></p>
+<p>（2）进行衰减纹理的采样</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227175301028.png" alt="image-20200227175301028"></p>
+<p>还要使用UNITY_ATTEN_CHANNEL获得衰减值所在分量，得到真正的衰减值</p>
+<h2 id="数学公式计算衰减"><a href="#数学公式计算衰减" class="headerlink" title="数学公式计算衰减"></a>数学公式计算衰减</h2><p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227182015197.png" alt="image-20200227182015197"></p>
+<p>但是效果有时候不尽人意，比如离开光源的照明范围会发生突变。</p>
+<h1 id="Unity的阴影"><a href="#Unity的阴影" class="headerlink" title="Unity的阴影"></a>Unity的阴影</h1><p>如何在Unity中物体向其他物体投射阴影，以及接受其他物体的阴影。</p>
+<h2 id="阴影的实现"><a href="#阴影的实现" class="headerlink" title="阴影的实现"></a>阴影的实现</h2><p>Unity使用了一种<strong>ShadowMap</strong>的技术，原理就是在光源位置放一台摄像机，那么阴影区域就是摄像机看不到的地方。</p>
+<p><strong>Unity会使用LightMode为ShadowCaster的Pass专门更新更新光源的shadowmap，如果没有找到该Pass，该物体就无法向其他物体投射阴影。</strong></p>
+<h2 id="传统的阴影映射纹理"><a href="#传统的阴影映射纹理" class="headerlink" title="传统的阴影映射纹理"></a>传统的阴影映射纹理</h2><p>在正常渲染的Pass将<strong>顶点位置变换到光源空间下，利用xy分量进行shadowmap的采样，得到该位置的深度信息，然后进行比较，如果小于采样得到的深度值，就是在阴影中</strong></p>
+<h2 id="屏幕空间的阴影映射技术"><a href="#屏幕空间的阴影映射技术" class="headerlink" title="屏幕空间的阴影映射技术"></a>屏幕空间的阴影映射技术</h2><p>（Screenspace Shadow Map）原本是延迟渲染中产生阴影的方式。</p>
+<p>（1）首先调用LightMode为ShadowCaster的Pass获取可投影光源的Shadowmap，还有<strong>摄像机的深度纹理</strong></p>
+<p>（2）根据这两个map获取<strong>屏幕空间的阴影图</strong>，如果摄像机的表面深度大于转到ShadowMap的深度值，<strong>表明此表面虽可见，但还是阴影中</strong>，就这样得到屏幕空间的阴影图，但是由于是屏幕空间，所以<strong>采样坐标必须是屏幕空间</strong></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><strong>1.如果一个物体就像接受其他物体的阴影，就必须在Shader中对Shadowmap进行采样，最后把光照结果相乘就产生阴影效果。</strong></p>
+<p><strong>2.如果物体想向其他物体投射阴影，就必须把物体加入到光源的Shadowmap计算中，这过程可以通过LightMode为ShadowCaster的Pass实现</strong></p>
+<h2 id="计算阴影三剑客"><a href="#计算阴影三剑客" class="headerlink" title="计算阴影三剑客"></a>计算阴影三剑客</h2><p>SHADOW_COORDS：声明一个_ShadowCoord的阴影纹理变量。</p>
+<p>TRANSFER_SHADOW：根据平台的不同选择使用的技术。比如如果可以使用<strong>屏幕空间的阴影映射</strong>就会调用ComputeScreenPos来计算_ShadowCoord。如果不支持，就使用传统的阴影映射。</p>
+<p>SHADOW_ATTENUATION：利用得到的阴影纹理坐标进行采样。</p>
+<p><strong>注意：TRANSER_SHADOW会使用v.vertex或a.pos进行计算，所以命名要对上</strong></p>
+<h2 id="统一管理光照衰减和阴影"><a href="#统一管理光照衰减和阴影" class="headerlink" title="统一管理光照衰减和阴影"></a>统一管理光照衰减和阴影</h2><p>使用Unity的内置宏实现UNITY_LIGHT_ATTENUATION</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UNITY_LIGHT_ATTENUATION(atten, i, i.pos_world.xyz);</span><br></pre></td></tr></table></figure>
+
+<p>接受三个参数：</p>
+<p>atten：是计算完结果后的存储参数，i：是v2f结构体，会传递给SHADOW_ATTENUATION，用于计算阴影值。i.pos_world：用于计算光照衰减。</p>
+<p>建议用这个宏。</p>
+<h2 id="透明度测试物体的阴影"><a href="#透明度测试物体的阴影" class="headerlink" title="透明度测试物体的阴影"></a>透明度测试物体的阴影</h2><p>需要在LightMode为ShadowCaster的Pass里进行透明度测试的计算，否则会出现错误</p>
+<p><img src="http://static.zybuluo.com/candycat/v0wel6w64l5x0intcrfp3vdt/alpha_test_shadow_0.png" alt="alpha_test_shadow_0.png-62.8kB"></p>
+<p><strong>解决方法：Fallback 设置为Transparent/Cutout/VertexLit</strong>这里的Pass进行了透明度测试。</p>
+<h2 id="半透明物体的阴影"><a href="#半透明物体的阴影" class="headerlink" title="半透明物体的阴影"></a>半透明物体的阴影</h2><p>在Unity中，所有内置的半透明的Shader是不会产生阴影效果的，但是我们可以使用一些trick强制为半透明物体生成阴影。</p>
+<p><img src="http://static.zybuluo.com/candycat/00c0x6mhf74ru1kd9ejdwlko/alpha_blend_shadow1.png" alt="alpha_blend_shadow1.png-94.9kB"></p>
+<h1 id="立方体纹理（P210）"><a href="#立方体纹理（P210）" class="headerlink" title="立方体纹理（P210）"></a>立方体纹理（P210）</h1><h2 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h2><h2 id="折射"><a href="#折射" class="headerlink" title="折射"></a>折射</h2><h2 id="菲涅尔反射"><a href="#菲涅尔反射" class="headerlink" title="菲涅尔反射"></a>菲涅尔反射</h2><p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227204646640.png" alt="image-20200227204646640"></p>
+<h1 id="渲染纹理"><a href="#渲染纹理" class="headerlink" title="渲染纹理"></a>渲染纹理</h1><p>在Unity我们可以使用一种特许的Pass来完成屏幕图像的获取。</p>
+<p><strong>注意：GrabPass通常用于渲染透明物体，所以要将渲染队列设置为透明队列（“Queue”=“Transparent”）</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200227212135783.png" alt="image-20200227212135783"></p>
+<p>使用GrabPass抓取图像，并且存储在_RefractionTex里面</p>
+<p><strong>主要思路：使用GrabPass抓取图像，用切线空间下的法线对屏幕纹理坐标进行偏移，然后对屏幕图像进行采样达到折射效果</strong></p>
+<h2 id="RenderTexture-VS-GrabPass"><a href="#RenderTexture-VS-GrabPass" class="headerlink" title="RenderTexture VS GrabPass"></a>RenderTexture VS GrabPass</h2><p>抓取屏幕图像的方法：</p>
+<p><strong>1.利用渲染纹理 + 额外摄像机的方式</strong></p>
+<p><strong>2.利用GrabPass{“_GrabTex”}</strong></p>
+<p>GrabPass好处在于实现简单，但是从效率上说，渲染纹理的效率要好于GrabPass。RenderTexture可以控制分辨率，GrabPass的分辨率和显示屏幕是一直的，而且会破坏CPU和Gpu的并行性。</p>
+<h1 id="程序纹理（P226）"><a href="#程序纹理（P226）" class="headerlink" title="程序纹理（P226）"></a>程序纹理（P226）</h1><h1 id="纹理动画（230）"><a href="#纹理动画（230）" class="headerlink" title="纹理动画（230）"></a>纹理动画（230）</h1><h1 id="顶点动画（234）"><a href="#顶点动画（234）" class="headerlink" title="顶点动画（234）"></a>顶点动画（234）</h1><p><strong>注意：模型空间的顶点动画Shader需要取消Unity的批处理，因为批处理会合并相关模型，那么各自的模型空间就会丢失</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228011436829.png" alt="image-20200228011436829"></p>
+<p>河流的顶点动画思路：</p>
+<p><strong>（1）_Frequency控制正选函数频率， _InvWaveKength控制波长， _Magnitude控制波动幅度，得到最终的位移。</strong></p>
+<h2 id="广告牌技术"><a href="#广告牌技术" class="headerlink" title="广告牌技术"></a>广告牌技术</h2><p>思路：构造3个相互正交的基向量。<strong>模拟粒子效果：法线方向时固定的，总是指向视角方向，而指向上的方向可以发生变化。模拟草丛效果：指向上的方向永远不变，法线随视角变化</strong></p>
+<p><img src="http://static.zybuluo.com/candycat/nmwj4c59j8dif8828fehq477/basis_vector.png" alt="basis_vector.png-76.2kB"></p>
+<p>注意：要对视角方向的法线进行判断，避免法线方向和向上方向平行。</p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><p>由于使用了</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Tags&#123;&quot;DisableBatching&quot;=&quot;True&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>取消了批处理，会增加DrawCall，带来性能的影响，所以一般来说我们要避免显式使用模型空间的中心作为描点。一般都是利用<strong>顶点颜色存储每个顶点到锚点的距离</strong></p>
+<p>注意在投射阴影的时候也要修改”ShadowCaster“的Pass的顶点动画，因为这个Pass会以正常的片元进行渲染。</p>
+<h1 id="屏幕后处理"><a href="#屏幕后处理" class="headerlink" title="屏幕后处理"></a>屏幕后处理</h1><p><strong>1.抓取渲染后的屏幕图像</strong></p>
+<p>Unity提供了一个方便的接口——<strong>OnRenderImage函数</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OnRenderImage(RenderTexture src,RenderTexture dest)</span><br></pre></td></tr></table></figure>
+
+<p>Unity会把渲染得到的图像存储在src，dest对应渲染纹理显示到屏幕上。</p>
+<p><strong>2.对渲染纹理的处理</strong></p>
+<p>我们通常利用Graphics.Blit函数完成对渲染纹理的处理。</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228133317221.png" alt="image-20200228133317221"></p>
+<p>默认情况下，OnRenderImage会在<strong>所有的不透明和透明的Pass执行完毕后被调用</strong>，以便对场景所有游戏对象产生影响。如果想后处理**不对透明物体产生任何影响，可以在OnRenderImage前添加ImageEffectOpaque达到目的。</p>
+<p><strong>3.后处理的通常过程</strong></p>
+<p>首先在摄像机添加屏幕后处理脚本，利用OnRenderImage获取当前屏幕的渲染纹理，然后嗲用Graphics.Blit使用特定Shader进行处理，然后把渲染纹理显示到屏幕上。</p>
+<h1 id="调整屏幕的亮度，饱和度和对比度"><a href="#调整屏幕的亮度，饱和度和对比度" class="headerlink" title="调整屏幕的亮度，饱和度和对比度"></a>调整屏幕的亮度，饱和度和对比度</h1><p><strong>1.把脚本的亮度，饱和度，对比度参数传递给Shader</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228151226490.png" alt="image-20200228151226490"></p>
+<p><strong>2.设置好渲染状态</strong></p>
+<p>关闭深度写入，避免挡住后面渲染的物体，深度测试总是通过，关闭剔除，后处理标配。</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228151332998.png" alt="image-20200228151332998"></p>
+<p><strong>3.亮度调整：把原颜色乘以亮度系数_Brightness即可</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228151657344.png" alt="image-20200228151657344"></p>
+<p><strong>饱和度调整：对每个颜色分量乘以一个特定的系数再相加，就可以得到一个饱和度为0的颜色值，然后_Saturation进行插值</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228151705261.png" alt="image-20200228151705261"></p>
+<p><strong>对比度调整：我们首先创建一个对比度为0的颜色，再使用_Contrast进行插值了</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228151806292.png" alt="image-20200228151806292"></p>
+<h1 id="边缘检测"><a href="#边缘检测" class="headerlink" title="边缘检测"></a>边缘检测</h1><p><strong>原理：利用边缘检测算子对图像进行卷积操作。</strong></p>
+<p><strong>卷积操作：使用一个卷积核对图像中每个像素进行一系列操作。</strong></p>
+<p><img src="http://static.zybuluo.com/candycat/bm2nnarbl2h6fmmjq1gsfb7c/edge_detection_kernel.png" alt="edge_detection_kernel.png-19.8kB"></p>
+<p>如果相邻像素之间的差值过大，我们就可以得知这个是边缘处</p>
+<p>实现：</p>
+<p>在顶点函数中准备好使用Sobel算子采样时需要的8个领域纹理坐标</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228152944299.png" alt="image-20200228152944299"></p>
+<p>然后在片元函数中，定义水平方向和竖直方向的卷积核Gx，Gy。依次进行采样，并计算亮度值，然后和Gx，Gy的权重相乘，叠加到梯度值上。</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228153142817.png" alt="image-20200228153142817"></p>
+<h1 id="高斯模糊"><a href="#高斯模糊" class="headerlink" title="高斯模糊"></a>高斯模糊</h1><p>同样使用了卷积计算，卷积核为<strong>高斯核</strong>。高斯核的维数越高，模糊程度越大。高斯方程<strong>很好模拟了每个像素对当前像素的影响程度——距离越近，影响越大</strong></p>
+<p>注意：注意使用一个NxN的高斯核对图像进行卷积滤波，就需要NxNxWxH次纹理采样，这样采样的次数就很巨大。</p>
+<p>一般操作：把二维高斯函数拆分为两个一维函数。采样次数就变成了2xNxWxH采样次数。<strong>所以我们先后调用两个Pass，分别进行竖直水平方向的滤波结果，我们还将图像进行缩放提高性能，通过调整高斯滤波的次数来控制模糊程度</strong></p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>C#脚本准备好高斯模糊的迭代次数，模糊范围，降采样系数</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228155926040.png" alt="image-20200228155926040"></p>
+<p><strong>1.首先降采样，并且把FilterMode改为Bilinera为了有压缩效果。</strong></p>
+<p><strong>2.通过For循环，进行高斯滤波的次数。</strong></p>
+<h1 id="Bloom"><a href="#Bloom" class="headerlink" title="Bloom"></a>Bloom</h1><p>步骤：先提取图像中较亮的区域，然后进行高斯模糊迭代处理，最后进行颜色的混合。</p>
+<h1 id="运动模糊"><a href="#运动模糊" class="headerlink" title="运动模糊"></a>运动模糊</h1><p><strong>1.累积缓存：来混合多张连续的图像，快速移动产生多张图像后，取平均值最后的运动模糊图像，但是对性能消耗很大。</strong></p>
+<p><strong>2.创建和使用速度缓存：在缓存中存储了各个像素当前的运动速度，然后利用该值决定模糊的方向和大小。</strong></p>
+<h2 id="实现-1"><a href="#实现-1" class="headerlink" title="实现"></a>实现</h2><p><strong>1.定义运动模糊的模糊参数，值越大，运动拖尾效果越明显。</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228202953885.png" alt="image-20200228202953885"></p>
+<p><strong>2.新建一个Rendertexture的变量，用于保存之前叠加的结果</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228203055189.png" alt="image-20200228203055189"></p>
+<p><strong>3.判断这个RenderTexture变量是否和屏幕分辨率一样，不一样就重新创建</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228203209390.png" alt="image-20200228203209390"></p>
+<p><strong>4.利用CGINCLUDE 和 ENDCG来定义一系列代码</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228203931303.png" alt="image-20200228203931303"></p>
+<p><strong>5.分两个Pass，一个输出RGB，一个P输出A值。</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228205152184.png" alt="image-20200228205152184"></p>
+<h1 id="深度纹理"><a href="#深度纹理" class="headerlink" title="深度纹理"></a>深度纹理</h1><p>存储的是高精度值，范围是【0，1】，通常是非线性分布的</p>
+<p><strong>深度值来自于顶点变换后得到的归一化设备坐标NDC，原本范围是【-1，1】的，但是为了存储在纹理里进行了映射</strong></p>
+<p><img src="http://static.zybuluo.com/candycat/u6fma5c4boo56dgjbgczlb2i/projection_matrix.png" alt="projection_matrix.png-150.4kB"></p>
+<p>深度纹理由Unity单独的Pass渲染而得，只会渲染渲染队列小于等于2500得物体，使用RenderType寻找到LightMode为ShadowCaster得Pass并进行切换，从而渲染深度纹理。</p>
+<h2 id="获取深度纹理（未解决）"><a href="#获取深度纹理（未解决）" class="headerlink" title="获取深度纹理（未解决）"></a>获取深度纹理（未解决）</h2><p>深度图里存放了<strong>[0,1]</strong>范围的<strong>非线性分布</strong>的深度值，这些深度值来自<strong>NDC</strong>坐标。</p>
+<p>第一步：在C#中设置Camera.main.depthTextureMode = DepthTextureMode.Depth;</p>
+<p>第二步：在Shader中声明_CameraDepthTexture</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sampler2D _CameraDepthTexture;</span><br></pre></td></tr></table></figure>
+
+<p>第三步：访问深度图</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">//1.如果是后处理，可以直接用uv访问</span><br><span class="line">//vertex</span><br><span class="line">//当有多个RenderTarget时，需要自己处理UV翻转问题</span><br><span class="line">#if UNITY_UV_STARTS_AT_TOP //DirectX之类的</span><br><span class="line">    if(_MainTex_TexelSize.y &lt; 0) //开启了抗锯齿</span><br><span class="line">        o.uv.y = 1 - o.uv.y; //满足上面两个条件时uv会翻转，因此需要转回来</span><br><span class="line">#endif</span><br><span class="line">//fragment</span><br><span class="line">float depth = UNITY_SAMPLE_DEPTH(tex2D(_CameraDepthTexture, i.uv));</span><br><span class="line"> </span><br><span class="line">//2.其他：利用投影纹理采样</span><br><span class="line">//vertex</span><br><span class="line">o.screenPos = ComputeScreenPos(o.vertex);</span><br><span class="line">//fragment</span><br><span class="line">float depth = SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, UNITY_PROJ_COORD(i.screenPos));</span><br><span class="line"></span><br><span class="line">float linear01Depth = Linear01Depth(depth); //转换成[0,1]内的线性变化深度值</span><br><span class="line">float linearEyeDepth = LinearEyeDepth(depth); //转换到摄像机空间</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="Unity的渲染优化技术"><a href="#Unity的渲染优化技术" class="headerlink" title="Unity的渲染优化技术"></a>Unity的渲染优化技术</h1><h2 id="移动平台的特点"><a href="#移动平台的特点" class="headerlink" title="移动平台的特点"></a>移动平台的特点</h2><p>overdraw（一个像素被渲染多次），在移动平台容易造成性能的瓶颈。</p>
+<h2 id="影响性能的因数"><a href="#影响性能的因数" class="headerlink" title="影响性能的因数"></a>影响性能的因数</h2><p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228212120923.png" alt="image-20200228212120923"></p>
+<p><strong>优化</strong></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228212241304.png" alt="image-20200228212241304"></p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228212249068.png" alt="image-20200228212249068"></p>
+<h2 id="动态批处理"><a href="#动态批处理" class="headerlink" title="动态批处理"></a>动态批处理</h2><p>如果场景有一些模型共享了同一个材质并且满足一些条件，Unity会自动把他们进行批处理，从而花费一个DrawCall就渲染所有的模型。<strong>原理：每一帧把可以批处理的模型网格进行合并（每一帧都会重新合并），合并后模型数据传递个GPU，然后同一材质渲染</strong></p>
+<p><strong>限制：能够动态批处理的顶点属性规模要小于900.</strong></p>
+<p><strong>可以接受多光源的Pass会中断批处理</strong></p>
+<p><strong>代码动态改变材质变量后不算同一个材质，会不参与合批。</strong></p>
+<h2 id="静态批处理"><a href="#静态批处理" class="headerlink" title="静态批处理"></a>静态批处理</h2><p>在运行开始阶段，把需要进行静态批处理的模型合并到一个新网格。</p>
+<p><strong>限制：模型就不能移动，需要勾上Static。</strong></p>
+<p><strong>需要占用更多的内存辣存储合并后的几何结构</strong></p>
+<p><strong>处理其他逐像素光的Pass不会被静态批处理</strong></p>
+<h2 id="共享材质"><a href="#共享材质" class="headerlink" title="共享材质"></a>共享材质</h2><p>如果两个材质只有使用的纹理不同，就把纹理合并到一张更大的纹理中，这就是图集(atlas)。</p>
+<p>不同物体上材质上参数微小的变化，就用顶点颜色来存储这些参数。同一个材质，而不是使用了同一种Shader的材质。</p>
+<p><img src="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200228215050080.png" alt="image-20200228215050080"></p>
+<h2 id="优化几何体"><a href="#优化几何体" class="headerlink" title="优化几何体"></a>优化几何体</h2><p>有时候Unity中显示的数目要多于建模软件中的顶点数，是因为<strong>GPU要把一个顶点拆分成两个或更多的顶点。</strong></p>
+<p><strong>主要原因：</strong></p>
+<p><strong>分离纹理坐标</strong></p>
+<p><strong>产生平滑的边界</strong></p>
+<h2 id="模型的LOD技术"><a href="#模型的LOD技术" class="headerlink" title="模型的LOD技术"></a>模型的LOD技术</h2><h2 id="遮挡剔除技术"><a href="#遮挡剔除技术" class="headerlink" title="遮挡剔除技术"></a>遮挡剔除技术</h2><p>遮挡剔除和摄像机的视锥体剔除不一样，视锥体剔除指挥剔除不在摄像机范围内的对象，但不会判断视野中是否有物体被其他物体挡住。</p>
+<h2 id="控制绘制顺序"><a href="#控制绘制顺序" class="headerlink" title="控制绘制顺序"></a>控制绘制顺序</h2><p>在Unity中渲染队列小于2500的物体总是从前往后绘制。而其他的队列（”Transparent“）是从后往前绘制的。</p>
+<h2 id="时刻警惕透明物体"><a href="#时刻警惕透明物体" class="headerlink" title="时刻警惕透明物体"></a>时刻警惕透明物体</h2><p>因为透明物体是从后往前渲染的，所以肯定会overdraw。</p>
+<h2 id="减少实时光照和阴影"><a href="#减少实时光照和阴影" class="headerlink" title="减少实时光照和阴影"></a>减少实时光照和阴影</h2>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-08-23T08:30:41.784Z">2020-08-23</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    几秒 读完 (大约 2 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2020/08/23/x%20Title%20MagicaVoxel/">x Title MagicaVoxel</a>
+            
+        </h1>
+        <div class="content">
+            <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Title: MagicaVoxel</span><br></pre></td></tr></table></figure>
+
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-08-23T08:30:41.783Z">2020-08-23</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    1 分钟 读完 (大约 124 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2020/08/23/ue4%E9%9B%AA/">ue4雪</a>
+            
+        </h1>
+        <div class="content">
+            <h1 id="ue4雪"><a href="#ue4雪" class="headerlink" title="ue4雪"></a>ue4雪</h1><p>主要思路：利用VertexNormal划分雪的区域，然后对于岩石和雪的属性进行Lerp，最重要的还有基于屏幕空间的此表面散射，此表面散射的强度和不透明度有关，当不透明度为0的时候，无散射。</p>
+<p><a href="https://www.bilibili.com/video/av82942893?from=search&amp;seid=15809526983300723419" target="_blank" rel="noopener">https://www.bilibili.com/video/av82942893?from=search&amp;seid=15809526983300723419</a></p>
+<p>交互雪，主要思路：利用SceneCapture绘制RenderTarget，利用SceneDepth和CustomDepth进行脚印的绘制。</p>
+<p><a href="https://zhuanlan.zhihu.com/p/80913086" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/80913086</a></p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-08-23T08:30:41.780Z">2020-08-23</time>
                 
                 <div class="level-item">
                 <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
@@ -305,7 +941,7 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2019/12/13/Unity%E5%AE%9E%E7%8E%B0%E7%B1%B3%E5%93%88%E6%B8%B8%E7%9A%84Mesh%E5%8F%98%E6%8D%A2%E8%BD%AC%E5%9C%BA%E6%95%88%E6%9E%9C/">Unity实现米哈游的Mesh变换转场效果</a>
+                <a class="has-link-black-ter" href="/2020/08/23/Unity%E5%AE%9E%E7%8E%B0%E7%B1%B3%E5%93%88%E6%B8%B8%E7%9A%84Mesh%E5%8F%98%E6%8D%A2%E8%BD%AC%E5%9C%BA%E6%95%88%E6%9E%9C/">Unity实现米哈游的Mesh变换转场效果</a>
             
         </h1>
         <div class="content">
@@ -316,7 +952,7 @@
         <div class="level is-mobile">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/12/13/Unity%E5%AE%9E%E7%8E%B0%E7%B1%B3%E5%93%88%E6%B8%B8%E7%9A%84Mesh%E5%8F%98%E6%8D%A2%E8%BD%AC%E5%9C%BA%E6%95%88%E6%9E%9C/#more">阅读更多</a>
+                <a class="button is-size-7 is-light" href="/2020/08/23/Unity%E5%AE%9E%E7%8E%B0%E7%B1%B3%E5%93%88%E6%B8%B8%E7%9A%84Mesh%E5%8F%98%E6%8D%A2%E8%BD%AC%E5%9C%BA%E6%95%88%E6%9E%9C/#more">阅读更多</a>
                 </div>
             </div>
         </div>
@@ -339,7 +975,56 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-12-13T05:51:32.201Z">2019-12-13</time>
+                <time class="level-item has-text-grey" datetime="2020-08-23T08:30:41.776Z">2020-08-23</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    1 分钟 读完 (大约 135 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2020/08/23/Unity3D%E5%8D%A1%E9%80%9A%E9%A3%8E%E6%A0%BC%E5%9C%B0%E7%BC%96/">Unity3D卡通风格地编</a>
+            
+        </h1>
+        <div class="content">
+            <h1 id="Unity地形工具Terrain"><a href="#Unity地形工具Terrain" class="headerlink" title="Unity地形工具Terrain"></a>Unity地形工具Terrain</h1><p>增加地块工具，可以通过点击来增加地块</p>
+<p><img src="/2020/08/23/Unity3D%E5%8D%A1%E9%80%9A%E9%A3%8E%E6%A0%BC%E5%9C%B0%E7%BC%96/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200404033235963.png" alt="image-20200404033235963"></p>
+<p>地形笔刷工具</p>
+<p><img src="/2020/08/23/Unity3D%E5%8D%A1%E9%80%9A%E9%A3%8E%E6%A0%BC%E5%9C%B0%E7%BC%96/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200404033856364.png" alt="image-20200404033856364"></p>
+<p>设置地形高度</p>
+<p>首先设置总体地形最高高度，然后利用Ctrl + 鼠标左键 来控制想要绘制的地形高度，这样就可以达到高低不一致的效果</p>
+<p><img src="/2020/08/23/Unity3D%E5%8D%A1%E9%80%9A%E9%A3%8E%E6%A0%BC%E5%9C%B0%E7%BC%96/C:%5CUsers%5CAdministrator.WIN-OGAUOR7DBB3%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20200404035627451.png" alt="image-20200404035627451"></p>
+<p>平滑高度</p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-08-23T08:30:41.775Z">2020-08-23</time>
                 
                 <div class="level-item">
                 <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
@@ -358,7 +1043,7 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2019/12/13/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/">Unity Visual Effect Graph初探</a>
+                <a class="has-link-black-ter" href="/2020/08/23/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/">Unity Visual Effect Graph初探</a>
             
         </h1>
         <div class="content">
@@ -369,7 +1054,7 @@
         <div class="level is-mobile">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/12/13/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/#more">阅读更多</a>
+                <a class="button is-size-7 is-light" href="/2020/08/23/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/#more">阅读更多</a>
                 </div>
             </div>
         </div>
@@ -392,7 +1077,7 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-12-13T05:51:31.902Z">2019-12-13</time>
+                <time class="level-item has-text-grey" datetime="2020-08-23T08:30:41.718Z">2020-08-23</time>
                 
                 <div class="level-item">
                 <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
@@ -411,7 +1096,7 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2019/12/13/Unity-VEG%E5%AE%9E%E7%8E%B0%E7%83%9F%E8%8A%B1%E6%95%88%E6%9E%9C/">Unity VEG实现烟花效果</a>
+                <a class="has-link-black-ter" href="/2020/08/23/Unity-VEG%E5%AE%9E%E7%8E%B0%E7%83%9F%E8%8A%B1%E6%95%88%E6%9E%9C/">Unity VEG实现烟花效果</a>
             
         </h1>
         <div class="content">
@@ -422,7 +1107,7 @@
         <div class="level is-mobile">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/12/13/Unity-VEG%E5%AE%9E%E7%8E%B0%E7%83%9F%E8%8A%B1%E6%95%88%E6%9E%9C/#more">阅读更多</a>
+                <a class="button is-size-7 is-light" href="/2020/08/23/Unity-VEG%E5%AE%9E%E7%8E%B0%E7%83%9F%E8%8A%B1%E6%95%88%E6%9E%9C/#more">阅读更多</a>
                 </div>
             </div>
         </div>
@@ -445,17 +1130,17 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-12-13T05:51:31.378Z">2019-12-13</time>
+                <time class="level-item has-text-grey" datetime="2020-08-23T08:30:41.685Z">2020-08-23</time>
                 
                 <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/UE4/">UE4</a>
+                <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
                 </div>
                 
                 
                 <span class="level-item has-text-grey">
                     
                     
-                    3 分钟 读完 (大约 407 个字)
+                    33 分钟 读完 (大约 4938 个字)
                 </span>
                 
                 
@@ -464,21 +1149,118 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2019/12/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/">UE4学习笔记(2)---蓝图接口-标签</a>
+                <a class="has-link-black-ter" href="/2020/08/23/Unity-PBR%E5%AE%9E%E7%8E%B0_%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">Unity PBR实现_学习笔记</a>
             
         </h1>
         <div class="content">
-            <h1 id="蓝图接口"><a href="#蓝图接口" class="headerlink" title="蓝图接口"></a>蓝图接口</h1><p> <strong>蓝图接口（Blueprint Interface）</strong> 是一个或多个函数的集合 - 只有名称，没有实现。可以添加到其他蓝图中。任何添加了该接口的蓝图都保证拥有这些函数。接口的函数 可以在添加它的每个蓝图中提供功能。在本质上，这类似于一般编程中的接口概念， 它允许多个不同类型的对象通过一个公共接口 共享和被访问。简单地说，蓝图接口允许不同的蓝图相互共享和发送数据。 </p>
+            <h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>首先整理需要计算的光源：直接光照，间接光照，自发光，最后的光照效果加起来就行了。</p>
+<p>首先直接光照，就是直接收到光源影响的光照，分为漫反射和和镜面反射。</p>
+<p>间接光照，物体除了受到直接光源的影响，还会受到<strong>周围物体所反射的光和环境光</strong>，也分为间接漫反射和间接镜面反射。1.对于静态物体的间接漫反射，unity会把光照信息烘焙到Lightmap上，也就是光照贴图，也会分为动态光照贴图和静态光照贴图，我们只需采样贴图得到光照信息则可，动态物体则会用光照探针LightProbe。2.对于镜面反射，我们会采用反射探针来描绘物体反射的内容。</p>
+<p>自发光，指物体自己能发光，物体的自发光也会对别的物体产生影响，需要额外写一个Pass。</p>
+<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><p>准备材质属性</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//材质属性</span><br><span class="line">	Properties&#123;</span><br><span class="line">		_Color(&quot;Color&quot;,color)=(1,1,1,1)		//颜色</span><br><span class="line">		_MainTex(&quot;Albedo&quot;,2D)=&quot;white&quot;&#123;&#125;     //反照率，材质表面的颜色</span><br><span class="line">		_MetallicGlossMap(&quot;Metallic&quot;,2D)=&quot;white&quot; &#123;&#125;//金属贴图，r通道存储金属度，a通道存储光滑度</span><br><span class="line">		_BumpMap(&quot;Normal Map&quot;,2D)=&quot;white&quot; &#123;&#125; //法线贴图</span><br><span class="line">		_OcclusionMap(&quot;Occlusion&quot;,2D)=&quot;white&quot; &#123;&#125; //环境光遮挡贴图 AO</span><br><span class="line">		_MetallicStrength(&quot;MetallicStrength&quot;,Range(0,1))=1 //金属强度</span><br><span class="line">		_GlossStrength(&quot;Smoothness&quot;,Range(0,1))=1 //光滑强度</span><br><span class="line">		_BumpScale(&quot;Normal Scale&quot;,Range(0,1))=1 //法线影响大小</span><br><span class="line">		_EmissionColor(&quot;EmissionColor&quot;,color)=(0,0,0) //自发光颜色</span><br><span class="line">		_EmissionMap(&quot;Emission Map&quot;,2D)=&quot;white&quot; &#123;&#125; //自发光贴图</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>顶点函数的输入输出结构体，texcoord1和texcoord2是为了计算动态和静态光照贴图所需要的uv坐标</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">//定义顶点函数的输入和输出函数</span><br><span class="line">			struct a2v</span><br><span class="line">			&#123;</span><br><span class="line">				float4 vertex:POSITION;</span><br><span class="line">				float3 normal:NORMAL;</span><br><span class="line">				float4 tangent:TANGENT;</span><br><span class="line">				float2 texcoord:TEXCOORD0;</span><br><span class="line">				float2 texcoord1:TEXCOORD1;//计算动态光照贴图的uv坐标</span><br><span class="line">				float2 texcoord2:TEXCOORD2;//计算静态光照贴图的uv坐标</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			struct v2f</span><br><span class="line">			&#123;</span><br><span class="line">				float4 pos :SV_POSITION;</span><br><span class="line">				float2 uv:TEXCOORD0;</span><br><span class="line">				half4 ambientOrLightmapUV:TEXCOORD1;//存储环境光或光照贴图的uv坐标</span><br><span class="line">				float4 TtoW0:TEXCOORD2;</span><br><span class="line">				float4 TtoW1:TEXCOORD3;</span><br><span class="line">				float4 TtoW2:TEXCOORD4;//xyz存储从切线空间到世界空间的矩阵，w存储着世界坐标</span><br><span class="line">				SHADOW_COORDS(5)//定义阴影所需要的变量</span><br><span class="line">				UNITY_FOG_COORDS(6);//定义雾效所需要的变量</span><br><span class="line">			&#125;</span><br></pre></td></tr></table></figure>
+
+<p>顶点函数用来准备片元函数所需要的数据，<strong>将顶点坐标从模型空间转换到裁剪空间，算出从切线空间到世界空间的矩阵，方便片元函数得到正确的法线向量，还有计算环境光照或光照贴图的uv坐标</strong>。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">//顶点函数主要计算片元函数需要的数据</span><br><span class="line">			v2f vert(a2v v)</span><br><span class="line">			&#123;</span><br><span class="line">				v2f o;</span><br><span class="line">				UNITY_INITIALIZE_OUTPUT(v2f,o);//初始化结构体数据，定义在HLSLSupport.cginc</span><br><span class="line">				o.pos=UnityObjectToClipPos(v.vertex);//将顶点坐标从模型空间转换到裁剪空间</span><br><span class="line">				o.uv=TRANSFORM_TEX(v.texcoord,_MainTex);//计算偏移后的uv坐标</span><br><span class="line"></span><br><span class="line">				float3 worldPos=mul(Unity_ObjectToWorld,v.vertex);//获取世界空间的顶点坐标</span><br><span class="line">				half3 worldNormal=	UnityObjectToWorldNormal(v.normal);//获取世界空间的法线向量</span><br><span class="line">				half3 worldTangent = UnityObjectToWorldDir(v.tangent);//获取世界空间的切线向量</span><br><span class="line">				half3 worldBinormal=cross(worldNormal,worldTangent)*v.tangent.w;//获取世界空间的副切线向量,*v.tangent.w是为了确定副切线的方向性</span><br><span class="line"></span><br><span class="line">				//计算环境光照或者光照贴图的uv坐标</span><br><span class="line">				o.ambientOrLightmapUV=VertexGI(v.texcoord1,v.texcoord2,worldPos,worldNormal);</span><br><span class="line"></span><br><span class="line">				//前3x3存储着切线空间到世界空间的矩阵，后3x1存储着世界坐标</span><br><span class="line">				//这样做的目的是为了减少存储耗能</span><br><span class="line">				o.TtoW0 = float4(worldTangent.x,worldBinormal.x,worldNormal.x,worldPos.x);</span><br><span class="line">				o.TtoW1 = float4(worldTangent.y,worldBinormal.y,worldNormal.y,worldPos.y);</span><br><span class="line">				o.TtoW2 = float4(worldTangent.z,worldBinormal.z,worldNormal.z,worldPos.z);</span><br><span class="line"></span><br><span class="line">				//填充阴影所选哟的参数</span><br><span class="line">				TRANSFER_SHADOW(o);</span><br><span class="line"></span><br><span class="line">				//填充雾效所需要的参数</span><br><span class="line">				UNITY_TRANSFER_FOG(o,o.pos);</span><br><span class="line"></span><br><span class="line">				return o;</span><br><span class="line">			&#125;</span><br></pre></td></tr></table></figure>
+
+<p>VertexGI函数主要是为了<strong>计算环境光照或光照贴图的uv坐标</strong>。其中UNITY_SHOULD_SAMPLE_SH代码段处理的是从light probe中读取颜色值。一般渲染时静态物体读取lightmap，非静态物体读取light probe。</p>
+<p>Unity内置函数参数解析：</p>
+<p>unity_LightmapST：光照贴图的uv坐标缩放和偏移参数</p>
+<p>unity_4LightPosX0,unity_4LightPosY0,unity_4LightPosZ0   float4  //仅用于Base Pass,前4个非重要的点光源在世界空间中的位置</p>
+<p>unity_DynamicLightmapST：动态光照贴图的uv坐标缩放和偏移参数</p>
+<p>unity_LightColor    half4[4]    //仅用于Base Pass，存储了前4个非重要的点光源的颜色</p>
+<p>unity_4LightAtten()  float4  //仅用于Base Pass， 存储了前4个非重要的点光源的衰减因子</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">//计算环境光照或光照贴图uv坐标</span><br><span class="line">			inline half4 VertexGI(float2 uv1,float2 uv2,float3 worldPos,float3 worldNormal)</span><br><span class="line">			&#123;</span><br><span class="line">				half4 ambientOrLightmapUV = 0;</span><br><span class="line"></span><br><span class="line">				//如果开启光照贴图，计算光照贴图uv坐标</span><br><span class="line">				#ifdef LIGHTMAP_ON</span><br><span class="line">					ambientOrLightmapUV.xy = uv1.xy * unity_LightmapST.xy + unity_LightmapST.zw;</span><br><span class="line">				//仅对动态物体采样光照探头，UNITY_SHOULD_SAMPLE_SH代码段处理的是从light probe中读取颜色值</span><br><span class="line">				#elif UNITY_SHOULD_SAMPLE_SH</span><br><span class="line">					//计算非重要的顶点光照</span><br><span class="line">					#ifdef VERTEXLIGHT_ON</span><br><span class="line">						//计算4个顶点光照</span><br><span class="line">						ambientOrLightmapUV.rgb=Shade4PointLights(unity_4LightPosX0,unity_4LightPosY0,unity_4LightPosZ0,</span><br><span class="line">												unity_LightColor[0],unity_LightColor[1],unity_LightColor[2],unity_LightColor[3],</span><br><span class="line">												unity_4LightAtten0,worldPos,worldNormal);</span><br><span class="line">					#endif</span><br><span class="line">					//计算球谐光照</span><br><span class="line">					ambientOrLightmapUV.rgb += ShaSH9(half4(worldNormal,1));</span><br><span class="line">				#endif</span><br><span class="line"></span><br><span class="line">				//如果开启了动态光照贴图，计算动态光照贴图的uv坐标</span><br><span class="line">				#ifdef DYNAMICLIGHTMAP_ON</span><br><span class="line">					ambientOrLightmapUV.zw = uv2.xy * unity_DynamicLightmapST.xy + unity_DynamicLightmapST.zw;</span><br><span class="line">				#endif</span><br><span class="line"></span><br><span class="line">				return ambientOrLightmapUV;</span><br><span class="line">			&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在片元函数，我们还需要对材质属性进行处理，转换为我们能直接使用的变量。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">half4 frag(v2f i): SV_Target </span><br><span class="line">			&#123;</span><br><span class="line">				//数据准备</span><br><span class="line">				float3 worldPos = float3(i.TtoW0.w,i.TtoW1.w,i.TtoW2.w);//世界坐标</span><br><span class="line">				float3 albedo = tex2D(_MainTex,i.uv).rgb * _Color.rgb;//固有色</span><br><span class="line">				half2 metallicGloss = tex2D(_MetallicGlossMap,i.uv).ra;//对金属粗糙度贴图进行采样</span><br><span class="line">				half metallic=metallicGloss.x * _MetallicStrength;//金属度</span><br><span class="line">				half roughness = 1-metallicGloss.y*_GlossStrength;//粗糙度</span><br><span class="line">				half occlusion = tex2D(_OcclusionMap,i.uv).g;//环境光遮挡AO</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">				//计算世界空间的法线</span><br><span class="line">				half3 normalTangent = UnpackNormal(tex2D(_BumpMap,i.uv));</span><br><span class="line">				normalTangent.xy *=_BumpScale;</span><br><span class="line">				normalTangent.z = sqrt(1-saturate(dot(normalTangent.xy,normalTangent.xy)));</span><br><span class="line">				half3 worldNormal = normalize(half3(dot(i.TtoW0.xyz,normalTangent),</span><br><span class="line">				dot(i.TtoW.xyz,normalTangent),</span><br><span class="line">				dot(i.TtoW2.xyz,normalTangent)));</span><br><span class="line"></span><br><span class="line">				//获取世界空间下的灯光方向，观察方向，反射方向</span><br><span class="line">				half3 lightDir = normalize(UnityWorldSpaceLightDir(worldPos));</span><br><span class="line">				half3 viewDir = normalize(UnityWorldSpaceViewDir(worldPos));</span><br><span class="line">				half3 refDir = reflect(-viewDir,worldNormal);</span><br><span class="line"></span><br><span class="line">				half3 emission = tex2D(_EmissionMap,i.uv) * _EmissionColor;//自发光颜色</span><br><span class="line"></span><br><span class="line">				//计算BRDF需要用到的数据</span><br><span class="line">				half3 halfDir = normalize(lightDir + viewDir);</span><br><span class="line">				half nv = saturate(dot(worldNormal,viewDir));</span><br><span class="line">				half nl = saturate(dot(worldNormal,lightDir));</span><br><span class="line">				half nh = saturate(dot(worldNormal,halfDir));</span><br><span class="line">				half lv = saturate(dot(lightDir,viewDir));</span><br><span class="line">				half lh = saturate(dot(lightDir,halfDir));</span><br><span class="line"></span><br><span class="line">				//计算BRDF中的漫反射率和镜面反射率，符合能量守恒</span><br><span class="line">				//镜面反射颜色</span><br><span class="line">				half3 specColor = lerp(unity_ColorSpaceDielectricSpec.rgb,albedo,metallic);</span><br><span class="line">				//计算漫反射总比率</span><br><span class="line">				half OneMinusReflectivity = (1 - metallic) * unity_ColorSpaceDielectricSpec.a;</span><br><span class="line">				//漫反射颜色</span><br><span class="line">				half3 diffColor = albedo * OneMinusReflectivity;</span><br><span class="line"></span><br><span class="line">				//计算间接光照，包含间接漫反射和间接镜面反射</span><br><span class="line">				half3 indirectDiffuse = ComputeIndirectDiffuse(i.ambientOrLightmapUV,occlusion);</span><br><span class="line">				half3 indirectSpecular = ComputeIndirectSpecular(refDir,worldPos,roughness,occlusion);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">			&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后我们需要计算BRDF中需要的镜面反射率，漫反射率。按照<strong>“Diffuse和Specular互斥”</strong>能量守恒，我们可以进行简单的划分diffuse和specular。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">float3 specilarTint = albedo * _Metallic;//高光反射率</span><br><span class="line">float3 albedo = albedo * (1-_Metallic);</span><br></pre></td></tr></table></figure>
+
+<p>但是这样简单的区分，会出现一些问题，在我们现实生活中，即使是非常光滑的物体也是很难反光的，而如果用了以上简单的区分，光滑的非金属物体将没有高光反射，这个就是需要电介质反射率需要参与计算的地方。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//计算BRDF中的漫反射率和镜面反射率，符合能量守恒</span><br><span class="line">				//镜面镜面反射率</span><br><span class="line">				half3 specColor = lerp(unity_ColorSpaceDielectricSpec.rgb,albedo,metallic);</span><br><span class="line">				//计算漫反射总比率</span><br><span class="line">				half OneMinusReflectivity = (1 - metallic) * unity_ColorSpaceDielectricSpec.a;</span><br><span class="line">				//计算漫反射率</span><br><span class="line">				half3 diffColor = albedo * OneMinusReflectivity;</span><br></pre></td></tr></table></figure>
+
+<p><strong>unity_ColorSpaceDielectricSpec里面存的是Unity选用的电介质反射率,<em>定义了绝缘体的高光颜色和反射率，不完全为0，是一个经验值</em>，alpha通道是1-dielectricSpec</strong>,<strong>实际上是将Matellic的数值remap到[DielectricSpec,1]的范围，则非金属性reamp在[1-dielectricSpec,0].</strong></p>
+<p>接着就计算间接光照，包含间接漫反射和间接镜面反射。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//计算间接光照，包含间接漫反射和间接镜面反射</span><br><span class="line">				half3 indirectDiffuse = ComputeIndirectDiffuse(i.ambientOrLightmapUV,occlusion);</span><br><span class="line">				half3 indirectSpecular = ComputeIndirectSpecular(refDir,worldPos,roughness,occlusion);</span><br></pre></td></tr></table></figure>
+
+<p>计算漫反射的时候，我们需要判断物体是动态物体还是静态，动态物体就是顶点函数之前计算的非重要光源，对于静态物体就直接光照贴图采样即可。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">//计算间接光漫反射</span><br><span class="line">			inline half3 ComputeIndirectDiffuse(half4 ambientOrLightmapUV,half occlusion);</span><br><span class="line">			&#123;</span><br><span class="line">				half3 indirectDiffuse = 0;</span><br><span class="line"></span><br><span class="line">				//如果是动态物体，间接光漫反射为再顶点函数中的非重要光源</span><br><span class="line">				#if UNITY_SHOULD_SAMPLE_SH</span><br><span class="line">					indirectDiffuse = ambientOrLightmapUV.rgb;</span><br><span class="line">				#endif</span><br><span class="line"></span><br><span class="line">				//如果是静态物体，则采样光照贴图或动态贴图</span><br><span class="line">				#ifdef LIGHTMAP_ON</span><br><span class="line">					//对光照贴图进行采样和解码</span><br><span class="line">					indirectDiffuse = DecodeLightmap(UNITY_SAMPLE_TEX2D(unity_Lightmap,ambientOrLightmapUV.xy));</span><br><span class="line">				#endif</span><br><span class="line"></span><br><span class="line">				#ifdef DYNAMICLIGHTMAP_ON</span><br><span class="line">					//对动态光照贴图进行采样和解码</span><br><span class="line">					indirectDiffuse += DecodeRealtimeLightmap(UNITY_SAMPLE_TEX2D(unity_DynamicLightmap,ambientOrLightmapUV.zw));</span><br><span class="line">				#endif</span><br><span class="line"></span><br><span class="line">				//将间接光漫反射乘以环境光遮罩</span><br><span class="line">				return indirectDiffuse * occlusion;</span><br><span class="line">			&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码使用了DecodeLightmap和DecodeRealtimeLightmap解码Unity内置的光照贴图，这是因为Unity烘焙的LightMap是**32BIT的HDR图，在桌面端，光照贴图的编码为RGBM,在移动端，大部分是double-LDR，因此需要针对不同平台进行解码。</p>
+<p>接下来我们要计算的就是<strong>间接镜面反射</strong>，要处理两个反射探头（Reflection Probe），要对反射探头的反射方向进行重新映射和采样。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">//计算间接光镜面反射</span><br><span class="line">			inline half3 ComputeIndirectSpecular(half3 refDir,float3 worldPos,half roughness,half occlusion)</span><br><span class="line">			&#123;</span><br><span class="line">				half3 specular = 0 ;</span><br><span class="line">				//重新映射第一个反射探头的采样方向</span><br><span class="line">				half3 refDir1 = BoxProjectedDirection(refDir,worldPos,unity_SpecCube0_ProbePosition,unity_SpecCube0_BoxMin,unity_SpecCube0_BoxMax);</span><br><span class="line">				//对第一个反射探头进行采样</span><br><span class="line">				half3 ref1 = SamplerReflectProbe(UNITY_PASS_TEXCUBE(unity_SpecCube0),refDir1,roughness,unity_SpecCube0_HDR);</span><br><span class="line">				//如果第一个反射探头的权重小于1，我们将采样第二个反射探头，进行混合</span><br><span class="line">				//下面if语句产生分支，定义再HLSLSupport.cginc</span><br><span class="line">				UNITY_BRANCH</span><br><span class="line">				if(unity_SpecCube0_BoxMin.w &lt; 0.999999)</span><br><span class="line">				&#123;</span><br><span class="line">					//重新映射第二个反射探头的方向</span><br><span class="line">					half3 refDir2 = BoxProjectedDirection(refDir,worldPos,unity_SpecCube1_ProbePosition,unity_SpecCube1_BoxMin,unity_SpecCube1_BoxMax);</span><br><span class="line">					//对第二个反射探头进行采样</span><br><span class="line">					half3 ref2 = SamplerReflectProbe(UNITY_PASS_TEXCUBE_SAMPLER(unity_SpecCube1,unity_SpecCube0),refDir2,roughness,unity_SpecCube1_HDR);</span><br><span class="line"></span><br><span class="line">					//进行混合</span><br><span class="line">					specular =lerp(ref2,ref1,unity_SpecCube0_BoxMin.w);</span><br><span class="line">				&#125;</span><br><span class="line">				else</span><br><span class="line">				&#123;</span><br><span class="line">					specular = ref1;</span><br><span class="line">				&#125;</span><br><span class="line">				return specular * occlusion;</span><br><span class="line">			&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用UNITY_PASS_TEXCUBE_SAMPLER宏将第二个反射探测器针的纹理与我们唯一的采样器相结合。</p>
+<p>这里需要解释的是为什么重新映射反射方向。CubeMap正常来说是不考虑物体与被反射物体的距离的，如果反射的物体距离被反射的物体很远时，反射效果比较好。</p>
+<p><img src="https://img-blog.csdn.net/2018072919581123?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3B1cHBldF9tYXN0ZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img"></p>
+<p>但是当距离比较近的时候，反射会有点奇怪。</p>
+<p><img src="https://img-blog.csdn.net/20180729234256302?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3B1cHBldF9tYXN0ZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img"></p>
+<p>这就需要Box Projection Cube Map的技术，通过重新修正反射采样方向。</p>
+<p>反射时，我们采样Reflection Probe时的向量对应的起点是Reflection Probe的中心点R，方向是在当前像素点计算的视线方向对应法线方向的反射向量PK。</p>
+<p><img src="https://img-blog.csdn.net/20180804182921323?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3B1cHBldF9tYXN0ZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img"></p>
+<p>ABCD是Reflection Probe对应的Cube，P为当前像素点，E为相机位置，N是法线方向，PK是反射方向，如果按照PK方向采样Reflection Probe，得到的就是错误的采样方向RL，所以需要真正的采样方向RK。</p>
+<p><img src="https://img-blog.csdn.net/20180812125844531?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3B1cHBldF9tYXN0ZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="img"></p>
+<p>其实就是求RK向量即可。首先K是Cube包围盒上的点，所以第一步我们要求得包围盒边界得坐标值才能计算出K点，Unity在unity_SpecCube0_BoxMin，unity_SpecCube0_BoxMax这两个内置的shader uniform变量中为我们存储了包围盒的BoundingBox最大最小值。</p>
+<h2 id="如何做向量和Box的碰撞检测？"><a href="#如何做向量和Box的碰撞检测？" class="headerlink" title="如何做向量和Box的碰撞检测？"></a>如何做向量和Box的碰撞检测？</h2><p><img src="https://pic1.zhimg.com/80/v2-8cb2ec590b72059d19193a83a3fc5170_hd.jpg" alt="img"></p>
+<p>从起点A出发，沿着d方向，检测碰撞。根据d的方向，我们只需要考虑MaxX边界以及MaxZ边界的碰撞，产生碰撞点B和D。</p>
+<p>用方程表示，假设沿着单位d方向经过t0距离后，遇到点B。假设沿着单位d方向经过t1距离后，遇到点D。则得A + t0 * d = B      A + t1 * d = D    B.x = Max X      D.z = Max Z。在方程中A，d，Max X   Max  Z都是已知量，所以可以求出t0和t1,很明显我们要得到的碰撞点是B点碰撞，我们需要的碰撞点是t = min(t0, t1)。</p>
+<p>总结：<strong>从起点出发，沿着方向前进，发生碰撞的时候，经过的距离最短的点就是我们要的点。</strong></p>
+<h2 id="如何得知碰撞边界"><a href="#如何得知碰撞边界" class="headerlink" title="如何得知碰撞边界"></a>如何得知碰撞边界</h2><p>通过上面二维空间，可以得知两个潜在的碰撞边界Max X 与Max Z，那么如果方向变为任意方向该如何处理？</p>
+<p>可以考虑各个轴向，比如，当方向的x分量大于0时，即d.x &gt; 0 时，我们关心Max X</p>
+<p>当方向的x分量小于0时，即d.x &lt; 0 时，我们关心Min X。Y轴和Z轴也是如此。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">float3 collisionEdge = (d &gt; 0.0f) ? boxMax : boxMin;</span><br></pre></td></tr></table></figure>
+
+<p>collisionEdge 中存储了三个轴向上我们关心的边界。</p>
+<h2 id="确定了碰撞边界后如何计算碰撞点"><a href="#确定了碰撞边界后如何计算碰撞点" class="headerlink" title="确定了碰撞边界后如何计算碰撞点"></a>确定了碰撞边界后如何计算碰撞点</h2><p>在三位空间中我们有三个碰撞边界，因此有三个潜在的碰撞点。</p>
+<p>可以列出方程</p>
+<p>A.x + d.x * tx = collisionEdge.x</p>
+<p>A.y + d.y * ty = collisionEdge.y</p>
+<p>A.z + d.z * tz = collisionEdge.z</p>
+<p>可以求得三个量tx，ty，tz，分别是三个边界碰撞要经过的距离。根据上面我们得知，最小的t就是我们需要的t,将向量整合后得到</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">float3 t = (collisonEdge - worldPosition) / d;</span><br><span class="line">float collisionDist = min(t.x, min(t.y, t.z));</span><br><span class="line">float3 collisionDir = d * collisionDist;</span><br></pre></td></tr></table></figure>
+
+<h2 id="整合得到"><a href="#整合得到" class="headerlink" title="整合得到"></a>整合得到</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">inline half3 BoxProjectedDirection(half3 worldRefDir,float3 worldPos,float4 cubemapCenter,float4 boxMin,float4 boxMax)</span><br><span class="line">			&#123;</span><br><span class="line">				UNITY_BRANCH</span><br><span class="line">				if(cubemapCenter.w &gt; 0.0)//如果反射探头开启了BoxProjection选项，cubemapCenter.w&gt;0</span><br><span class="line">				&#123;</span><br><span class="line">					half3 rbmax = (boxMax.xyz - worldPos) / worldRefDir;</span><br><span class="line">					half3 rbmin = (boxMin.xyz - worldPos) / worldRefDir;</span><br><span class="line"></span><br><span class="line">					half3 rbminmax = (worldRefDir &gt; 0.0f) ? rbmax :rbmin;</span><br><span class="line"></span><br><span class="line">					half fa = min(min(rbminmax.x,rbminmax,y),rbminmax.z);</span><br><span class="line"></span><br><span class="line">					worldPos -= cubemapCenter.xyz;</span><br><span class="line">					worldRefDir = worldPos + worldRefDir *fa;</span><br><span class="line">				&#125;</span><br><span class="line">				return worldRefDir;</span><br><span class="line">			&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="对反射探头进行采样"><a href="#对反射探头进行采样" class="headerlink" title="对反射探头进行采样"></a>对反射探头进行采样</h2><p>在反射探头中存储的是一组图像，内容逐渐模糊，是因为当我们看到比较粗糙的物体时，反射的内容也是比较模糊的，但是实时模糊是比较昂贵的，所以unity是烘焙成一组图像mipmap，随着不同等级进行采样，级数越高越模糊，6是总级数。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">inline half3 SamplerReflectProbe(UNITY_ARGS_TEXCUBE(tex),half3 refDir,half roughness,half4 hdr)</span><br><span class="line">			&#123;</span><br><span class="line">				roughness = roughness * (1.7 - 0.7 * roughness);</span><br><span class="line">				half mip = roughness * 6;</span><br><span class="line">				//采样</span><br><span class="line">				half4 rgbm = UNITY_SAMPLE_TEXCUBE_LOD(tex,refDir,mip);</span><br><span class="line">				//采样后的结果包含HDR，我们需要把结果转换到RGB </span><br><span class="line">				return DecodeHDR(rgbm,hdr);</span><br><span class="line">			&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为物体的粗糙度和反射图像的清晰度不是线性关系，所以有第一个公式，主要为了节省性能。</p>
+<p>上面我们只是计算了间接光的直接颜色，我们还要将IBL的BRDF计算过程做了预计算，放入了LUT查找图里</p>
+<p><img src="https://pic4.zhimg.com/80/v2-fa94a620458eea780ef0a749c5461d7b_hd.jpg" alt="img"></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vec2 envBRDF          = texture2D(BRDFIntegrationMap, vec2(NdotV, roughness)).xy;</span><br><span class="line">vec3 indirectSpecular = prefilteredColor * (F * envBRDF.x + envBRDF.y)</span><br></pre></td></tr></table></figure>
+
+<p>用NdotV，roughness作为参数就可以直接从图中获得计算结果，并得到处理了视角和高光的最终颜色值。虽然纹理随机采样会导致cache miss，但毕竟节约了大量的计算。</p>
+<p><strong>注意这个LUT是虚幻和OpenGL的实现，实际上Unity用的是另一套东西</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">surfaceReduction * gi.specular * FresnelLerp (specColor, grazingTerm, nv);</span><br></pre></td></tr></table></figure>
+
+<p>注意到Unity用的是一个叫surfaceReduction的系数，以及一个在F0（specColor就是我们的F0）和grazingTerm之间进行插值的菲涅尔系数。纹理采样的开销远大于计算这几个参数的开销，也就是说Unity这个做法通常而言比采样LUT要来的快。当然我也不知道这怎么来的。</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//计算掠射角时反射率</span><br><span class="line">half grazingTerm = saturate((1 - roughness) + (1-oneMinusReflectivity));</span><br><span class="line">//计算间接光镜面反射</span><br><span class="line">indirectSpecular *= ComputeFresnelLerp(specColor,grazingTerm,nv);</span><br><span class="line">//计算间接光漫反射</span><br><span class="line">indirectDiffuse *= diffColor;</span><br><span class="line"></span><br><span class="line">//计算间接光镜面反射菲涅尔项</span><br><span class="line">inline half3 ComputeFresnelLerp(half3 c0,half3 c1,half cosA)</span><br><span class="line">&#123;</span><br><span class="line">	half t = pow(1 - cosA,5);</span><br><span class="line">	return lerp(c0,c1,t);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>间接光终于算完了，就剩下我们的直接光照了，只要把上面的公式往上带就好了。</p>
+<p>首先我们先计算BRDF的镜面反射</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">half V = ComputeSmithJointGGXVisibilityTerm(nl,nv,roughness);//计算BRDF高光反射项，可见性V</span><br><span class="line">half D = ComputeGGXTerm(nh,roughness);//计算BRDF高光反射项,法线分布函数D</span><br><span class="line">half3 F = ComputeFresnelTerm(specColor,lh);//计算BRDF高光反射项，菲涅尔项F</span><br><span class="line"></span><br><span class="line">half3 specularTerm = V * D * F;//计算镜面反射项</span><br></pre></td></tr></table></figure>
+
+<p>V这一项被称为可见性项，是阴影遮掩函数G除以BRDF镜面反射分母(n·l)(n·v)部分，在这里为了方便我们也把系数4也加了进去。我们会在分母的后面加上1e-5f,来防止分母为0</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">//计算Smith-Joint阴影遮掩函数，返回的是除以镜面反射项分母的可见性项V</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">inline</span> half <span class="hljs-title">ComputeSmithJointGGXVisibilityTerm</span><span class="hljs-params">(half nl,half nv,half roughness)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	half ag = roughness * roughness;</span><br><span class="line">	half lambdaV = nl * (nv * (<span class="hljs-number">1</span> - ag) + ag);</span><br><span class="line">	half lambdaL = nv * (nl * (<span class="hljs-number">1</span> - ag) + ag);</span><br><span class="line">	</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-number">0.5f</span>/(lambdaV + lambdaL + <span class="hljs-number">1e-5</span>f);</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-comment">//计算法线分布函数</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">inline</span> half <span class="hljs-title">ComputeGGXTerm</span><span class="hljs-params">(half nh,half roughness)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	half a = roughness * roughness;</span><br><span class="line">	half a2 = a * a;</span><br><span class="line">	half d = (a2 - <span class="hljs-number">1.0f</span>) * nh * nh + <span class="hljs-number">1.0f</span>;</span><br><span class="line">	<span class="hljs-comment">//UNITY_INV_PI定义在UnityCG.cginc  为1/π</span></span><br><span class="line">	<span class="hljs-keyword">return</span> a2 * UNITY_INV_PI / (d * d + <span class="hljs-number">1e-5</span>f);</span><br><span class="line">&#125;</span><br><span class="line"><span class="hljs-comment">//计算菲涅尔</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">inline</span> half3 <span class="hljs-title">ComputeFresnelTerm</span><span class="hljs-params">(half3 F0,half cosA)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">return</span> F0 + (<span class="hljs-number">1</span> - F0) * <span class="hljs-built_in">pow</span>(<span class="hljs-number">1</span> - cosA, <span class="hljs-number">5</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后就是BRDF漫反射部分</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">half3 diffuseTerm = ComputeDisneyDiffuseTerm(nv,nl,lh,roughness,diffColor);<span class="hljs-comment">//计算漫反射项</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">//计算漫反射项</span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">inline</span> half3 <span class="hljs-title">ComputeDisneyDiffuseTerm</span><span class="hljs-params">(half nv,half nl,half lh,half roughness,half3 baseColor)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	half Fd90 = <span class="hljs-number">0.5f</span> + <span class="hljs-number">2</span> * roughness * lh * lh;</span><br><span class="line">	<span class="hljs-keyword">return</span> baseColor * UNITY_INV_PI * (<span class="hljs-number">1</span> + (Fd90 - <span class="hljs-number">1</span>) * <span class="hljs-built_in">pow</span>(<span class="hljs-number">1</span>-nl,<span class="hljs-number">5</span>)) * (<span class="hljs-number">1</span> + (Fd90 - <span class="hljs-number">1</span>) * <span class="hljs-built_in">pow</span>(<span class="hljs-number">1</span>-nv,<span class="hljs-number">5</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>终于全部都计算完毕了，直接加起来就好了。</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">//计算最后的颜色</span></span><br><span class="line">half3 color = UNITY_PI * (diffuseTerm + specularTerm) * _LightColor0.rgb * nl * atten</span><br><span class="line">				+ indirectDiffuse + indirectSpecular + emission;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">//设置雾效,定义在UnityCG.cginc</span></span><br><span class="line">UNITY_APPLY_FOG(i.fogCoord, color.rgb);</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>其实PBR公式那么复杂，可以简单归纳为<img src="https://www.zhihu.com/equation?tex=%E8%BE%93%E5%87%BA%E9%A2%9C%E8%89%B2%3D%28%E6%BC%AB%E5%8F%8D%E5%B0%84%E6%AF%94%E4%BE%8B%5Cfrac%7B%E7%BA%B9%E7%90%86%E9%A2%9C%E8%89%B2%7D%7B%5Cpi%7D%2B+%E9%95%9C%E9%9D%A2%E5%8F%8D%E5%B0%84%E6%AF%94%E4%BE%8B+%5Cfrac%7B%E9%95%9C%E9%9D%A2%E9%AB%98%E5%85%89%5Ctimes+%E5%87%A0%E4%BD%95%E9%81%AE%E8%94%BD%5Ctimes+%E8%8F%B2%E6%B6%85%E5%B0%94%E6%95%88%E5%BA%94%7D%7B4%28viewDir%5Ccdot+normal%29%28lightDir%5Ccdot+normal%29%7D%29%E5%85%89%E6%BA%90%E9%A2%9C%E8%89%B2%28lightDir+%5Ccdot+normal%29+" alt="[公式]"></p>
+<p>然后又分为直接光照，间接光照，自发光，那么什么辐射度，就是为了告诉你这是基于物理的渲染，不用深究，虽然我感觉我就是在囫囵吞枣。终于把这个难啃的骨头啃了，虽然我觉得不久之后我又会忘记哈哈哈。</p>
+
         </div>
         
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/12/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
         
         
     </div>
@@ -491,112 +1273,27 @@
 
 
 
+
     
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-12-13T05:51:31.367Z">2019-12-13</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/UE4/">UE4</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    5 分钟 读完 (大约 817 个字)
-                </span>
-                
-                
-            </div>
+<div class="card card-transparent">
+    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+        <div class="pagination-previous is-invisible is-hidden-mobile">
+            <a class="is-flex-grow has-text-black-ter" href="/page/0/">上一页</a>
         </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+        <div class="pagination-next">
+            <a class="is-flex-grow has-text-black-ter" href="/page/2/">下一页</a>
+        </div>
+        <ul class="pagination-list is-hidden-mobile">
             
-                <a class="has-link-black-ter" href="/2019/12/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(1)%E2%80%94%E2%80%94%E7%AE%80%E5%8D%95%E6%A1%86%E6%9E%B6/">UE4学习笔记(1)——简单框架</a>
+            <li><a class="pagination-link is-current" href="/">1</a></li>
             
-        </h1>
-        <div class="content">
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>纪录自己的UE4学习之路</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/12/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(1)%E2%80%94%E2%80%94%E7%AE%80%E5%8D%95%E6%A1%86%E6%9E%B6/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
+            <li><a class="pagination-link has-text-black-ter" href="/page/2/">2</a></li>
+            
+            <li><a class="pagination-link has-text-black-ter" href="/page/3/">3</a></li>
+            
+        </ul>
+    </nav>
 </div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-10-30T02:00:00.000Z">2019-10-30</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Hexo/">Hexo</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    4 分钟 读完 (大约 543 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/10/30/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">Hexo博客搭建过程(踩坑)</a>
-            
-        </h1>
-        <div class="content">
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​         本文主要用来记录自己Hexo博客搭建过程中遇到的坑。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/10/30/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
 </div>
                 
 
@@ -641,7 +1338,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        9
+                        22
                     </p>
                 </div>
             </div>
@@ -737,7 +1434,7 @@
                 <span class="level-item">UE4</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">4</span>
+                <span class="level-item tag">5</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/Unity/">
@@ -745,7 +1442,7 @@
                 <span class="level-item">Unity</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">3</span>
+                <span class="level-item tag">5</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/%E6%9D%82%E8%AE%B0/">
@@ -766,7 +1463,7 @@
         <h3 class="menu-label">
             标签云
         </h3>
-        <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/UE4/" style="font-size: 20px;">UE4</a> <a href="/tags/Unity/" style="font-size: 15px;">Unity</a> <a href="/tags/%E6%9D%82%E8%AE%B0/" style="font-size: 10px;">杂记</a>
+        <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/UE4/" style="font-size: 20px;">UE4</a> <a href="/tags/Unity/" style="font-size: 20px;">Unity</a> <a href="/tags/%E6%9D%82%E8%AE%B0/" style="font-size: 10px;">杂记</a>
     </div>
 </div>
     
@@ -783,10 +1480,10 @@
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-09T12:57:32.552Z">2020-01-09</time></div>
-                    <a href="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/" class="title has-link-black-ter is-size-6 has-text-weight-normal">UE4材质大师课程笔记(二)---RenderTarget</a>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-23T08:30:41.793Z">2020-08-23</time></div>
+                    <a href="/2020/08/23/%E6%9C%AA%E5%91%BD%E5%90%8D/" class="title has-link-black-ter is-size-6 has-text-weight-normal">未命名</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/UE4/">UE4</a>
+                        
                     </p>
                 </div>
             </div>
@@ -796,10 +1493,10 @@
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-07T08:47:07.643Z">2020-01-07</time></div>
-                    <a href="/2020/01/07/UE4--%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/" class="title has-link-black-ter is-size-6 has-text-weight-normal">UE4--材质大师课程笔记</a>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-23T08:30:41.791Z">2020-08-23</time></div>
+                    <a href="/2020/08/23/%E5%BB%BA%E8%AE%AE%E5%90%8E%E5%A4%84%E7%90%86%E6%8F%8F%E8%BE%B9%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%80%9D%E8%B7%AF%EF%BC%9A%E5%88%A9%E7%94%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B7%B1%E5%BA%A6%E8%BF%9B%E8%A1%8C%E4%B8%8A%E4%B8%8B%E5%B7%A6%E5%8F%B34%E5%83%8F%E7%B4%A0%E6%8F%8F%E8%BE%B9/" class="title has-link-black-ter is-size-6 has-text-weight-normal">建议后处理描边，主要思路：利用自定义深度进行上下左右4像素描边</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/UE4/">UE4</a>
+                        
                     </p>
                 </div>
             </div>
@@ -809,10 +1506,10 @@
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-07T06:58:36.763Z">2020-01-07</time></div>
-                    <a href="/2020/01/07/2019%E5%B9%B4---%E5%B0%8F%E8%AE%B0/" class="title has-link-black-ter is-size-6 has-text-weight-normal">2019年---小记</a>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-23T08:30:41.788Z">2020-08-23</time></div>
+                    <a href="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/" class="title has-link-black-ter is-size-6 has-text-weight-normal">什么是渲染流水线</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a>
+                        
                     </p>
                 </div>
             </div>
@@ -822,10 +1519,10 @@
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-13T05:51:32.222Z">2019-12-13</time></div>
-                    <a href="/2019/12/13/Unity%E5%AE%9E%E7%8E%B0%E7%B1%B3%E5%93%88%E6%B8%B8%E7%9A%84Mesh%E5%8F%98%E6%8D%A2%E8%BD%AC%E5%9C%BA%E6%95%88%E6%9E%9C/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Unity实现米哈游的Mesh变换转场效果</a>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-23T08:30:41.784Z">2020-08-23</time></div>
+                    <a href="/2020/08/23/x%20Title%20MagicaVoxel/" class="title has-link-black-ter is-size-6 has-text-weight-normal">x Title MagicaVoxel</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
+                        
                     </p>
                 </div>
             </div>
@@ -835,10 +1532,10 @@
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-13T05:51:32.201Z">2019-12-13</time></div>
-                    <a href="/2019/12/13/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Unity Visual Effect Graph初探</a>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-23T08:30:41.783Z">2020-08-23</time></div>
+                    <a href="/2020/08/23/ue4%E9%9B%AA/" class="title has-link-black-ter is-size-6 has-text-weight-normal">ue4雪</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
+                        
                     </p>
                 </div>
             </div>
@@ -856,23 +1553,12 @@
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/01/">
+            <a class="level is-marginless" href="/archives/2020/08/">
                 <span class="level-start">
-                    <span class="level-item">一月 2020</span>
+                    <span class="level-item">八月 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">3</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="level is-marginless" href="/archives/2019/12/">
-                <span class="level-start">
-                    <span class="level-item">十二月 2019</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">5</span>
+                    <span class="level-item tag">21</span>
                 </span>
             </a>
         </li>
@@ -911,14 +1597,14 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/UE4/">
                         <span class="tag">UE4</span>
-                        <span class="tag is-grey">4</span>
+                        <span class="tag is-grey">5</span>
                     </a>
                 </div>
                 
                 <div class="control">
                     <a class="tags has-addons" href="/tags/Unity/">
                         <span class="tag">Unity</span>
-                        <span class="tag is-grey">3</span>
+                        <span class="tag is-grey">5</span>
                     </a>
                 </div>
                 
@@ -955,10 +1641,10 @@
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-09T12:57:32.552Z">2020-01-09</time></div>
-                    <a href="/2020/01/09/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/" class="title has-link-black-ter is-size-6 has-text-weight-normal">UE4材质大师课程笔记(二)---RenderTarget</a>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-23T08:30:41.793Z">2020-08-23</time></div>
+                    <a href="/2020/08/23/%E6%9C%AA%E5%91%BD%E5%90%8D/" class="title has-link-black-ter is-size-6 has-text-weight-normal">未命名</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/UE4/">UE4</a>
+                        
                     </p>
                 </div>
             </div>
@@ -968,10 +1654,10 @@
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-07T08:47:07.643Z">2020-01-07</time></div>
-                    <a href="/2020/01/07/UE4--%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/" class="title has-link-black-ter is-size-6 has-text-weight-normal">UE4--材质大师课程笔记</a>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-23T08:30:41.791Z">2020-08-23</time></div>
+                    <a href="/2020/08/23/%E5%BB%BA%E8%AE%AE%E5%90%8E%E5%A4%84%E7%90%86%E6%8F%8F%E8%BE%B9%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%80%9D%E8%B7%AF%EF%BC%9A%E5%88%A9%E7%94%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B7%B1%E5%BA%A6%E8%BF%9B%E8%A1%8C%E4%B8%8A%E4%B8%8B%E5%B7%A6%E5%8F%B34%E5%83%8F%E7%B4%A0%E6%8F%8F%E8%BE%B9/" class="title has-link-black-ter is-size-6 has-text-weight-normal">建议后处理描边，主要思路：利用自定义深度进行上下左右4像素描边</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/UE4/">UE4</a>
+                        
                     </p>
                 </div>
             </div>
@@ -981,10 +1667,10 @@
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-01-07T06:58:36.763Z">2020-01-07</time></div>
-                    <a href="/2020/01/07/2019%E5%B9%B4---%E5%B0%8F%E8%AE%B0/" class="title has-link-black-ter is-size-6 has-text-weight-normal">2019年---小记</a>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-23T08:30:41.788Z">2020-08-23</time></div>
+                    <a href="/2020/08/23/%E4%BB%80%E4%B9%88%E6%98%AF%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF/" class="title has-link-black-ter is-size-6 has-text-weight-normal">什么是渲染流水线</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a>
+                        
                     </p>
                 </div>
             </div>
@@ -994,10 +1680,10 @@
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-13T05:51:32.222Z">2019-12-13</time></div>
-                    <a href="/2019/12/13/Unity%E5%AE%9E%E7%8E%B0%E7%B1%B3%E5%93%88%E6%B8%B8%E7%9A%84Mesh%E5%8F%98%E6%8D%A2%E8%BD%AC%E5%9C%BA%E6%95%88%E6%9E%9C/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Unity实现米哈游的Mesh变换转场效果</a>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-23T08:30:41.784Z">2020-08-23</time></div>
+                    <a href="/2020/08/23/x%20Title%20MagicaVoxel/" class="title has-link-black-ter is-size-6 has-text-weight-normal">x Title MagicaVoxel</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
+                        
                     </p>
                 </div>
             </div>
@@ -1007,10 +1693,10 @@
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-12-13T05:51:32.201Z">2019-12-13</time></div>
-                    <a href="/2019/12/13/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Unity Visual Effect Graph初探</a>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-08-23T08:30:41.783Z">2020-08-23</time></div>
+                    <a href="/2020/08/23/ue4%E9%9B%AA/" class="title has-link-black-ter is-size-6 has-text-weight-normal">ue4雪</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
+                        
                     </p>
                 </div>
             </div>
@@ -1028,23 +1714,12 @@
         <ul class="menu-list">
         
         <li>
-            <a class="level is-marginless" href="/archives/2020/01/">
+            <a class="level is-marginless" href="/archives/2020/08/">
                 <span class="level-start">
-                    <span class="level-item">一月 2020</span>
+                    <span class="level-item">八月 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">3</span>
-                </span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="level is-marginless" href="/archives/2019/12/">
-                <span class="level-start">
-                    <span class="level-item">十二月 2019</span>
-                </span>
-                <span class="level-end">
-                    <span class="level-item tag">5</span>
+                    <span class="level-item tag">21</span>
                 </span>
             </a>
         </li>
@@ -1083,14 +1758,14 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/UE4/">
                         <span class="tag">UE4</span>
-                        <span class="tag is-grey">4</span>
+                        <span class="tag is-grey">5</span>
                     </a>
                 </div>
                 
                 <div class="control">
                     <a class="tags has-addons" href="/tags/Unity/">
                         <span class="tag">Unity</span>
-                        <span class="tag is-grey">3</span>
+                        <span class="tag is-grey">5</span>
                     </a>
                 </div>
                 
