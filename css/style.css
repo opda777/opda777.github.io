@@ -529,3 +529,7 @@ figure.highlight .section {
 .gist .file {
   all: initial;
 }
+.center {
+  text-align: center;
+  margin: 0 auto;
+}
