@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html  lang="zh">
+<html>
+
 <head>
-    <meta charset="utf-8" />
+  
+  <title>Unity实现米哈游的Mesh变换转场效果 - Opda</title>
+  <meta charset="UTF-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
 
-<meta name="generator" content="Hexo 4.0.0" />
-
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-
-<title>Unity实现米哈游的Mesh变换转场效果 - Opda</title>
-
-
-    <meta name="description" content="前言之前看过米哈游大佬制作的桃源恋歌MMD，被其中的Mesh变换转场效果所折服了，所以自己想模仿着实现这个效果，幸好kerjiro技术美术大神开源了这方面的视觉特效项目，感觉自己如果想成为TA还有好长的路要走。。。">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/png" />
+  <meta name="description" content="前言之前看过米哈游大佬制作的桃源恋歌MMD，被其中的Mesh变换转场效果所折服了，所以自己想模仿着实现这个效果，幸好kerjiro技术美术大神开源了这方面的视觉特效项目，感觉自己如果想成为TA还有好长的路要走。。。">
 <meta name="keywords" content="Unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity实现米哈游的Mesh变换转场效果">
@@ -18,156 +19,190 @@
 <meta property="og:site_name" content="Opda">
 <meta property="og:description" content="前言之前看过米哈游大佬制作的桃源恋歌MMD，被其中的Mesh变换转场效果所折服了，所以自己想模仿着实现这个效果，幸好kerjiro技术美术大神开源了这方面的视觉特效项目，感觉自己如果想成为TA还有好长的路要走。。。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com&#x2F;Image&#x2F;Unity-MeshTransform&#x2F;Effect.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com&#x2F;Image&#x2F;Unity-MeshTransform&#x2F;%E5%AE%9E%E7%8E%B0%E6%80%9D%E8%B7%AF.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com&#x2F;Image&#x2F;Unity-MeshTransform&#x2F;LastEffect.gif">
+<meta property="og:image" content="https:&#x2F;&#x2F;opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com&#x2F;Image&#x2F;Unity-MeshTransform&#x2F;Fail.gif">
 <meta property="og:updated_time" content="2020-08-23T09:15:05.224Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http:&#x2F;&#x2F;yoursite.com&#x2F;images&#x2F;og_image.png">
-
-
-
-
-
-
-
-<link rel="icon" href="/images/code.ico">
-
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
-
-
-    
-    
-<style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
-
-    
-    
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
-
-    
-    
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
-
-    
-    
-    
-    
-<link rel="stylesheet" href="/css/back-to-top.css">
-
-    
-    
-    
-    
-    
-    
-    
-    <link rel="stylesheet" href="/css/progressbar.css">
-<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
-    
-    <script async="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-    
-
-
-<link rel="stylesheet" href="/css/style.css">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com&#x2F;Image&#x2F;Unity-MeshTransform&#x2F;Effect.gif">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@0.4.3/dist/css/mdui.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.15.8/styles/atom-one-dark.css">
+   
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1038733_0xvrvpg9c0r.css">
+  <link rel="stylesheet" href="/css/style.css?v=1598868014687">
 </head>
-<body class="is-3-column">
-    <nav class="navbar navbar-main">
-    <div class="container">
-        <div class="navbar-brand is-flex-center">
-            <a class="navbar-item navbar-logo" href="/">
-            
-                <img src="/images/game.svg" alt="Unity实现米哈游的Mesh变换转场效果" height="28">
-            
-            </a>
-        </div>
-        <div class="navbar-menu">
-            
-            <div class="navbar-start">
-                
-                <a class="navbar-item"
-                href="/">主页</a>
-                
-                <a class="navbar-item"
-                href="/archives">文章</a>
-                
-                <a class="navbar-item"
-                href="/categories">归档</a>
-                
-                <a class="navbar-item"
-                href="/tags">标志</a>
-                
-                <a class="navbar-item"
-                href="/about">关于</a>
-                
-            </div>
-            
-            <div class="navbar-end">
-                
-                    
-                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/opda777">
-                        
-                        <i class="fab fa-github"></i>
-                        
-                    </a>
-                    
-                
-                
-                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
-                    <i class="fas fa-list-ul"></i>
-                </a>
-                
-                
-                <a class="navbar-item search" title="搜索" href="javascript:;">
-                    <i class="fas fa-search"></i>
-                </a>
-                
-            </div>
-        </div>
+
+<body class="mdui-drawer-body-left">
+  
+  <div id="nexmoe-background">
+    <div class="nexmoe-bg" style="background-image: url(https://i.loli.net/2019/01/13/5c3aec85a4343.jpg)"></div>
+    <div class="mdui-appbar mdui-shadow-0">
+      <div class="mdui-toolbar">
+        <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">menu</i></a>
+        <div class="mdui-toolbar-spacer"></div>
+        <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+        <a href="/" title="Opda" class="mdui-btn mdui-btn-icon"><img src="/images/avatar.png"></a>
+       </div>
     </div>
-</nav>
-    
-    <section class="section">
-        <div class="container">
-            <div class="columns">
-                <div class="column is-8-tablet is-8-desktop is-9-widescreen has-order-2 column-main">
-<div class="card">
-    
-    <div class="card-content article ">
+  </div>
+  <div id="nexmoe-header">
+      <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="Opda">
+            <img src="/images/avatar.png" alt="Opda">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>11</div>
+        <div><span>标签</span>5</div>
+        <div><span>分类</span>5</div>
+    </div>
+    <ul class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
         
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-11-12T16:00:00.000Z">2019-11-13</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Unity/">Unity</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    21 分钟 读完 (大约 3182 个字)
-                </span>
-                
-                
-                <span class="level-item has-text-grey" id="busuanzi_container_page_pv">
-                    <i class="far fa-eye"></i>
-                    <span id="busuanzi_value_page_pv">0</span>次访问
-                </span>
-                
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
             </div>
-        </div>
+        </a>
         
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                Unity实现米哈游的Mesh变换转场效果
-            
-        </h1>
-        <div class="content">
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前看过米哈游大佬制作的桃源恋歌MMD，被其中的Mesh变换转场效果所折服了，所以自己想模仿着实现这个效果，幸好kerjiro技术美术大神开源了这方面的视觉特效项目，感觉自己如果想成为TA还有好长的路要走。。。</p>
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </ul>
+    <aside id="nexmoe-sidebar">
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">社交按钮</h3>
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/20238211" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/nexmoe/" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(25, 23, 23);background-color: rgba(25, 23, 23, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">文章分类</h3>
+    <div class="nexmoe-widget">
+
+      <ul class="category-list">
+
+        
+
+
+        
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Hexo/">Hexo</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Maya/">Maya</a>
+          <span class="category-list-count">2</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/UE4/">UE4</a>
+          <span class="category-list-count">4</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/Unity/">Unity</a>
+          <span class="category-list-count">3</span>
+        </li>
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/杂记/">杂记</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+      </ul>
+
+    </div>
+  </div>
+
+
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">标签云</h3>
+    <div id="randomtagcloud" class="nexmoe-widget tagcloud">
+      <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Maya/" style="font-size: 13.33px;">Maya</a> <a href="/tags/UE4/" style="font-size: 20px;">UE4</a> <a href="/tags/Unity/" style="font-size: 16.67px;">Unity</a> <a href="/tags/%E6%9D%82%E8%AE%B0/" style="font-size: 10px;">杂记</a>
+    </div>
+    
+  </div>
+
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">文章归档</h3>
+    <div class="nexmoe-widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2020 Opda
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://nexmoe.com/hexo-theme-nexmoe.html" target="_blank">Nexmoe</a>
+    </div>
+</div><!-- .nexmoe-drawer -->
+  </div>
+  <div id="nexmoe-content">
+    <div class="nexmoe-primary">
+        <div class="nexmoe-post">
+    <div class="nexmoe-post-cover"> 
+        
+            <img src="https://i.loli.net/2019/01/13/5c3aec85a4343.jpg">
+        
+        <h1>Unity实现米哈游的Mesh变换转场效果</h1>
+    </div>
+  <div class="nexmoe-post-meta">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2019年11月13日</a>
+    <a><i class="nexmoefont icon-areachart"></i>3.4k 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 17 分钟</a>
+    
+      <a class="nexmoefont icon-appstore-fill -link" href="/categories/Unity/">Unity</a>
+    
+    
+      <a class="nexmoefont icon-tag-fill -link" href="/tags/Unity/" rel="tag">Unity</a>
+    
+  </div>
+  <article>
+    <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前看过米哈游大佬制作的桃源恋歌MMD，被其中的Mesh变换转场效果所折服了，所以自己想模仿着实现这个效果，幸好kerjiro技术美术大神开源了这方面的视觉特效项目，感觉自己如果想成为TA还有好长的路要走。。。</p>
  <a id="more"></a> 
 
 <h2 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h2><p>首先让我们来看一下最终效果</p>
@@ -177,464 +212,98 @@
 <h2 id="几何着色器"><a href="#几何着色器" class="headerlink" title="几何着色器"></a>几何着色器</h2><p>相信大家接触的最多的应该是顶点着色器和像素着色器，那么什么是几何着色器呢？</p>
 <h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>在顶点和片段着色器之间有一个可选的着色器，叫做几何着色器(Geometry Shader)。几何着色器以一个或多个表示为一个单独基本图形（primitive）即图元的顶点作为输入，比如可以是一个点或者三角形。几何着色器在将这些顶点发送到下一个着色阶段之前，可以将这些顶点转变为它认为合适的内容。<strong>几何着色器有意思的地方在于它可以把（一个或多个）顶点转变为完全不同的基本图形（primitive），从而生成比原来多得多的顶点。</strong> </p>
 <h3 id="使用几何着色器进行图元转换"><a href="#使用几何着色器进行图元转换" class="headerlink" title="使用几何着色器进行图元转换"></a>使用几何着色器进行图元转换</h3><p>声明着色器</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#pragma geometry geom</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#pragma geometry geom</span><br></pre></td></tr></table></figure>
 
 <p>设置输出顶点数量，其中N为几何着色器为单个调用输出的顶点最大数量，几何着色器每次输出的顶点数量是可变的，但是不能超过定义的最大值， 出于性能考虑，最大顶点数应尽可能小; 当GS输出在1到20个标量之间时，可以实现GS的性能峰值，如果GS输出在27-40个标量之间，则性能下降50％。每次调用的标量输出数是最大顶点输出数和输出顶点类型结构中的标量数的乘积。 </p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[maxvertexcount(N)]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[maxvertexcount(N)]</span><br></pre></td></tr></table></figure>
 
 <p>声明输入和输出的Struct</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">//传递给几何着色器的数据</span><br><span class="line">struct v2g</span><br><span class="line">&#123;</span><br><span class="line">	float4 vertex:POSITION;</span><br><span class="line">	float3 normal:TEXCOORD0;</span><br><span class="line">	//float2 uv:TEXCOORD1;</span><br><span class="line">	</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">//传递给像素着色器的数据</span><br><span class="line">struct g2f</span><br><span class="line">&#123;</span><br><span class="line">	float4 pos : SV_POSITION;</span><br><span class="line">	float3 normal:TEXCOORD0;</span><br><span class="line">	//float2 uv : TEXCOORD1;</span><br><span class="line">	float4 color:COLOR;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">//传递给几何着色器的数据</span><br><span class="line">struct v2g</span><br><span class="line">&#123;</span><br><span class="line">	float4 vertex:POSITION;</span><br><span class="line">	float3 normal:TEXCOORD0;</span><br><span class="line">	//float2 uv:TEXCOORD1;</span><br><span class="line">	</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">//传递给像素着色器的数据</span><br><span class="line">struct g2f</span><br><span class="line">&#123;</span><br><span class="line">	float4 pos : SV_POSITION;</span><br><span class="line">	float3 normal:TEXCOORD0;</span><br><span class="line">	//float2 uv : TEXCOORD1;</span><br><span class="line">	float4 color:COLOR;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <p>设置几何着色器输入参数和输出参数，</p>
 <p>其中“triangle”为输入的图元类型， 输入参数一定为顶点数组 。</p>
-<figure class="highlight ruby hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">输入图元类型 <span class="hljs-params">| 所需顶点数  </span></span><br><span class="line"><span class="hljs-params">-|</span>-</span><br><span class="line">point <span class="hljs-params">| 输入1个点的1个顶点</span></span><br><span class="line"><span class="hljs-params">line |</span> 输入<span class="hljs-number">1</span>条直线的<span class="hljs-number">2</span>个顶点 </span><br><span class="line">lineadj <span class="hljs-params">| 输入1条具有邻接(lists或strips)的线段的4个顶点 </span></span><br><span class="line"><span class="hljs-params">triangle |</span> 输入<span class="hljs-number">1</span>个三角形的<span class="hljs-number">3</span>个顶点</span><br><span class="line">triangleadj <span class="hljs-params">| 输入1个具有邻接(lists或strips)的三角形的6个顶点</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">输入图元类型 <span class="params">| 所需顶点数  </span></span><br><span class="line"><span class="params">-|</span>-</span><br><span class="line">point <span class="params">| 输入1个点的1个顶点</span></span><br><span class="line"><span class="params">line |</span> 输入<span class="number">1</span>条直线的<span class="number">2</span>个顶点 </span><br><span class="line">lineadj <span class="params">| 输入1条具有邻接(lists或strips)的线段的4个顶点 </span></span><br><span class="line"><span class="params">triangle |</span> 输入<span class="number">1</span>个三角形的<span class="number">3</span>个顶点</span><br><span class="line">triangleadj <span class="params">| 输入1个具有邻接(lists或strips)的三角形的6个顶点</span></span><br></pre></td></tr></table></figure>
 
 <p>TriangleStream为流类型(stream type)对象，还有 LineStream 和 PointStream ,存储着由几何着色器输出的几何体顶点列表。内置Append用于向输出流添加顶点序列， 若想扩展输入的图元，也可以用内置Append向输出流添加多出来的顶点。 </p>
 <p>当指定uint primID:SV_PrimitiveID时，输入汇编阶段会为每个图元自动生成一个图元ID。当调用draw方法绘制n个图元时，ID号为0到n-1，这里用到的原因是为了随机Cube化。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">void geom(triangle v2g input[3], uint pid : SV_PrimitiveID, inout TriangleStream&lt;g2f&gt; outStream)</span><br><span class="line">&#123;</span><br><span class="line">	//shader body</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">void geom(triangle v2g input[3], uint pid : SV_PrimitiveID, inout TriangleStream&lt;g2f&gt; outStream)</span><br><span class="line">&#123;</span><br><span class="line">	//shader body</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>将输出顶点传送至输出stream上</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OutputStream.Append(o);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OutputStream.Append(o);</span><br></pre></td></tr></table></figure>
 
 
 
 <h2 id="开始动手"><a href="#开始动手" class="headerlink" title="开始动手"></a>开始动手</h2><h3 id="CPU传递数据给Shader"><a href="#CPU传递数据给Shader" class="headerlink" title="CPU传递数据给Shader"></a>CPU传递数据给Shader</h3><p>首先我们需要新建一个脚本用于传递数据给Shader，以下就是K神的传递脚本，我已经写好注释。挂在一个空物体上面即可。</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br></pre></td><td class="code"><pre><span class="line">using System.Collections;</span><br><span class="line">using System.Collections.Generic;</span><br><span class="line">using UnityEngine;</span><br><span class="line"></span><br><span class="line">//在编辑器模式下也可运行</span><br><span class="line">[ExecuteInEditMode]</span><br><span class="line">public class Voxelizer : MonoBehaviour</span><br><span class="line">&#123;</span><br><span class="line">    //SerializeField用于面板上显示非Public的参数</span><br><span class="line">    //Range(0,1)控制可滑选的范围</span><br><span class="line"></span><br><span class="line">    //控制生成方块的密度</span><br><span class="line">    [SerializeField, Range(0, 1)] float _density = 0.05f;</span><br><span class="line">    //控制生成方块的大小</span><br><span class="line">    [SerializeField, Range(0, 10)] float _scale = 3;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //动画参数</span><br><span class="line">    //用于控制方块变形后的长度</span><br><span class="line">    [SerializeField, Range(0, 20)] float _stretch = 5;</span><br><span class="line">    //用于控制方块变形后上升的最大距离</span><br><span class="line">    [SerializeField, Range(0, 1000)] float _fallDistance = 1;</span><br><span class="line">    //用于控制方块变形后的随机移动范围</span><br><span class="line">    [SerializeField, Range(0, 10)] float _fluctuation = 1;</span><br><span class="line"></span><br><span class="line">    //颜色参数</span><br><span class="line">    [SerializeField, ColorUsage(false, true)] Color _emissionColor1 = Color.black;</span><br><span class="line">    [SerializeField, ColorUsage(false, true)] Color _emissionColor2 = Color.black;</span><br><span class="line">    [SerializeField, ColorUsage(false, true)] Color _transitionColor = Color.white;</span><br><span class="line">    [SerializeField, ColorUsage(false, true)] Color _lineColor = Color.white;</span><br><span class="line"></span><br><span class="line">    //用于Mesh变换物体的Renderer</span><br><span class="line">    [SerializeField] Renderer[] _renderers = null;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //效果平面的位置与距离</span><br><span class="line">    Vector4 EffectorPlane</span><br><span class="line">    &#123;</span><br><span class="line">        get</span><br><span class="line">        &#123;</span><br><span class="line">            //获取向前的方向</span><br><span class="line">            var fwd = transform.forward / transform.localScale.z;</span><br><span class="line">            //获取向前方向上的移动距离</span><br><span class="line">            var dist = Vector3.Dot(fwd, transform.position);</span><br><span class="line">            return new Vector4(fwd.x, fwd.y, fwd.z, dist);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //将RGB颜色模型转为HSV颜色模型</span><br><span class="line">    Vector4  ColorToHsvm(Color color)</span><br><span class="line">    &#123;</span><br><span class="line">        //获取颜色的分量最大值</span><br><span class="line">        var max = color.maxColorComponent;</span><br><span class="line">        float h, s, v;</span><br><span class="line">        Color.RGBToHSV(color / max, out h, out s, out v);</span><br><span class="line">        return new Vector4(h, s, v, max);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //获取着色器属性的唯一标识符</span><br><span class="line">    //优点：使用属性标识符比将字符串传递给所有材料属性函数更有效。</span><br><span class="line">    //例如，如果您经常调用Material.SetColor或使用MaterialPropertyBlock，</span><br><span class="line">    //则最好只获取一次所需属性的标识符。</span><br><span class="line"></span><br><span class="line">    static class ShaderIDs</span><br><span class="line">    &#123;</span><br><span class="line">        public static readonly int VoxelParams = Shader.PropertyToID(&quot;_VoxelParams&quot;);</span><br><span class="line">        public static readonly int AnimParams = Shader.PropertyToID(&quot;_AnimParams&quot;);</span><br><span class="line">        public static readonly int EmissionHsvm1 = Shader.PropertyToID(&quot;_EmissionHsvm1&quot;);</span><br><span class="line">        public static readonly int EmissionHsvm2 = Shader.PropertyToID(&quot;_EmissionHsvm2&quot;);</span><br><span class="line">        public static readonly int TransitionColor = Shader.PropertyToID(&quot;_TransitionColor&quot;);</span><br><span class="line">        public static readonly int LineColor = Shader.PropertyToID(&quot;_LineColor&quot;);</span><br><span class="line">        public static readonly int EffectorPlane = Shader.PropertyToID(&quot;_EffectorPlane&quot;);</span><br><span class="line">        public static readonly int PrevEffectorPlane = Shader.PropertyToID(&quot;_PrevEffectorPlane&quot;);</span><br><span class="line">        public static readonly int LocalTime = Shader.PropertyToID(&quot;_LocalTime&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //在要使用相同材质但属性稍有不同的多个对象绘制的情况下使用MaterialPropertyBlock。</span><br><span class="line">    MaterialPropertyBlock _sheet;</span><br><span class="line">    Vector4 _prevEffectorPlane = Vector3.one * 1e+5f;</span><br><span class="line"></span><br><span class="line">    private void LateUpdate()</span><br><span class="line">    &#123;</span><br><span class="line">        //查看渲染列表是否为空</span><br><span class="line">        if (_renderers == null || _renderers.Length == 0) return;</span><br><span class="line">        //创建新的MaterialPropertyBlock</span><br><span class="line">        if (_sheet == null) _sheet = new MaterialPropertyBlock();</span><br><span class="line"></span><br><span class="line">        var plane = EffectorPlane;</span><br><span class="line">        // Filter out large deltas.</span><br><span class="line">        //过滤掉大的三角面片</span><br><span class="line">        if ((_prevEffectorPlane - plane).magnitude &gt; 100) _prevEffectorPlane = plane;</span><br><span class="line"></span><br><span class="line">        //存储参数</span><br><span class="line">        var vparams = new Vector2(_density, _scale);</span><br><span class="line">        var aparams = new Vector3(_stretch, _fallDistance, _fluctuation);</span><br><span class="line">        var emission1 = ColorToHsvm(_emissionColor1);</span><br><span class="line">        var emission2 = ColorToHsvm(_emissionColor2);</span><br><span class="line"></span><br><span class="line">        //将参数传递给shader</span><br><span class="line">        foreach (var renderer in _renderers)</span><br><span class="line">        &#123;</span><br><span class="line">            if (renderer == null) continue;</span><br><span class="line">            renderer.GetPropertyBlock(_sheet);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.VoxelParams, vparams);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.AnimParams, aparams);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.EmissionHsvm1, emission1);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.EmissionHsvm2, emission2);</span><br><span class="line">            _sheet.SetColor(ShaderIDs.TransitionColor, _transitionColor);</span><br><span class="line">            _sheet.SetColor(ShaderIDs.LineColor, _lineColor);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.EffectorPlane, plane);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.PrevEffectorPlane, _prevEffectorPlane);</span><br><span class="line">            //_sheet.SetFloat(ShaderIDs.LocalTime, time);</span><br><span class="line">            renderer.SetPropertyBlock(_sheet);</span><br><span class="line">            print(plane);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //进行gizmo编辑器的实现,用于可视化Debug</span><br><span class="line">    Mesh _gridMesh;</span><br><span class="line"></span><br><span class="line">    void OnDestroy()</span><br><span class="line">    &#123;</span><br><span class="line">        if (_gridMesh != null)</span><br><span class="line">        &#123;</span><br><span class="line">            if (Application.isPlaying)</span><br><span class="line">                Destroy(_gridMesh);</span><br><span class="line">            else</span><br><span class="line">                DestroyImmediate(_gridMesh);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    void OnDrawGizmos()</span><br><span class="line">    &#123;</span><br><span class="line">        if (_gridMesh == null) InitGridMesh();</span><br><span class="line"></span><br><span class="line">        //矩阵用于控制Gizmos跟随物体的移动而移动</span><br><span class="line">        Gizmos.matrix = transform.localToWorldMatrix;</span><br><span class="line"></span><br><span class="line">        Gizmos.color = new Color(1, 1, 0, 0.5f);</span><br><span class="line">        Gizmos.DrawWireMesh(_gridMesh, Vector3.zero);</span><br><span class="line">        Gizmos.DrawWireMesh(_gridMesh, Vector3.forward);</span><br><span class="line"></span><br><span class="line">        Gizmos.color = new Color(1, 0, 0, 0.5f);</span><br><span class="line">        Gizmos.DrawWireCube(Vector3.forward / 2, new Vector3(0.02f, 0.02f, 1));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    void InitGridMesh()</span><br><span class="line">    &#123;</span><br><span class="line">        const float ext = 0.5f;</span><br><span class="line">        const int columns = 10;</span><br><span class="line"></span><br><span class="line">        var vertices = new List&lt;Vector3&gt;();</span><br><span class="line">        var indices = new List&lt;int&gt;();</span><br><span class="line"></span><br><span class="line">        for (var i = 0; i &lt; columns + 1; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            var x = ext * (2.0f * i / columns - 1);</span><br><span class="line"></span><br><span class="line">            indices.Add(vertices.Count);</span><br><span class="line">            vertices.Add(new Vector3(x, -ext, 0));</span><br><span class="line"></span><br><span class="line">            indices.Add(vertices.Count);</span><br><span class="line">            vertices.Add(new Vector3(x, +ext, 0));</span><br><span class="line"></span><br><span class="line">            indices.Add(vertices.Count);</span><br><span class="line">            vertices.Add(new Vector3(-ext, x, 0));</span><br><span class="line"></span><br><span class="line">            indices.Add(vertices.Count);</span><br><span class="line">            vertices.Add(new Vector3(+ext, x, 0));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        _gridMesh = new Mesh &#123; hideFlags = HideFlags.DontSave &#125;;</span><br><span class="line">        _gridMesh.SetVertices(vertices);</span><br><span class="line">        _gridMesh.SetNormals(vertices);</span><br><span class="line">        _gridMesh.SetIndices(indices.ToArray(), MeshTopology.Lines, 0);</span><br><span class="line">        _gridMesh.UploadMeshData(true);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br></pre></td><td class="code"><pre><span class="line">using System.Collections;</span><br><span class="line">using System.Collections.Generic;</span><br><span class="line">using UnityEngine;</span><br><span class="line"></span><br><span class="line">//在编辑器模式下也可运行</span><br><span class="line">[ExecuteInEditMode]</span><br><span class="line">public class Voxelizer : MonoBehaviour</span><br><span class="line">&#123;</span><br><span class="line">    //SerializeField用于面板上显示非Public的参数</span><br><span class="line">    //Range(0,1)控制可滑选的范围</span><br><span class="line"></span><br><span class="line">    //控制生成方块的密度</span><br><span class="line">    [SerializeField, Range(0, 1)] float _density = 0.05f;</span><br><span class="line">    //控制生成方块的大小</span><br><span class="line">    [SerializeField, Range(0, 10)] float _scale = 3;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //动画参数</span><br><span class="line">    //用于控制方块变形后的长度</span><br><span class="line">    [SerializeField, Range(0, 20)] float _stretch = 5;</span><br><span class="line">    //用于控制方块变形后上升的最大距离</span><br><span class="line">    [SerializeField, Range(0, 1000)] float _fallDistance = 1;</span><br><span class="line">    //用于控制方块变形后的随机移动范围</span><br><span class="line">    [SerializeField, Range(0, 10)] float _fluctuation = 1;</span><br><span class="line"></span><br><span class="line">    //颜色参数</span><br><span class="line">    [SerializeField, ColorUsage(false, true)] Color _emissionColor1 = Color.black;</span><br><span class="line">    [SerializeField, ColorUsage(false, true)] Color _emissionColor2 = Color.black;</span><br><span class="line">    [SerializeField, ColorUsage(false, true)] Color _transitionColor = Color.white;</span><br><span class="line">    [SerializeField, ColorUsage(false, true)] Color _lineColor = Color.white;</span><br><span class="line"></span><br><span class="line">    //用于Mesh变换物体的Renderer</span><br><span class="line">    [SerializeField] Renderer[] _renderers = null;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //效果平面的位置与距离</span><br><span class="line">    Vector4 EffectorPlane</span><br><span class="line">    &#123;</span><br><span class="line">        get</span><br><span class="line">        &#123;</span><br><span class="line">            //获取向前的方向</span><br><span class="line">            var fwd = transform.forward / transform.localScale.z;</span><br><span class="line">            //获取向前方向上的移动距离</span><br><span class="line">            var dist = Vector3.Dot(fwd, transform.position);</span><br><span class="line">            return new Vector4(fwd.x, fwd.y, fwd.z, dist);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //将RGB颜色模型转为HSV颜色模型</span><br><span class="line">    Vector4  ColorToHsvm(Color color)</span><br><span class="line">    &#123;</span><br><span class="line">        //获取颜色的分量最大值</span><br><span class="line">        var max = color.maxColorComponent;</span><br><span class="line">        float h, s, v;</span><br><span class="line">        Color.RGBToHSV(color / max, out h, out s, out v);</span><br><span class="line">        return new Vector4(h, s, v, max);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //获取着色器属性的唯一标识符</span><br><span class="line">    //优点：使用属性标识符比将字符串传递给所有材料属性函数更有效。</span><br><span class="line">    //例如，如果您经常调用Material.SetColor或使用MaterialPropertyBlock，</span><br><span class="line">    //则最好只获取一次所需属性的标识符。</span><br><span class="line"></span><br><span class="line">    static class ShaderIDs</span><br><span class="line">    &#123;</span><br><span class="line">        public static readonly int VoxelParams = Shader.PropertyToID(&quot;_VoxelParams&quot;);</span><br><span class="line">        public static readonly int AnimParams = Shader.PropertyToID(&quot;_AnimParams&quot;);</span><br><span class="line">        public static readonly int EmissionHsvm1 = Shader.PropertyToID(&quot;_EmissionHsvm1&quot;);</span><br><span class="line">        public static readonly int EmissionHsvm2 = Shader.PropertyToID(&quot;_EmissionHsvm2&quot;);</span><br><span class="line">        public static readonly int TransitionColor = Shader.PropertyToID(&quot;_TransitionColor&quot;);</span><br><span class="line">        public static readonly int LineColor = Shader.PropertyToID(&quot;_LineColor&quot;);</span><br><span class="line">        public static readonly int EffectorPlane = Shader.PropertyToID(&quot;_EffectorPlane&quot;);</span><br><span class="line">        public static readonly int PrevEffectorPlane = Shader.PropertyToID(&quot;_PrevEffectorPlane&quot;);</span><br><span class="line">        public static readonly int LocalTime = Shader.PropertyToID(&quot;_LocalTime&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //在要使用相同材质但属性稍有不同的多个对象绘制的情况下使用MaterialPropertyBlock。</span><br><span class="line">    MaterialPropertyBlock _sheet;</span><br><span class="line">    Vector4 _prevEffectorPlane = Vector3.one * 1e+5f;</span><br><span class="line"></span><br><span class="line">    private void LateUpdate()</span><br><span class="line">    &#123;</span><br><span class="line">        //查看渲染列表是否为空</span><br><span class="line">        if (_renderers == null || _renderers.Length == 0) return;</span><br><span class="line">        //创建新的MaterialPropertyBlock</span><br><span class="line">        if (_sheet == null) _sheet = new MaterialPropertyBlock();</span><br><span class="line"></span><br><span class="line">        var plane = EffectorPlane;</span><br><span class="line">        // Filter out large deltas.</span><br><span class="line">        //过滤掉大的三角面片</span><br><span class="line">        if ((_prevEffectorPlane - plane).magnitude &gt; 100) _prevEffectorPlane = plane;</span><br><span class="line"></span><br><span class="line">        //存储参数</span><br><span class="line">        var vparams = new Vector2(_density, _scale);</span><br><span class="line">        var aparams = new Vector3(_stretch, _fallDistance, _fluctuation);</span><br><span class="line">        var emission1 = ColorToHsvm(_emissionColor1);</span><br><span class="line">        var emission2 = ColorToHsvm(_emissionColor2);</span><br><span class="line"></span><br><span class="line">        //将参数传递给shader</span><br><span class="line">        foreach (var renderer in _renderers)</span><br><span class="line">        &#123;</span><br><span class="line">            if (renderer == null) continue;</span><br><span class="line">            renderer.GetPropertyBlock(_sheet);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.VoxelParams, vparams);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.AnimParams, aparams);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.EmissionHsvm1, emission1);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.EmissionHsvm2, emission2);</span><br><span class="line">            _sheet.SetColor(ShaderIDs.TransitionColor, _transitionColor);</span><br><span class="line">            _sheet.SetColor(ShaderIDs.LineColor, _lineColor);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.EffectorPlane, plane);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.PrevEffectorPlane, _prevEffectorPlane);</span><br><span class="line">            //_sheet.SetFloat(ShaderIDs.LocalTime, time);</span><br><span class="line">            renderer.SetPropertyBlock(_sheet);</span><br><span class="line">            print(plane);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //进行gizmo编辑器的实现,用于可视化Debug</span><br><span class="line">    Mesh _gridMesh;</span><br><span class="line"></span><br><span class="line">    void OnDestroy()</span><br><span class="line">    &#123;</span><br><span class="line">        if (_gridMesh != null)</span><br><span class="line">        &#123;</span><br><span class="line">            if (Application.isPlaying)</span><br><span class="line">                Destroy(_gridMesh);</span><br><span class="line">            else</span><br><span class="line">                DestroyImmediate(_gridMesh);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    void OnDrawGizmos()</span><br><span class="line">    &#123;</span><br><span class="line">        if (_gridMesh == null) InitGridMesh();</span><br><span class="line"></span><br><span class="line">        //矩阵用于控制Gizmos跟随物体的移动而移动</span><br><span class="line">        Gizmos.matrix = transform.localToWorldMatrix;</span><br><span class="line"></span><br><span class="line">        Gizmos.color = new Color(1, 1, 0, 0.5f);</span><br><span class="line">        Gizmos.DrawWireMesh(_gridMesh, Vector3.zero);</span><br><span class="line">        Gizmos.DrawWireMesh(_gridMesh, Vector3.forward);</span><br><span class="line"></span><br><span class="line">        Gizmos.color = new Color(1, 0, 0, 0.5f);</span><br><span class="line">        Gizmos.DrawWireCube(Vector3.forward / 2, new Vector3(0.02f, 0.02f, 1));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    void InitGridMesh()</span><br><span class="line">    &#123;</span><br><span class="line">        const float ext = 0.5f;</span><br><span class="line">        const int columns = 10;</span><br><span class="line"></span><br><span class="line">        var vertices = new List&lt;Vector3&gt;();</span><br><span class="line">        var indices = new List&lt;int&gt;();</span><br><span class="line"></span><br><span class="line">        for (var i = 0; i &lt; columns + 1; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            var x = ext * (2.0f * i / columns - 1);</span><br><span class="line"></span><br><span class="line">            indices.Add(vertices.Count);</span><br><span class="line">            vertices.Add(new Vector3(x, -ext, 0));</span><br><span class="line"></span><br><span class="line">            indices.Add(vertices.Count);</span><br><span class="line">            vertices.Add(new Vector3(x, +ext, 0));</span><br><span class="line"></span><br><span class="line">            indices.Add(vertices.Count);</span><br><span class="line">            vertices.Add(new Vector3(-ext, x, 0));</span><br><span class="line"></span><br><span class="line">            indices.Add(vertices.Count);</span><br><span class="line">            vertices.Add(new Vector3(+ext, x, 0));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        _gridMesh = new Mesh &#123; hideFlags = HideFlags.DontSave &#125;;</span><br><span class="line">        _gridMesh.SetVertices(vertices);</span><br><span class="line">        _gridMesh.SetNormals(vertices);</span><br><span class="line">        _gridMesh.SetIndices(indices.ToArray(), MeshTopology.Lines, 0);</span><br><span class="line">        _gridMesh.UploadMeshData(true);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="MaterialPropertyBlock"><a href="#MaterialPropertyBlock" class="headerlink" title="MaterialPropertyBlock"></a>MaterialPropertyBlock</h3><p>研究代码的时候发现了MaterialPropertyBlock，查阅文档才发现是用于节约性能。实际应用可以查看这篇文章<a href="https://blog.csdn.net/liweizhao/article/details/81937590" target="_blank" rel="noopener">MaterialPropertyBlock</a>。</p>
-<h3 id="Shader的实现"><a href="#Shader的实现" class="headerlink" title="Shader的实现"></a>Shader的实现</h3><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br></pre></td><td class="code"><pre><span class="line">// Upgrade NOTE: replaced &apos;_Object2World&apos; with &apos;unity_ObjectToWorld&apos;</span><br><span class="line"></span><br><span class="line">// Upgrade NOTE: replaced &apos;_Object2World&apos; with &apos;unity_ObjectToWorld&apos;</span><br><span class="line"></span><br><span class="line">Shader &quot;Custom/MeshShader&quot;</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    Properties</span><br><span class="line">    &#123;</span><br><span class="line">        _MainTex(&quot;主纹理贴图&quot;,2D)=&quot;white&quot;&#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    SubShader</span><br><span class="line">    &#123;</span><br><span class="line">		Tags &#123; &quot;RenderType&quot; = &quot;Opaque&quot; &#125;</span><br><span class="line">		LOD 100</span><br><span class="line">        Pass</span><br><span class="line">		&#123;</span><br><span class="line">			Tags&#123;&quot;LightMode&quot;=&quot;ForwardBase&quot;&#125;</span><br><span class="line">			CGPROGRAM</span><br><span class="line">			</span><br><span class="line">			//声明着色器</span><br><span class="line">			#pragma vertex vert </span><br><span class="line">			#pragma geometry geom</span><br><span class="line">			#pragma fragment frag</span><br><span class="line"></span><br><span class="line">			#include &quot;UnityCG.cginc&quot;</span><br><span class="line">			#include &quot;Assets/My/SimplexNoise3D.hlsl&quot;</span><br><span class="line">			//传递给顶点着色器的数据</span><br><span class="line">			struct a2v</span><br><span class="line">			&#123;</span><br><span class="line">				float4 vertex:POSITION;</span><br><span class="line">				float3 normal:NORMAL;</span><br><span class="line">				float4 texcoord:TEXCOORD0;</span><br><span class="line">			&#125;;</span><br><span class="line">			</span><br><span class="line">			//传递给几何着色器的数据</span><br><span class="line">			struct v2g</span><br><span class="line">			&#123;</span><br><span class="line">				float4 vertex:POSITION;</span><br><span class="line">				float3 normal:TEXCOORD0;</span><br><span class="line">				//float2 uv:TEXCOORD1;</span><br><span class="line">				</span><br><span class="line">			&#125;;</span><br><span class="line"></span><br><span class="line">			//传递给像素着色器的数据</span><br><span class="line">			struct g2f</span><br><span class="line">			&#123;</span><br><span class="line">				float4 pos : SV_POSITION;</span><br><span class="line">				float3 normal:TEXCOORD0;</span><br><span class="line">				//float2 uv : TEXCOORD1;</span><br><span class="line">				float4 color:COLOR;</span><br><span class="line">			&#125;;</span><br><span class="line"></span><br><span class="line">			sampler2D _MainTex;</span><br><span class="line">			float4 _MainTex_ST;</span><br><span class="line"></span><br><span class="line">			//用于几何着色器的数据</span><br><span class="line">			half2 _VoxelParams; // density, scale  密度，比例</span><br><span class="line">			half3 _AnimParams;  // stretch, fall distance, fluctuation   伸展、下降距离、波动</span><br><span class="line">			float4 _EffectorPlane;</span><br><span class="line">			float4 _PrevEffectorPlane;</span><br><span class="line"></span><br><span class="line">			//用于像素着色器的数据</span><br><span class="line">			half4 _EmissionHsvm1;</span><br><span class="line">			half4 _EmissionHsvm2;</span><br><span class="line">			half3 _TransitionColor;</span><br><span class="line">			half3 _LineColor;</span><br><span class="line"></span><br><span class="line">			</span><br><span class="line">			//顶点着色器</span><br><span class="line">			void vert(inout v2g input)</span><br><span class="line">			&#123;</span><br><span class="line">				</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			g2f VertexOutput(</span><br><span class="line">				float3 position0, float3 position1,</span><br><span class="line">				half3 normal0, half3 normal1, half param,</span><br><span class="line">				half emission = 0, half random = 0, half2 baryCoord = 0.5</span><br><span class="line">			)</span><br><span class="line">			&#123;</span><br><span class="line">				g2f i;</span><br><span class="line">				i.pos = UnityObjectToClipPos(float4(lerp(position0, position1, param),1));</span><br><span class="line">				i.normal = normalize(lerp(normal0, normal1, param));</span><br><span class="line">				i.color = float4(baryCoord, emission,random);</span><br><span class="line">				return i;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			// 计算方块的位置和大小</span><br><span class="line">			void CubePosScale(</span><br><span class="line">				float3 center, float size, float rand, float param,</span><br><span class="line">				out float3 pos, out float3 scale</span><br><span class="line">			)</span><br><span class="line">			&#123;</span><br><span class="line">				const float VoxelScale = _VoxelParams.y;</span><br><span class="line">				const float Stretch = _AnimParams.x;</span><br><span class="line">				const float FallDist = _AnimParams.y;</span><br><span class="line">				const float Fluctuation = _AnimParams.z;</span><br><span class="line"></span><br><span class="line">				// Noise field</span><br><span class="line">				//噪声场</span><br><span class="line">				float4 snoise = snoise_grad(float3(rand * 2378.34, param * 0.8, 0));</span><br><span class="line"></span><br><span class="line">				// Stretch/move param</span><br><span class="line">				float move = saturate(param * 4 - 3);</span><br><span class="line">				move = move * move;</span><br><span class="line"></span><br><span class="line">				// Cube position</span><br><span class="line">				pos = center + snoise.xyz * size * Fluctuation;</span><br><span class="line">				pos.y += move * move * lerp(0.25, 1, rand) * size * FallDist;</span><br><span class="line"></span><br><span class="line">				// Cube scale anim</span><br><span class="line">				scale = float2(1 - move, 1 + move * Stretch).xyx;</span><br><span class="line">				scale *= size * VoxelScale * saturate(1 + snoise.w * 2);</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">			//哈希值，用于随机觉得面片是三角面片还是Cube</span><br><span class="line">			float Hash(uint s)</span><br><span class="line">			&#123;</span><br><span class="line">				s = s ^ 2747636419u;</span><br><span class="line">				s = s * 2654435769u;</span><br><span class="line">				s = s ^ (s &gt;&gt; 16);</span><br><span class="line">				s = s * 2654435769u;</span><br><span class="line">				s = s ^ (s &gt;&gt; 16);</span><br><span class="line">				s = s * 2654435769u;</span><br><span class="line">				return float(s) * rcp(4294967296.0); // 2^-32</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			//几何着色器</span><br><span class="line">			[maxvertexcount(24)]</span><br><span class="line">			void geom(triangle v2g input[3], uint pid : SV_PrimitiveID, inout TriangleStream&lt;g2f&gt; outStream)</span><br><span class="line">			&#123;</span><br><span class="line">				//获取密度</span><br><span class="line">				const float VoxelDensity = _VoxelParams.x;</span><br><span class="line"></span><br><span class="line">				//获取传入顶点的位置</span><br><span class="line">				float3 p0 = input[0].vertex.xyz;</span><br><span class="line">				float3 p1 = input[1].vertex.xyz;</span><br><span class="line">				float3 p2 = input[2].vertex.xyz;</span><br><span class="line"></span><br><span class="line">				float3 p0_prev = p0;</span><br><span class="line">				float3 p1_prev = p1;</span><br><span class="line">				float3 p2_prev = p2;</span><br><span class="line"></span><br><span class="line">				//获取传入顶点的法线</span><br><span class="line">				float3 n0 = input[0].normal;</span><br><span class="line">				float3 n1 = input[1].normal;</span><br><span class="line">				float3 n2 = input[2].normal;</span><br><span class="line"></span><br><span class="line">				//计算中心点</span><br><span class="line">				float3 center = (p0 + p1 + p2) / 3;</span><br><span class="line">				float size = distance(p0, center);</span><br><span class="line"></span><br><span class="line">				//变形参数</span><br><span class="line">				//将中心点变换到世界空间中</span><br><span class="line">				float3 center_ws = mul(unity_ObjectToWorld, float4(center,1)).xyz;</span><br><span class="line">				float param = 1 - dot(_EffectorPlane.xyz, center_ws) + _EffectorPlane.w;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">				//如果变形还没开始那就将平常操作</span><br><span class="line">				if (param &lt; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					outStream.Append(VertexOutput(p0, 0, n0, 0, 0, 0, 0));</span><br><span class="line">					outStream.Append(VertexOutput(p1, 0, n1, 0, 0, 0, 0));</span><br><span class="line">					outStream.Append(VertexOutput(p2, 0, n2, 0, 0, 0, 0));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line">					return;</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">				</span><br><span class="line">				//变形结束后，不传递任何数据，从而使物体隐身</span><br><span class="line">				if (param &gt;= 1) return;</span><br><span class="line"></span><br><span class="line">				// Choose cube/triangle randomly.</span><br><span class="line">				//uint seed = float3(pid * 877, pid * 877, pid * 877);</span><br><span class="line">				uint seed = pid * 877;</span><br><span class="line">				if (Hash(seed) &lt; VoxelDensity)</span><br><span class="line">				&#123;</span><br><span class="line">					// -- Cube --</span><br><span class="line"></span><br><span class="line">					// Random numbers</span><br><span class="line">					float rand1 = Hash(seed + 1);</span><br><span class="line">					float rand2 = Hash(seed + 5);</span><br><span class="line"></span><br><span class="line">					// Cube position and scale</span><br><span class="line">					float3 pos, pos_prev, scale, scale_prev;</span><br><span class="line">					CubePosScale(center, size, rand1, param, pos, scale);</span><br><span class="line"></span><br><span class="line">					// Secondary animation parameters</span><br><span class="line">					float morph = smoothstep(0, 0.25, param);		</span><br><span class="line"></span><br><span class="line">					float em = smoothstep(0, 0.15, param) * 2; // initial emission</span><br><span class="line">					em = min(em, 1 + smoothstep(0.8, 0.9, 1 - param));</span><br><span class="line">					em += smoothstep(0.75, 1, param); // emission while falling</span><br><span class="line"></span><br><span class="line">					// Cube points calculation</span><br><span class="line">					float3 pc0 = pos + float3(-1, -1, -1) * scale;</span><br><span class="line">					float3 pc1 = pos + float3(+1, -1, -1) * scale;</span><br><span class="line">					float3 pc2 = pos + float3(-1, +1, -1) * scale;</span><br><span class="line">					float3 pc3 = pos + float3(+1, +1, -1) * scale;</span><br><span class="line">					float3 pc4 = pos + float3(-1, -1, +1) * scale;</span><br><span class="line">					float3 pc5 = pos + float3(+1, -1, +1) * scale;</span><br><span class="line">					float3 pc6 = pos + float3(-1, +1, +1) * scale;</span><br><span class="line">					float3 pc7 = pos + float3(+1, +1, +1) * scale;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">					// World space to object space conversion</span><br><span class="line"></span><br><span class="line">					// Vertex outputs</span><br><span class="line">					float3 nc = float3(-1, 0, 0);</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc2, n0, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc0, n2, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc6, n0, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc4, n2, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(1, 0, 0);</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc1, n2, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc3, n1, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc5, n2, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc7, n1, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(0, -1, 0);</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc0, n2, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc1, n2, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc4, n2, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc5, n2, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(0, 1, 0);</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc3, n1, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc2, n0, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc7, n1, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc6, n0, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(0, 0, -1);</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc1, n2, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc0, n2, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc3, n1, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc2, n0, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(0, 0, 1);</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc4, -n2, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc5, -n2, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc6, -n0, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc7, -n1, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line">				&#125;</span><br><span class="line">				else</span><br><span class="line">				&#123;</span><br><span class="line">					// -- Triangle --</span><br><span class="line">					half morph = smoothstep(0, 0.25, param);</span><br><span class="line">					//half morph = 0.25;</span><br><span class="line">					half em = smoothstep(0, 0.15, param) * 2;</span><br><span class="line">					outStream.Append(VertexOutput(p0, center, n0, n0, morph, em));</span><br><span class="line">					outStream.Append(VertexOutput(p1, center, n1, n1, morph, em));</span><br><span class="line">					outStream.Append(VertexOutput(p2, center, n2, n2, morph, em));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			//计算颜色</span><br><span class="line">			half3 SelfEmission(g2f input)</span><br><span class="line">			&#123;</span><br><span class="line">				half2 bcc = input.color.rg;</span><br><span class="line">				half em1 = saturate(input.color.b);</span><br><span class="line">				half em2 = saturate(input.color.b - 1);</span><br><span class="line">				half rand = input.color.a;</span><br><span class="line"></span><br><span class="line">				// Cube face color</span><br><span class="line">				half3 face = lerp(_EmissionHsvm1.xyz, _EmissionHsvm2.xyz, rand);</span><br><span class="line">				face *= lerp(_EmissionHsvm1.w, _EmissionHsvm2.w, rand);</span><br><span class="line"></span><br><span class="line">				// Cube face attenuation</span><br><span class="line">				face *= lerp(0.75, 1, smoothstep(0, 0.5, length(bcc - 0.5)));</span><br><span class="line"></span><br><span class="line">				// Edge detection</span><br><span class="line">				half2 fw = fwidth(bcc);</span><br><span class="line">				half2 edge2 = min(smoothstep(0, fw * 2, bcc),</span><br><span class="line">					smoothstep(0, fw * 2, 1 - bcc));</span><br><span class="line">				half edge = 1 - min(edge2.x, edge2.y);</span><br><span class="line"></span><br><span class="line">				return</span><br><span class="line">					face * em1 +</span><br><span class="line">					_TransitionColor * em2 * face +</span><br><span class="line">					edge * _LineColor * em1;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			half4 frag(g2f z):SV_Target</span><br><span class="line">			&#123;</span><br><span class="line">				half4 col = half4(SelfEmission(z),1);</span><br><span class="line">				return col;</span><br><span class="line">			&#125;</span><br><span class="line">				ENDCG</span><br><span class="line">		&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    FallBack &quot;Diffuse&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Shader的实现"><a href="#Shader的实现" class="headerlink" title="Shader的实现"></a>Shader的实现</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br></pre></td><td class="code"><pre><span class="line">// Upgrade NOTE: replaced &apos;_Object2World&apos; with &apos;unity_ObjectToWorld&apos;</span><br><span class="line"></span><br><span class="line">// Upgrade NOTE: replaced &apos;_Object2World&apos; with &apos;unity_ObjectToWorld&apos;</span><br><span class="line"></span><br><span class="line">Shader &quot;Custom/MeshShader&quot;</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    Properties</span><br><span class="line">    &#123;</span><br><span class="line">        _MainTex(&quot;主纹理贴图&quot;,2D)=&quot;white&quot;&#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    SubShader</span><br><span class="line">    &#123;</span><br><span class="line">		Tags &#123; &quot;RenderType&quot; = &quot;Opaque&quot; &#125;</span><br><span class="line">		LOD 100</span><br><span class="line">        Pass</span><br><span class="line">		&#123;</span><br><span class="line">			Tags&#123;&quot;LightMode&quot;=&quot;ForwardBase&quot;&#125;</span><br><span class="line">			CGPROGRAM</span><br><span class="line">			</span><br><span class="line">			//声明着色器</span><br><span class="line">			#pragma vertex vert </span><br><span class="line">			#pragma geometry geom</span><br><span class="line">			#pragma fragment frag</span><br><span class="line"></span><br><span class="line">			#include &quot;UnityCG.cginc&quot;</span><br><span class="line">			#include &quot;Assets/My/SimplexNoise3D.hlsl&quot;</span><br><span class="line">			//传递给顶点着色器的数据</span><br><span class="line">			struct a2v</span><br><span class="line">			&#123;</span><br><span class="line">				float4 vertex:POSITION;</span><br><span class="line">				float3 normal:NORMAL;</span><br><span class="line">				float4 texcoord:TEXCOORD0;</span><br><span class="line">			&#125;;</span><br><span class="line">			</span><br><span class="line">			//传递给几何着色器的数据</span><br><span class="line">			struct v2g</span><br><span class="line">			&#123;</span><br><span class="line">				float4 vertex:POSITION;</span><br><span class="line">				float3 normal:TEXCOORD0;</span><br><span class="line">				//float2 uv:TEXCOORD1;</span><br><span class="line">				</span><br><span class="line">			&#125;;</span><br><span class="line"></span><br><span class="line">			//传递给像素着色器的数据</span><br><span class="line">			struct g2f</span><br><span class="line">			&#123;</span><br><span class="line">				float4 pos : SV_POSITION;</span><br><span class="line">				float3 normal:TEXCOORD0;</span><br><span class="line">				//float2 uv : TEXCOORD1;</span><br><span class="line">				float4 color:COLOR;</span><br><span class="line">			&#125;;</span><br><span class="line"></span><br><span class="line">			sampler2D _MainTex;</span><br><span class="line">			float4 _MainTex_ST;</span><br><span class="line"></span><br><span class="line">			//用于几何着色器的数据</span><br><span class="line">			half2 _VoxelParams; // density, scale  密度，比例</span><br><span class="line">			half3 _AnimParams;  // stretch, fall distance, fluctuation   伸展、下降距离、波动</span><br><span class="line">			float4 _EffectorPlane;</span><br><span class="line">			float4 _PrevEffectorPlane;</span><br><span class="line"></span><br><span class="line">			//用于像素着色器的数据</span><br><span class="line">			half4 _EmissionHsvm1;</span><br><span class="line">			half4 _EmissionHsvm2;</span><br><span class="line">			half3 _TransitionColor;</span><br><span class="line">			half3 _LineColor;</span><br><span class="line"></span><br><span class="line">			</span><br><span class="line">			//顶点着色器</span><br><span class="line">			void vert(inout v2g input)</span><br><span class="line">			&#123;</span><br><span class="line">				</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			g2f VertexOutput(</span><br><span class="line">				float3 position0, float3 position1,</span><br><span class="line">				half3 normal0, half3 normal1, half param,</span><br><span class="line">				half emission = 0, half random = 0, half2 baryCoord = 0.5</span><br><span class="line">			)</span><br><span class="line">			&#123;</span><br><span class="line">				g2f i;</span><br><span class="line">				i.pos = UnityObjectToClipPos(float4(lerp(position0, position1, param),1));</span><br><span class="line">				i.normal = normalize(lerp(normal0, normal1, param));</span><br><span class="line">				i.color = float4(baryCoord, emission,random);</span><br><span class="line">				return i;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			// 计算方块的位置和大小</span><br><span class="line">			void CubePosScale(</span><br><span class="line">				float3 center, float size, float rand, float param,</span><br><span class="line">				out float3 pos, out float3 scale</span><br><span class="line">			)</span><br><span class="line">			&#123;</span><br><span class="line">				const float VoxelScale = _VoxelParams.y;</span><br><span class="line">				const float Stretch = _AnimParams.x;</span><br><span class="line">				const float FallDist = _AnimParams.y;</span><br><span class="line">				const float Fluctuation = _AnimParams.z;</span><br><span class="line"></span><br><span class="line">				// Noise field</span><br><span class="line">				//噪声场</span><br><span class="line">				float4 snoise = snoise_grad(float3(rand * 2378.34, param * 0.8, 0));</span><br><span class="line"></span><br><span class="line">				// Stretch/move param</span><br><span class="line">				float move = saturate(param * 4 - 3);</span><br><span class="line">				move = move * move;</span><br><span class="line"></span><br><span class="line">				// Cube position</span><br><span class="line">				pos = center + snoise.xyz * size * Fluctuation;</span><br><span class="line">				pos.y += move * move * lerp(0.25, 1, rand) * size * FallDist;</span><br><span class="line"></span><br><span class="line">				// Cube scale anim</span><br><span class="line">				scale = float2(1 - move, 1 + move * Stretch).xyx;</span><br><span class="line">				scale *= size * VoxelScale * saturate(1 + snoise.w * 2);</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">			//哈希值，用于随机觉得面片是三角面片还是Cube</span><br><span class="line">			float Hash(uint s)</span><br><span class="line">			&#123;</span><br><span class="line">				s = s ^ 2747636419u;</span><br><span class="line">				s = s * 2654435769u;</span><br><span class="line">				s = s ^ (s &gt;&gt; 16);</span><br><span class="line">				s = s * 2654435769u;</span><br><span class="line">				s = s ^ (s &gt;&gt; 16);</span><br><span class="line">				s = s * 2654435769u;</span><br><span class="line">				return float(s) * rcp(4294967296.0); // 2^-32</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			//几何着色器</span><br><span class="line">			[maxvertexcount(24)]</span><br><span class="line">			void geom(triangle v2g input[3], uint pid : SV_PrimitiveID, inout TriangleStream&lt;g2f&gt; outStream)</span><br><span class="line">			&#123;</span><br><span class="line">				//获取密度</span><br><span class="line">				const float VoxelDensity = _VoxelParams.x;</span><br><span class="line"></span><br><span class="line">				//获取传入顶点的位置</span><br><span class="line">				float3 p0 = input[0].vertex.xyz;</span><br><span class="line">				float3 p1 = input[1].vertex.xyz;</span><br><span class="line">				float3 p2 = input[2].vertex.xyz;</span><br><span class="line"></span><br><span class="line">				float3 p0_prev = p0;</span><br><span class="line">				float3 p1_prev = p1;</span><br><span class="line">				float3 p2_prev = p2;</span><br><span class="line"></span><br><span class="line">				//获取传入顶点的法线</span><br><span class="line">				float3 n0 = input[0].normal;</span><br><span class="line">				float3 n1 = input[1].normal;</span><br><span class="line">				float3 n2 = input[2].normal;</span><br><span class="line"></span><br><span class="line">				//计算中心点</span><br><span class="line">				float3 center = (p0 + p1 + p2) / 3;</span><br><span class="line">				float size = distance(p0, center);</span><br><span class="line"></span><br><span class="line">				//变形参数</span><br><span class="line">				//将中心点变换到世界空间中</span><br><span class="line">				float3 center_ws = mul(unity_ObjectToWorld, float4(center,1)).xyz;</span><br><span class="line">				float param = 1 - dot(_EffectorPlane.xyz, center_ws) + _EffectorPlane.w;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">				//如果变形还没开始那就将平常操作</span><br><span class="line">				if (param &lt; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					outStream.Append(VertexOutput(p0, 0, n0, 0, 0, 0, 0));</span><br><span class="line">					outStream.Append(VertexOutput(p1, 0, n1, 0, 0, 0, 0));</span><br><span class="line">					outStream.Append(VertexOutput(p2, 0, n2, 0, 0, 0, 0));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line">					return;</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">				</span><br><span class="line">				//变形结束后，不传递任何数据，从而使物体隐身</span><br><span class="line">				if (param &gt;= 1) return;</span><br><span class="line"></span><br><span class="line">				// Choose cube/triangle randomly.</span><br><span class="line">				//uint seed = float3(pid * 877, pid * 877, pid * 877);</span><br><span class="line">				uint seed = pid * 877;</span><br><span class="line">				if (Hash(seed) &lt; VoxelDensity)</span><br><span class="line">				&#123;</span><br><span class="line">					// -- Cube --</span><br><span class="line"></span><br><span class="line">					// Random numbers</span><br><span class="line">					float rand1 = Hash(seed + 1);</span><br><span class="line">					float rand2 = Hash(seed + 5);</span><br><span class="line"></span><br><span class="line">					// Cube position and scale</span><br><span class="line">					float3 pos, pos_prev, scale, scale_prev;</span><br><span class="line">					CubePosScale(center, size, rand1, param, pos, scale);</span><br><span class="line"></span><br><span class="line">					// Secondary animation parameters</span><br><span class="line">					float morph = smoothstep(0, 0.25, param);		</span><br><span class="line"></span><br><span class="line">					float em = smoothstep(0, 0.15, param) * 2; // initial emission</span><br><span class="line">					em = min(em, 1 + smoothstep(0.8, 0.9, 1 - param));</span><br><span class="line">					em += smoothstep(0.75, 1, param); // emission while falling</span><br><span class="line"></span><br><span class="line">					// Cube points calculation</span><br><span class="line">					float3 pc0 = pos + float3(-1, -1, -1) * scale;</span><br><span class="line">					float3 pc1 = pos + float3(+1, -1, -1) * scale;</span><br><span class="line">					float3 pc2 = pos + float3(-1, +1, -1) * scale;</span><br><span class="line">					float3 pc3 = pos + float3(+1, +1, -1) * scale;</span><br><span class="line">					float3 pc4 = pos + float3(-1, -1, +1) * scale;</span><br><span class="line">					float3 pc5 = pos + float3(+1, -1, +1) * scale;</span><br><span class="line">					float3 pc6 = pos + float3(-1, +1, +1) * scale;</span><br><span class="line">					float3 pc7 = pos + float3(+1, +1, +1) * scale;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">					// World space to object space conversion</span><br><span class="line"></span><br><span class="line">					// Vertex outputs</span><br><span class="line">					float3 nc = float3(-1, 0, 0);</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc2, n0, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc0, n2, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc6, n0, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc4, n2, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(1, 0, 0);</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc1, n2, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc3, n1, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc5, n2, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc7, n1, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(0, -1, 0);</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc0, n2, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc1, n2, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc4, n2, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc5, n2, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(0, 1, 0);</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc3, n1, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc2, n0, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc7, n1, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc6, n0, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(0, 0, -1);</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc1, n2, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc0, n2, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc3, n1, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc2, n0, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(0, 0, 1);</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc4, -n2, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc5, -n2, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc6, -n0, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc7, -n1, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line">				&#125;</span><br><span class="line">				else</span><br><span class="line">				&#123;</span><br><span class="line">					// -- Triangle --</span><br><span class="line">					half morph = smoothstep(0, 0.25, param);</span><br><span class="line">					//half morph = 0.25;</span><br><span class="line">					half em = smoothstep(0, 0.15, param) * 2;</span><br><span class="line">					outStream.Append(VertexOutput(p0, center, n0, n0, morph, em));</span><br><span class="line">					outStream.Append(VertexOutput(p1, center, n1, n1, morph, em));</span><br><span class="line">					outStream.Append(VertexOutput(p2, center, n2, n2, morph, em));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			//计算颜色</span><br><span class="line">			half3 SelfEmission(g2f input)</span><br><span class="line">			&#123;</span><br><span class="line">				half2 bcc = input.color.rg;</span><br><span class="line">				half em1 = saturate(input.color.b);</span><br><span class="line">				half em2 = saturate(input.color.b - 1);</span><br><span class="line">				half rand = input.color.a;</span><br><span class="line"></span><br><span class="line">				// Cube face color</span><br><span class="line">				half3 face = lerp(_EmissionHsvm1.xyz, _EmissionHsvm2.xyz, rand);</span><br><span class="line">				face *= lerp(_EmissionHsvm1.w, _EmissionHsvm2.w, rand);</span><br><span class="line"></span><br><span class="line">				// Cube face attenuation</span><br><span class="line">				face *= lerp(0.75, 1, smoothstep(0, 0.5, length(bcc - 0.5)));</span><br><span class="line"></span><br><span class="line">				// Edge detection</span><br><span class="line">				half2 fw = fwidth(bcc);</span><br><span class="line">				half2 edge2 = min(smoothstep(0, fw * 2, bcc),</span><br><span class="line">					smoothstep(0, fw * 2, 1 - bcc));</span><br><span class="line">				half edge = 1 - min(edge2.x, edge2.y);</span><br><span class="line"></span><br><span class="line">				return</span><br><span class="line">					face * em1 +</span><br><span class="line">					_TransitionColor * em2 * face +</span><br><span class="line">					edge * _LineColor * em1;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			half4 frag(g2f z):SV_Target</span><br><span class="line">			&#123;</span><br><span class="line">				half4 col = half4(SelfEmission(z),1);</span><br><span class="line">				return col;</span><br><span class="line">			&#125;</span><br><span class="line">				ENDCG</span><br><span class="line">		&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    FallBack &quot;Diffuse&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这里运用到了三维噪声的知识，这里我只是简单的调用了K神写好的噪声函数，并没有深究，其实我还是看过了一些关于噪声的文章，以后已机会把笔记总结出来。</p>
 <h1 id="最终结果"><a href="#最终结果" class="headerlink" title="最终结果"></a>最终结果</h1><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-MeshTransform/LastEffect.gif" alt="实现思路"></p>
 <h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>这个效果对于模型也是有要求的，模型的面片不能太小，不然就会得到以下的结果…</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-MeshTransform/Fail.gif" alt="失败效果"></p>
 
-        </div>
-        
-        <div class="level is-size-7 is-uppercase">
-            <div class="level-start">
-                <div class="level-item">
-                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
-                    <a class="has-link-grey -link" href="/tags/Unity/" rel="tag">Unity</a>
-                </div>
-            </div>
-        </div>
-        
-        
-        
-    </div>
+  </article>
+  
+    
+<div class="nexmoe-post-copyright">
+<i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+<strong>本文作者：</strong>Opda<br>
+<strong>本文链接：</strong><a href="http://yoursite.com/2019/11/13/Unity%E5%AE%9E%E7%8E%B0%E7%B1%B3%E5%93%88%E6%B8%B8%E7%9A%84Mesh%E5%8F%98%E6%8D%A2%E8%BD%AC%E5%9C%BA%E6%95%88%E6%9E%9C/" title="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;11&#x2F;13&#x2F;Unity%E5%AE%9E%E7%8E%B0%E7%B1%B3%E5%93%88%E6%B8%B8%E7%9A%84Mesh%E5%8F%98%E6%8D%A2%E8%BD%AC%E5%9C%BA%E6%95%88%E6%9E%9C&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;11&#x2F;13&#x2F;Unity%E5%AE%9E%E7%8E%B0%E7%B1%B3%E5%93%88%E6%B8%B8%E7%9A%84Mesh%E5%8F%98%E6%8D%A2%E8%BD%AC%E5%9C%BA%E6%95%88%E6%9E%9C&#x2F;</a><br>
+
+  <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+
 </div>
 
 
-
-<div class="card">
-    <div class="card-content">
-        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
-        <div class="buttons is-centered">
-            
-                
-<a class="button is-info donate">
-    <span class="icon is-small">
-        <i class="fab fa-alipay"></i>
-    </span>
-    <span>支付宝</span>
-    <div class="qrcode"><img src="/images/Alipay.jpg" alt="支付宝"></div>
-</a>
-
-                
-                
-<a class="button is-success donate">
-    <span class="icon is-small">
-        <i class="fab fa-weixin"></i>
-    </span>
-    <span>微信</span>
-    <div class="qrcode"><img src="/images/Wechat.jpg" alt="微信"></div>
-</a>
-
-                
-        </div>
-    </div>
-</div>
-
-
-
-<div class="card card-transparent">
-    <div class="level post-navigation is-flex-wrap is-mobile">
-        
-        <div class="level-start">
-            <a class="level level-item has-link-grey  article-nav-prev" href="/2019/11/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/">
-                <i class="level-item fas fa-chevron-left"></i>
-                <span class="level-item">UE4学习笔记(2)---蓝图接口-标签</span>
-            </a>
-        </div>
-        
-        
-        <div class="level-end">
-            <a class="level level-item has-link-grey  article-nav-next" href="/2019/11/06/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(1)%E2%80%94%E2%80%94%E7%AE%80%E5%8D%95%E6%A1%86%E6%9E%B6/">
-                <span class="level-item">UE4学习笔记(1)——简单框架</span>
-                <i class="level-item fas fa-chevron-right"></i>
-            </a>
-        </div>
-        
-    </div>
-</div>
-
-
-
-<div class="card">
-    <div class="card-content">
-        <h3 class="title is-5 has-text-weight-normal">评论</h3>
-        
-<div id="comment-container"></div>
-<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-	var gitment = new Gitment({
-		id: '249f945e0b16a885526195792c43a508',
-		owner: 'opda777',
-		repo: 'opda777.github.io',
-		oauth: {
-			client_id: '0822f10c39cf53501e46',
-			client_secret: 'd37395506104a8a584de6f051a6084e1e2086f5d',
-		},
-	})
-	gitment.render('comment-container')
+  
+  <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
 </script>
-
+</section>
+</div>
     </div>
-</div>
-</div>
-                
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/mdui@0.4.3/dist/js/mdui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+ 
+    <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+
+ 
+    <script src="https://cdn.jsdelivr.net/npm/smoothscroll-for-websites@1.4.9/SmoothScroll.min.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.15.8/build/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script src="/js/app.js?v=1598868014690"></script>
+<script src="https://cdn.jsdelivr.net/npm/lazysizes@5.1.0/lazysizes.min.js"></script>
+
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/xtaodada/xtaodada.github.io@0.0.2/copy.js"></script>
+
+
+
+  
 
 
 
 
-<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left is-sticky">
-    
-        
-<div class="card widget">
-    <div class="card-content">
-        <nav class="level">
-            <div class="level-item has-text-centered" style="flex-shrink: 1">
-                <div>
-                    
-                    <figure class="image is-128x128 has-mb-6">
-                        <img class="" src="/images/opda.jpg" alt="opda">
-                    </figure>
-                    
-                    <p class="is-size-4 is-block">
-                        opda
-                    </p>
-                    
-                    
-                    <p class="is-size-6 is-block">
-                        想提前退休的有志青年
-                    </p>
-                    
-                    
-                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
-                        <i class="fas fa-map-marker-alt has-mr-7"></i>
-                        <span>广州 中国</span>
-                    </p>
-                    
-                </div>
-            </div>
-        </nav>
-        <nav class="level is-mobile">
-            <div class="level-item has-text-centered is-marginless">
-                <div>
-                    <p class="heading">
-                        文章
-                    </p>
-                    <p class="title has-text-weight-normal">
-                        11
-                    </p>
-                </div>
-            </div>
-            <div class="level-item has-text-centered is-marginless">
-                <div>
-                    <p class="heading">
-                        分类
-                    </p>
-                    <p class="title has-text-weight-normal">
-                        5
-                    </p>
-                </div>
-            </div>
-            <div class="level-item has-text-centered is-marginless">
-                <div>
-                    <p class="heading">
-                        标签
-                    </p>
-                    <p class="title has-text-weight-normal">
-                        5
-                    </p>
-                </div>
-            </div>
-        </nav>
-        
-        <div class="level">
-            <a class="level-item button is-link is-rounded" href="https://github.com/opda777" target="_blank">
-                关注我</a>
-        </div>
-        
-        
-        
-    </div>
-</div>
-    
-        
 
-    <div class="card widget" id="toc">
-        <div class="card-content">
-            <div class="menu">
-                <h3 class="menu-label">
-                    目录
-                </h3>
-                <ul class="menu-list"><li>
-        <a class="is-flex" href="#前言">
-        <span class="has-mr-6">1</span>
-        <span>前言</span>
-        </a><ul class="menu-list"><li>
-        <a class="is-flex" href="#最终效果">
-        <span class="has-mr-6">1.1</span>
-        <span>最终效果</span>
-        </a></li><li>
-        <a class="is-flex" href="#实现思路">
-        <span class="has-mr-6">1.2</span>
-        <span>实现思路</span>
-        </a></li><li>
-        <a class="is-flex" href="#几何着色器">
-        <span class="has-mr-6">1.3</span>
-        <span>几何着色器</span>
-        </a><ul class="menu-list"><li>
-        <a class="is-flex" href="#定义">
-        <span class="has-mr-6">1.3.1</span>
-        <span>定义</span>
-        </a></li><li>
-        <a class="is-flex" href="#使用几何着色器进行图元转换">
-        <span class="has-mr-6">1.3.2</span>
-        <span>使用几何着色器进行图元转换</span>
-        </a></li></ul></li><li>
-        <a class="is-flex" href="#开始动手">
-        <span class="has-mr-6">1.4</span>
-        <span>开始动手</span>
-        </a><ul class="menu-list"><li>
-        <a class="is-flex" href="#CPU传递数据给Shader">
-        <span class="has-mr-6">1.4.1</span>
-        <span>CPU传递数据给Shader</span>
-        </a></li><li>
-        <a class="is-flex" href="#MaterialPropertyBlock">
-        <span class="has-mr-6">1.4.2</span>
-        <span>MaterialPropertyBlock</span>
-        </a></li><li>
-        <a class="is-flex" href="#Shader的实现">
-        <span class="has-mr-6">1.4.3</span>
-        <span>Shader的实现</span>
-        </a></li></ul></li></ul></li><li>
-        <a class="is-flex" href="#最终结果">
-        <span class="has-mr-6">2</span>
-        <span>最终结果</span>
-        </a><ul class="menu-list"><li>
-        <a class="is-flex" href="#注意">
-        <span class="has-mr-6">2.1</span>
-        <span>注意</span>
-        </a></li></ul></li></ul>
-            </div>
-        </div>
-    </div>
-
-    
-    
-        <div class="column-right-shadow is-hidden-widescreen ">
-        
-        </div>
-    
-</div>
-
-                
-            </div>
-        </div>
-    </section>
-    <footer class="footer">
-    <div class="container">
-        <div class="level">
-            <div class="level-start has-text-centered-mobile">
-                <a class="footer-logo is-block has-mb-6" href="/">
-                
-                    <img src="/images/game.svg" alt="Unity实现米哈游的Mesh变换转场效果" height="28">
-                
-                </a>
-                <p class="is-size-7">
-                &copy; 2020 Opda&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
-                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
-                
-                <br>
-                <span id="busuanzi_container_site_uv">
-                共<span id="busuanzi_value_site_uv">0</span>个访客
-                </span>
-                
-                </p>
-            </div>
-            <div class="level-end">
-            
-                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
-                
-                <p class="control">
-                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
-                        
-                        <i class="fab fa-creative-commons"></i>
-                        
-                    </a>
-                </p>
-                
-                <p class="control">
-                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
-                        
-                        <i class="fab fa-creative-commons-by"></i>
-                        
-                    </a>
-                </p>
-                
-                <p class="control">
-                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/opda777">
-                        
-                        <i class="fab fa-github"></i>
-                        
-                    </a>
-                </p>
-                
-                </div>
-            
-            </div>
-        </div>
-    </div>
-</footer>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
-<script>moment.locale("zh-CN");</script>
-
-<script>
-var IcarusThemeSettings = {
-    article: {
-        highlight: {
-            clipboard: true,
-            fold: 'unfolded'
-        }
-    }
-};
-</script>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
-
-
-
-    
-    
-<script src="/js/animation.js"></script>
-
-    
-    
-<script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
-<script src="/js/gallery.js" defer></script>
-
-    
-    
-<div id="outdated">
-    <h6>Your browser is out-of-date!</h6>
-    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/" target="_blank" rel="noopener">Update
-            my browser now </a></p>
-    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        outdatedBrowser({
-            bgColor: '#f25648',
-            color: '#ffffff',
-            lowerThan: 'flex'
-        });
-    });
-</script>
-
-    
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    MathJax.Hub.Config({
-        'HTML-CSS': {
-            matchFontHeight: false
-        },
-        SVG: {
-            matchFontHeight: false
-        },
-        CommonHTML: {
-            matchFontHeight: false
-        },
-        tex2jax: {
-            inlineMath: [
-                ['$','$'],
-                ['\\(','\\)']
-            ]
-        }
-    });
-});
-</script>
-    
-    
-<a id="back-to-top" title="回到顶端" href="javascript:;">
-    <i class="fas fa-chevron-up"></i>
-</a>
-<script src="/js/back-to-top.js" defer></script>
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-
-<script src="/js/main.js" defer></script>
-
-    
-    <div class="searchbox ins-search">
-    <div class="searchbox-container ins-search-container">
-        <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
-            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
-        </div>
-        <div class="searchbox-result-wrapper ins-section-wrapper">
-            <div class="ins-section-container"></div>
-        </div>
-    </div>
-</div>
-<script>
-    (function (window) {
-        var INSIGHT_CONFIG = {
-            TRANSLATION: {
-                POSTS: '文章',
-                PAGES: '页面',
-                CATEGORIES: '分类',
-                TAGS: '标签',
-                UNTITLED: '(无标题)',
-            },
-            CONTENT_URL: '/content.json',
-        };
-        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
-    })(window);
-</script>
-<script src="/js/insight.js" defer></script>
-<link rel="stylesheet" href="/css/search.css">
-<link rel="stylesheet" href="/css/insight.css">
-    
 <script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true}});</script></body>
+
 </html>
