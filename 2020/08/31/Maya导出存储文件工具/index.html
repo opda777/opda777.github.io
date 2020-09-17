@@ -25,6 +25,10 @@
 
   
 
+  <!-- Highlight.js -->
+  <link href="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.18.1/styles/a11y-dark.min.css" rel="stylesheet">
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
 </head>
 
 </html>
@@ -66,7 +70,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">1.7k</span>
+            <span class="post-count">1.6k</span>
         </span>
     </span>
 
@@ -90,6 +94,16 @@
   
     <div class="article-entry" itemprop="articleBody">
        
+  <div class="article-gallery">
+    <div class="article-gallery-photos">
+      
+        
+          <img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/cot-tan-serenaillustrationpost.jpg" itemprop="image">
+        
+      
+    </div>
+  </div>
+
   <p>笔记记录</p>
 <a id="more"></a>
 
@@ -98,20 +112,301 @@
 <h2 id="主要思路"><a href="#主要思路" class="headerlink" title="主要思路"></a>主要思路</h2><p>主要逻辑在controllerLibrary.py脚本，save，find，load3个方法。创建ControllerLibrary类继承于dict字典类，数据存储name,path,screenshot的相关路径等等。</p>
 <p>主要API：cmds.file()进行文件的存储和读取    cmds.viewFit():将摄像机对准物体    cmds.playblast():渲染导出图片    json.dump()：json文件的编码写入    json.load():json文件的解码读取</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200831160940099.png" alt="image-20200831160940099"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><span class="line">#-*-coding:gbk-*-</span><br><span class="line"></span><br><span class="line">from maya import cmds</span><br><span class="line">import os</span><br><span class="line">import json</span><br><span class="line">import pprint</span><br><span class="line"></span><br><span class="line">#获取Maya文档路径</span><br><span class="line">USERAPPDIR = cmds.internalVar(userAppDir=True)</span><br><span class="line">#文件夹路径</span><br><span class="line">DIRECTORY = os.path.join(USERAPPDIR, &quot;controllerLibrary&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def createDirectory(directory=DIRECTORY):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    根据文件路径创建文件夹</span><br><span class="line">    Args:</span><br><span class="line">        directory(str): 要创建的文件夹路径</span><br><span class="line"></span><br><span class="line">    Returns:</span><br><span class="line"></span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    #首先判断文件夹是否存在</span><br><span class="line">    if not os.path.exists(directory):</span><br><span class="line">        #如果不存在那就创建文件夹</span><br><span class="line">        os.mkdir(directory)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#继承字典类</span><br><span class="line">class ControllerLibrary(dict):</span><br><span class="line"></span><br><span class="line">    #保存文件方法</span><br><span class="line">    #**info关键字参数</span><br><span class="line">    def save(self,name,screenshot=True,directory=DIRECTORY,**info):</span><br><span class="line"></span><br><span class="line">        #首先要确认要保存的路径是否存在</span><br><span class="line">        createDirectory(directory)</span><br><span class="line"></span><br><span class="line">        #保存文件路径</span><br><span class="line">        path = os.path.join(directory,&quot;&#123;0&#125;.ma&quot;.format(name))</span><br><span class="line">        #json保存文件</span><br><span class="line">        infoFile = os.path.join(directory,&quot;&#123;0&#125;.json&quot;.format(name))</span><br><span class="line">        info[&quot;name&quot;] = name</span><br><span class="line">        info[&quot;path&quot;] = path</span><br><span class="line"></span><br><span class="line">        #判是否需要screenShot</span><br><span class="line">        if screenshot:</span><br><span class="line">            self.saveScreenshot(name,directory)</span><br><span class="line"></span><br><span class="line">        #进行场景文件的保存,保存格式为mayaAscii</span><br><span class="line">        cmds.file(rename=path)</span><br><span class="line"></span><br><span class="line">        #如果进行了选择，就单独保存选择了的物体场景</span><br><span class="line">        if cmds.ls(selection=True):</span><br><span class="line">            cmds.file(force=True,type=&quot;mayaAscii&quot;,exportSelected=True)</span><br><span class="line"></span><br><span class="line">        #否则保存全部场景物体</span><br><span class="line">        else:</span><br><span class="line">            cmds.file(save=True,type=&quot;mayaAscii&quot;,force=True)</span><br><span class="line"></span><br><span class="line">        #打开infoFile文件,保存为json格式,写入文件</span><br><span class="line">        with open(infoFile,&quot;w&quot;) as f:</span><br><span class="line">            json.dump(info,f,indent=4)</span><br><span class="line"></span><br><span class="line">        self[name] = path</span><br><span class="line"></span><br><span class="line">    #获得文件夹下的所有文件</span><br><span class="line">    def find(self,directory=DIRECTORY):</span><br><span class="line">        # 进行清空，避免删除.ma文件时没有更新</span><br><span class="line">        self.clear()</span><br><span class="line"></span><br><span class="line">        if not os.path.exists(directory):</span><br><span class="line">            return None</span><br><span class="line"></span><br><span class="line">        files = os.listdir(directory)</span><br><span class="line"></span><br><span class="line">        #进行特定筛选，只获取ma文件</span><br><span class="line">        mayaFiles = [f for f in files if f.endswith(&quot;.ma&quot;)]</span><br><span class="line"></span><br><span class="line">        #进行键值对存储</span><br><span class="line">        for ma in mayaFiles:</span><br><span class="line">            #分离文件名和扩展名</span><br><span class="line">            name,ext = os.path.splitext(ma)</span><br><span class="line">            path = os.path.join(directory,ma)</span><br><span class="line"></span><br><span class="line">            #查看是否json文件</span><br><span class="line">            infoFile = &quot;&#123;0&#125;.json&quot;.format(name)</span><br><span class="line">            if infoFile in files:</span><br><span class="line">                infoFile = os.path.join(directory,infoFile)</span><br><span class="line">                #读取每个场景配置的json文件</span><br><span class="line">                with open(infoFile,&quot;r&quot;) as f:</span><br><span class="line">                    #进行读取</span><br><span class="line">                    info = json.load(f)</span><br><span class="line"></span><br><span class="line">            else:</span><br><span class="line">                print(u&quot;没有发现&#123;0&#125;文件&quot;.format(infoFile))</span><br><span class="line">                info = &#123;&#125;</span><br><span class="line"></span><br><span class="line">            #查看是否screenshot图片</span><br><span class="line">            screenshot = &quot;&#123;0&#125;.jpg&quot;.format(name)</span><br><span class="line">            if screenshot in files:</span><br><span class="line">                info[&quot;screenshot&quot;] = os.path.join(directory,screenshot)</span><br><span class="line"></span><br><span class="line">            info[&quot;name&quot;]=name</span><br><span class="line">            info[&quot;path&quot;]=path</span><br><span class="line"></span><br><span class="line">            self[name]=info</span><br><span class="line">            #print(info)</span><br><span class="line"></span><br><span class="line">    #加载</span><br><span class="line">    def load(self,name):</span><br><span class="line">        path = self[name][&quot;path&quot;]</span><br><span class="line"></span><br><span class="line">        #进行加载</span><br><span class="line">        cmds.file(path,i=True,usingNamespaces=False)</span><br><span class="line"></span><br><span class="line">    #保存屏幕截图</span><br><span class="line">    def saveScreenshot(self,name,directory=DIRECTORY):</span><br><span class="line">        #确定图片保存的路径</span><br><span class="line">        path = os.path.join(directory,&quot;&#123;0&#125;.jpg&quot;.format(name))</span><br><span class="line"></span><br><span class="line">        #将摄像机对准物体，以方便进行截图</span><br><span class="line">        cmds.viewFit()</span><br><span class="line">        #确定保存图片格式为jpg</span><br><span class="line">        cmds.setAttr(&quot;defaultRenderGlobals.imageFormat&quot;,8)</span><br><span class="line"></span><br><span class="line">        #进行截图,这个相当于渲染命令</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        completeFilename:导出图片的路径    forceOverwrite:是否覆盖现有的playblast     format:输出的格式</span><br><span class="line">        width,heigt:分辨率     showOrnaments:是否显示轴坐标图      viewer:是否启动播放查看器</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        cmds.playblast(completeFilename=path,forceOverwrite=True,format=&quot;image&quot;,width=200,height=200,</span><br><span class="line">                       showOrnaments=False,startTime=1,endTime=1,viewer=False)</span><br><span class="line"></span><br><span class="line">        return path</span><br></pre></td></tr></table></figure>
+<pre><code>#-*-coding:gbk-*-
 
-<p>主要逻辑构建好，就可以构建UI了，UI构建在libraryUI.py中完成</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br></pre></td><td class="code"><pre><span class="line">#-*-coding:gbk-*-</span><br><span class="line"></span><br><span class="line">import controllerLibrary</span><br><span class="line">from imp import reload</span><br><span class="line">reload(controllerLibrary)</span><br><span class="line">from PySide2 import QtWidgets,QtCore,QtGui</span><br><span class="line">import maya.OpenMayaUI as omui</span><br><span class="line">import maya.cmds as cmds</span><br><span class="line">from shiboken2 import wrapInstance</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#获取maya主窗口</span><br><span class="line">def maya_main_window():</span><br><span class="line">    main_window_ptr = omui.MQtUtil.mainWindow()</span><br><span class="line">    return wrapInstance(long(main_window_ptr),QtWidgets.QWidget)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#ui类</span><br><span class="line">class ControllerLibraryUI(QtWidgets.QDialog):</span><br><span class="line"></span><br><span class="line">    #初始化</span><br><span class="line">    def __init__(self,parent=maya_main_window()):</span><br><span class="line">        super(ControllerLibraryUI, self).__init__(parent)</span><br><span class="line">        self.library = controllerLibrary.ControllerLibrary()</span><br><span class="line"></span><br><span class="line">        #图标size</span><br><span class="line">        self.size = 64</span><br><span class="line">        #格子Sizd</span><br><span class="line">        self.buffer=12</span><br><span class="line"></span><br><span class="line">        #设置窗口标题</span><br><span class="line">        self.setWindowTitle(u&quot;控制Library窗口&quot;)</span><br><span class="line">        #关闭问号按钮</span><br><span class="line">        self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)</span><br><span class="line"></span><br><span class="line">        self.createWidgets()</span><br><span class="line">        self.createLayouts()</span><br><span class="line">        self.createConnects()</span><br><span class="line"></span><br><span class="line">        #填充ListWidget</span><br><span class="line">        self.populate()</span><br><span class="line"></span><br><span class="line">    def createWidgets(self):</span><br><span class="line">        self.save_btn = QtWidgets.QPushButton(&quot;save&quot;)</span><br><span class="line">        self.saveName_lineEdit = QtWidgets.QLineEdit()</span><br><span class="line"></span><br><span class="line">        #设置listWidget</span><br><span class="line">        self.file_listWidget = QtWidgets.QListWidget()</span><br><span class="line">        #图标模式</span><br><span class="line">        self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)</span><br><span class="line">        #设置图标大小</span><br><span class="line">        self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))</span><br><span class="line">        #设置拉伸模式为Adjust</span><br><span class="line">        self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)</span><br><span class="line">        #设置GridSize</span><br><span class="line">        self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))</span><br><span class="line"></span><br><span class="line">        self.import_btn = QtWidgets.QPushButton(&quot;Import&quot;)</span><br><span class="line">        self.refresh_btn = QtWidgets.QPushButton(&quot;Refresh&quot;)</span><br><span class="line">        self.close_btn = QtWidgets.QPushButton(&quot;Close&quot;)</span><br><span class="line"></span><br><span class="line">    def createLayouts(self):</span><br><span class="line">        main_layout = QtWidgets.QVBoxLayout(self)</span><br><span class="line"></span><br><span class="line">        save_layout = QtWidgets.QHBoxLayout()</span><br><span class="line">        save_layout.addWidget(self.saveName_lineEdit)</span><br><span class="line">        save_layout.addWidget(self.save_btn)</span><br><span class="line">        main_layout.addLayout(save_layout)</span><br><span class="line"></span><br><span class="line">        main_layout.addWidget(self.file_listWidget)</span><br><span class="line"></span><br><span class="line">        btn_layout = QtWidgets.QHBoxLayout()</span><br><span class="line">        btn_layout.addWidget(self.import_btn)</span><br><span class="line">        btn_layout.addWidget(self.refresh_btn)</span><br><span class="line">        btn_layout.addWidget(self.close_btn)</span><br><span class="line">        main_layout.addLayout(btn_layout)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    def createConnects(self):</span><br><span class="line">        self.save_btn.clicked.connect(self.save)</span><br><span class="line"></span><br><span class="line">        self.import_btn.clicked.connect(self.load)</span><br><span class="line">        self.refresh_btn.clicked.connect(self.populate)</span><br><span class="line">        self.close_btn.clicked.connect(self.close)</span><br><span class="line"></span><br><span class="line">    def populate(self):</span><br><span class="line"></span><br><span class="line">        #清空file_list，避免重复增加</span><br><span class="line">        self.file_listWidget.clear()</span><br><span class="line">        #获取Directory文件夹下经过筛选的文件</span><br><span class="line">        self.library.find()</span><br><span class="line"></span><br><span class="line">        #获取键值对</span><br><span class="line">        for name,info in self.library.items():</span><br><span class="line">            #创建ListWidegtItem</span><br><span class="line">            item = QtWidgets.QListWidgetItem(name)</span><br><span class="line">            #添加到file_listWidget</span><br><span class="line">            self.file_listWidget.addItem(item)</span><br><span class="line"></span><br><span class="line">            #查看是否有截图</span><br><span class="line">            screenshot = info.get(&quot;screenshot&quot;)</span><br><span class="line">            if screenshot:</span><br><span class="line">                icon = QtGui.QIcon(screenshot)</span><br><span class="line">                item.setIcon(icon)</span><br><span class="line"></span><br><span class="line">    def load(self):</span><br><span class="line">        #获取当前选中的ListWidgetItem</span><br><span class="line">        currentItem = self.file_listWidget.currentItem()</span><br><span class="line">        #如果没有选中，则弹出警告</span><br><span class="line">        if not currentItem:</span><br><span class="line">            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;请选择文件！！&quot;)</span><br><span class="line">            return</span><br><span class="line"></span><br><span class="line">        self.library.load(currentItem.text())</span><br><span class="line"></span><br><span class="line">    def save(self):</span><br><span class="line">        #首先获取lineEdit的str</span><br><span class="line">        name = self.saveName_lineEdit.text()</span><br><span class="line"></span><br><span class="line">        #去除name的首尾空格</span><br><span class="line">        if not name.strip():</span><br><span class="line">            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;名字不合法！！&quot;)</span><br><span class="line">            return</span><br><span class="line"></span><br><span class="line">        self.library.save(name)</span><br><span class="line">        #重新更新ListWidget</span><br><span class="line">        self.populate()</span><br><span class="line">        #重置LineEdit</span><br><span class="line">        self.saveName_lineEdit.setText(&quot;&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def showUI():</span><br><span class="line">    ui = ControllerLibraryUI()</span><br><span class="line">    ui.show()</span><br><span class="line"></span><br><span class="line">    return ui</span><br></pre></td></tr></table></figure>
+from maya import cmds
+import os
+import json
+import pprint
 
-<h2 id="QListView和QListWidget的区别"><a href="#QListView和QListWidget的区别" class="headerlink" title="QListView和QListWidget的区别"></a>QListView和QListWidget的区别</h2><p>我上次搞图片快速分类工具的时候，对于图片文件的预览我使用了QListView来进行数据的展示。这次我用QListWidget列表展示数据，那么他们到底有什么不一样呢？</p>
+#获取Maya文档路径
+USERAPPDIR = cmds.internalVar(userAppDir=True)
+#文件夹路径
+DIRECTORY = os.path.join(USERAPPDIR, &quot;controllerLibrary&quot;)
+
+
+def createDirectory(directory=DIRECTORY):
+    &quot;&quot;&quot;
+    根据文件路径创建文件夹
+    Args:
+        directory(str): 要创建的文件夹路径
+
+    Returns:
+
+    &quot;&quot;&quot;
+    #首先判断文件夹是否存在
+    if not os.path.exists(directory):
+        #如果不存在那就创建文件夹
+        os.mkdir(directory)
+
+
+#继承字典类
+class ControllerLibrary(dict):
+
+    #保存文件方法
+    #**info关键字参数
+    def save(self,name,screenshot=True,directory=DIRECTORY,**info):
+
+        #首先要确认要保存的路径是否存在
+        createDirectory(directory)
+
+        #保存文件路径
+        path = os.path.join(directory,&quot;{0}.ma&quot;.format(name))
+        #json保存文件
+        infoFile = os.path.join(directory,&quot;{0}.json&quot;.format(name))
+        info[&quot;name&quot;] = name
+        info[&quot;path&quot;] = path
+
+        #判是否需要screenShot
+        if screenshot:
+            self.saveScreenshot(name,directory)
+
+        #进行场景文件的保存,保存格式为mayaAscii
+        cmds.file(rename=path)
+
+        #如果进行了选择，就单独保存选择了的物体场景
+        if cmds.ls(selection=True):
+            cmds.file(force=True,type=&quot;mayaAscii&quot;,exportSelected=True)
+
+        #否则保存全部场景物体
+        else:
+            cmds.file(save=True,type=&quot;mayaAscii&quot;,force=True)
+
+        #打开infoFile文件,保存为json格式,写入文件
+        with open(infoFile,&quot;w&quot;) as f:
+            json.dump(info,f,indent=4)
+
+        self[name] = path
+
+    #获得文件夹下的所有文件
+    def find(self,directory=DIRECTORY):
+        # 进行清空，避免删除.ma文件时没有更新
+        self.clear()
+
+        if not os.path.exists(directory):
+            return None
+
+        files = os.listdir(directory)
+
+        #进行特定筛选，只获取ma文件
+        mayaFiles = [f for f in files if f.endswith(&quot;.ma&quot;)]
+
+        #进行键值对存储
+        for ma in mayaFiles:
+            #分离文件名和扩展名
+            name,ext = os.path.splitext(ma)
+            path = os.path.join(directory,ma)
+
+            #查看是否json文件
+            infoFile = &quot;{0}.json&quot;.format(name)
+            if infoFile in files:
+                infoFile = os.path.join(directory,infoFile)
+                #读取每个场景配置的json文件
+                with open(infoFile,&quot;r&quot;) as f:
+                    #进行读取
+                    info = json.load(f)
+
+            else:
+                print(u&quot;没有发现{0}文件&quot;.format(infoFile))
+                info = {}
+
+            #查看是否screenshot图片
+            screenshot = &quot;{0}.jpg&quot;.format(name)
+            if screenshot in files:
+                info[&quot;screenshot&quot;] = os.path.join(directory,screenshot)
+
+            info[&quot;name&quot;]=name
+            info[&quot;path&quot;]=path
+
+            self[name]=info
+            #print(info)
+
+    #加载
+    def load(self,name):
+        path = self[name][&quot;path&quot;]
+
+        #进行加载
+        cmds.file(path,i=True,usingNamespaces=False)
+
+    #保存屏幕截图
+    def saveScreenshot(self,name,directory=DIRECTORY):
+        #确定图片保存的路径
+        path = os.path.join(directory,&quot;{0}.jpg&quot;.format(name))
+
+        #将摄像机对准物体，以方便进行截图
+        cmds.viewFit()
+        #确定保存图片格式为jpg
+        cmds.setAttr(&quot;defaultRenderGlobals.imageFormat&quot;,8)
+
+        #进行截图,这个相当于渲染命令
+        &quot;&quot;&quot;
+        completeFilename:导出图片的路径    forceOverwrite:是否覆盖现有的playblast     format:输出的格式
+        width,heigt:分辨率     showOrnaments:是否显示轴坐标图      viewer:是否启动播放查看器
+        &quot;&quot;&quot;
+        cmds.playblast(completeFilename=path,forceOverwrite=True,format=&quot;image&quot;,width=200,height=200,
+                       showOrnaments=False,startTime=1,endTime=1,viewer=False)
+
+        return path
+
+</code></pre><p>主要逻辑构建好，就可以构建UI了，UI构建在libraryUI.py中完成</p>
+<pre><code>#-*-coding:gbk-*-
+
+import controllerLibrary
+from imp import reload
+reload(controllerLibrary)
+from PySide2 import QtWidgets,QtCore,QtGui
+import maya.OpenMayaUI as omui
+import maya.cmds as cmds
+from shiboken2 import wrapInstance
+
+
+#获取maya主窗口
+def maya_main_window():
+    main_window_ptr = omui.MQtUtil.mainWindow()
+    return wrapInstance(long(main_window_ptr),QtWidgets.QWidget)
+
+
+#ui类
+class ControllerLibraryUI(QtWidgets.QDialog):
+
+    #初始化
+    def __init__(self,parent=maya_main_window()):
+        super(ControllerLibraryUI, self).__init__(parent)
+        self.library = controllerLibrary.ControllerLibrary()
+
+        #图标size
+        self.size = 64
+        #格子Sizd
+        self.buffer=12
+
+        #设置窗口标题
+        self.setWindowTitle(u&quot;控制Library窗口&quot;)
+        #关闭问号按钮
+        self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
+
+        self.createWidgets()
+        self.createLayouts()
+        self.createConnects()
+
+        #填充ListWidget
+        self.populate()
+
+    def createWidgets(self):
+        self.save_btn = QtWidgets.QPushButton(&quot;save&quot;)
+        self.saveName_lineEdit = QtWidgets.QLineEdit()
+
+        #设置listWidget
+        self.file_listWidget = QtWidgets.QListWidget()
+        #图标模式
+        self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)
+        #设置图标大小
+        self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))
+        #设置拉伸模式为Adjust
+        self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)
+        #设置GridSize
+        self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))
+
+        self.import_btn = QtWidgets.QPushButton(&quot;Import&quot;)
+        self.refresh_btn = QtWidgets.QPushButton(&quot;Refresh&quot;)
+        self.close_btn = QtWidgets.QPushButton(&quot;Close&quot;)
+
+    def createLayouts(self):
+        main_layout = QtWidgets.QVBoxLayout(self)
+
+        save_layout = QtWidgets.QHBoxLayout()
+        save_layout.addWidget(self.saveName_lineEdit)
+        save_layout.addWidget(self.save_btn)
+        main_layout.addLayout(save_layout)
+
+        main_layout.addWidget(self.file_listWidget)
+
+        btn_layout = QtWidgets.QHBoxLayout()
+        btn_layout.addWidget(self.import_btn)
+        btn_layout.addWidget(self.refresh_btn)
+        btn_layout.addWidget(self.close_btn)
+        main_layout.addLayout(btn_layout)
+
+
+
+    def createConnects(self):
+        self.save_btn.clicked.connect(self.save)
+
+        self.import_btn.clicked.connect(self.load)
+        self.refresh_btn.clicked.connect(self.populate)
+        self.close_btn.clicked.connect(self.close)
+
+    def populate(self):
+
+        #清空file_list，避免重复增加
+        self.file_listWidget.clear()
+        #获取Directory文件夹下经过筛选的文件
+        self.library.find()
+
+        #获取键值对
+        for name,info in self.library.items():
+            #创建ListWidegtItem
+            item = QtWidgets.QListWidgetItem(name)
+            #添加到file_listWidget
+            self.file_listWidget.addItem(item)
+
+            #查看是否有截图
+            screenshot = info.get(&quot;screenshot&quot;)
+            if screenshot:
+                icon = QtGui.QIcon(screenshot)
+                item.setIcon(icon)
+
+    def load(self):
+        #获取当前选中的ListWidgetItem
+        currentItem = self.file_listWidget.currentItem()
+        #如果没有选中，则弹出警告
+        if not currentItem:
+            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;请选择文件！！&quot;)
+            return
+
+        self.library.load(currentItem.text())
+
+    def save(self):
+        #首先获取lineEdit的str
+        name = self.saveName_lineEdit.text()
+
+        #去除name的首尾空格
+        if not name.strip():
+            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;名字不合法！！&quot;)
+            return
+
+        self.library.save(name)
+        #重新更新ListWidget
+        self.populate()
+        #重置LineEdit
+        self.saveName_lineEdit.setText(&quot;&quot;)
+
+
+def showUI():
+    ui = ControllerLibraryUI()
+    ui.show()
+
+    return ui</code></pre><h2 id="QListView和QListWidget的区别"><a href="#QListView和QListWidget的区别" class="headerlink" title="QListView和QListWidget的区别"></a>QListView和QListWidget的区别</h2><p>我上次搞图片快速分类工具的时候，对于图片文件的预览我使用了QListView来进行数据的展示。这次我用QListWidget列表展示数据，那么他们到底有什么不一样呢？</p>
 <p><strong>QlistView类用于展示数据，它的子类是QListWIdget。QListView是基于模型（Model）的，需要程序来建立模型，然后再保存数据。QListWidget是一个升级版本的QListView，它已经建立了一个数据储存模型（QListWidgetItem），直接调用addItem（）函数，就可以添加条目（Item）</strong></p>
 <p>图片快速分类中QlistView的使用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#创建QFileSystemModel</span><br><span class="line">      #QFileSystemModel是一个维护文件目录内容信息的模型，它本身不包含任何数据项，而只是表示本地文件系统上的文件和目录。</span><br><span class="line">      self.file_model = QtWidgets.QFileSystemModel()</span><br><span class="line">      #设置过滤器</span><br><span class="line">      self.file_model.setNameFilters(self.FILTERS)</span><br><span class="line">      #隐藏过滤掉的文件</span><br><span class="line">      self.file_model.setNameFilterDisables(False)</span><br><span class="line">      #设置Model</span><br><span class="line">      self.ui.image_list_view.setModel(self.file_model)</span><br></pre></td></tr></table></figure>
-
-<p>存储导入工具中QListWidget的使用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#设置listWidget</span><br><span class="line">      self.file_listWidget = QtWidgets.QListWidget()</span><br><span class="line">      #图标模式</span><br><span class="line">      self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)</span><br><span class="line">      #设置图标大小</span><br><span class="line">      self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))</span><br><span class="line">      #设置拉伸模式为Adjust</span><br><span class="line">      self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)</span><br><span class="line">      #设置GridSize        				self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))</span><br></pre></td></tr></table></figure>
-
- 
+<pre><code>        #创建QFileSystemModel
+        #QFileSystemModel是一个维护文件目录内容信息的模型，它本身不包含任何数据项，而只是表示本地文件系统上的文件和目录。
+        self.file_model = QtWidgets.QFileSystemModel()
+        #设置过滤器
+        self.file_model.setNameFilters(self.FILTERS)
+        #隐藏过滤掉的文件
+        self.file_model.setNameFilterDisables(False)
+        #设置Model
+        self.ui.image_list_view.setModel(self.file_model)
+</code></pre><p>存储导入工具中QListWidget的使用</p>
+<pre><code>        #设置listWidget
+        self.file_listWidget = QtWidgets.QListWidget()
+        #图标模式
+        self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)
+        #设置图标大小
+        self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))
+        #设置拉伸模式为Adjust
+        self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)
+        #设置GridSize                        self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))</code></pre> 
       <!-- reward -->
       
     </div>

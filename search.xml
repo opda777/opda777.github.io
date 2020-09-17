@@ -1,38 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Maya导出存储文件工具</title>
-    <url>/2020/08/31/Maya%E5%AF%BC%E5%87%BA%E5%AD%98%E5%82%A8%E6%96%87%E4%BB%B6%E5%B7%A5%E5%85%B7/</url>
-    <content><![CDATA[<p>笔记记录</p>
-<a id="more"></a>
-
-<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>保存场景为ma文件，并且可以加载，刷新等。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/GIF%202020-8-31%2015-49-31.gif" alt></p>
-<h2 id="主要思路"><a href="#主要思路" class="headerlink" title="主要思路"></a>主要思路</h2><p>主要逻辑在controllerLibrary.py脚本，save，find，load3个方法。创建ControllerLibrary类继承于dict字典类，数据存储name,path,screenshot的相关路径等等。</p>
-<p>主要API：cmds.file()进行文件的存储和读取    cmds.viewFit():将摄像机对准物体    cmds.playblast():渲染导出图片    json.dump()：json文件的编码写入    json.load():json文件的解码读取</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200831160940099.png" alt="image-20200831160940099"></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#-*-coding:gbk-*-</span><br><span class="line"></span><br><span class="line">from maya import cmds</span><br><span class="line">import os</span><br><span class="line">import json</span><br><span class="line">import pprint</span><br><span class="line"></span><br><span class="line">#获取Maya文档路径</span><br><span class="line">USERAPPDIR = cmds.internalVar(userAppDir=True)</span><br><span class="line">#文件夹路径</span><br><span class="line">DIRECTORY = os.path.join(USERAPPDIR, &quot;controllerLibrary&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def createDirectory(directory=DIRECTORY):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    根据文件路径创建文件夹</span><br><span class="line">    Args:</span><br><span class="line">        directory(str): 要创建的文件夹路径</span><br><span class="line"></span><br><span class="line">    Returns:</span><br><span class="line"></span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    #首先判断文件夹是否存在</span><br><span class="line">    if not os.path.exists(directory):</span><br><span class="line">        #如果不存在那就创建文件夹</span><br><span class="line">        os.mkdir(directory)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#继承字典类</span><br><span class="line">class ControllerLibrary(dict):</span><br><span class="line"></span><br><span class="line">    #保存文件方法</span><br><span class="line">    #**info关键字参数</span><br><span class="line">    def save(self,name,screenshot=True,directory=DIRECTORY,**info):</span><br><span class="line"></span><br><span class="line">        #首先要确认要保存的路径是否存在</span><br><span class="line">        createDirectory(directory)</span><br><span class="line"></span><br><span class="line">        #保存文件路径</span><br><span class="line">        path = os.path.join(directory,&quot;&#123;0&#125;.ma&quot;.format(name))</span><br><span class="line">        #json保存文件</span><br><span class="line">        infoFile = os.path.join(directory,&quot;&#123;0&#125;.json&quot;.format(name))</span><br><span class="line">        info[&quot;name&quot;] = name</span><br><span class="line">        info[&quot;path&quot;] = path</span><br><span class="line"></span><br><span class="line">        #判是否需要screenShot</span><br><span class="line">        if screenshot:</span><br><span class="line">            self.saveScreenshot(name,directory)</span><br><span class="line"></span><br><span class="line">        #进行场景文件的保存,保存格式为mayaAscii</span><br><span class="line">        cmds.file(rename=path)</span><br><span class="line"></span><br><span class="line">        #如果进行了选择，就单独保存选择了的物体场景</span><br><span class="line">        if cmds.ls(selection=True):</span><br><span class="line">            cmds.file(force=True,type=&quot;mayaAscii&quot;,exportSelected=True)</span><br><span class="line"></span><br><span class="line">        #否则保存全部场景物体</span><br><span class="line">        else:</span><br><span class="line">            cmds.file(save=True,type=&quot;mayaAscii&quot;,force=True)</span><br><span class="line"></span><br><span class="line">        #打开infoFile文件,保存为json格式,写入文件</span><br><span class="line">        with open(infoFile,&quot;w&quot;) as f:</span><br><span class="line">            json.dump(info,f,indent=4)</span><br><span class="line"></span><br><span class="line">        self[name] = path</span><br><span class="line"></span><br><span class="line">    #获得文件夹下的所有文件</span><br><span class="line">    def find(self,directory=DIRECTORY):</span><br><span class="line">        # 进行清空，避免删除.ma文件时没有更新</span><br><span class="line">        self.clear()</span><br><span class="line"></span><br><span class="line">        if not os.path.exists(directory):</span><br><span class="line">            return None</span><br><span class="line"></span><br><span class="line">        files = os.listdir(directory)</span><br><span class="line"></span><br><span class="line">        #进行特定筛选，只获取ma文件</span><br><span class="line">        mayaFiles = [f for f in files if f.endswith(&quot;.ma&quot;)]</span><br><span class="line"></span><br><span class="line">        #进行键值对存储</span><br><span class="line">        for ma in mayaFiles:</span><br><span class="line">            #分离文件名和扩展名</span><br><span class="line">            name,ext = os.path.splitext(ma)</span><br><span class="line">            path = os.path.join(directory,ma)</span><br><span class="line"></span><br><span class="line">            #查看是否json文件</span><br><span class="line">            infoFile = &quot;&#123;0&#125;.json&quot;.format(name)</span><br><span class="line">            if infoFile in files:</span><br><span class="line">                infoFile = os.path.join(directory,infoFile)</span><br><span class="line">                #读取每个场景配置的json文件</span><br><span class="line">                with open(infoFile,&quot;r&quot;) as f:</span><br><span class="line">                    #进行读取</span><br><span class="line">                    info = json.load(f)</span><br><span class="line"></span><br><span class="line">            else:</span><br><span class="line">                print(u&quot;没有发现&#123;0&#125;文件&quot;.format(infoFile))</span><br><span class="line">                info = &#123;&#125;</span><br><span class="line"></span><br><span class="line">            #查看是否screenshot图片</span><br><span class="line">            screenshot = &quot;&#123;0&#125;.jpg&quot;.format(name)</span><br><span class="line">            if screenshot in files:</span><br><span class="line">                info[&quot;screenshot&quot;] = os.path.join(directory,screenshot)</span><br><span class="line"></span><br><span class="line">            info[&quot;name&quot;]=name</span><br><span class="line">            info[&quot;path&quot;]=path</span><br><span class="line"></span><br><span class="line">            self[name]=info</span><br><span class="line">            #print(info)</span><br><span class="line"></span><br><span class="line">    #加载</span><br><span class="line">    def load(self,name):</span><br><span class="line">        path = self[name][&quot;path&quot;]</span><br><span class="line"></span><br><span class="line">        #进行加载</span><br><span class="line">        cmds.file(path,i=True,usingNamespaces=False)</span><br><span class="line"></span><br><span class="line">    #保存屏幕截图</span><br><span class="line">    def saveScreenshot(self,name,directory=DIRECTORY):</span><br><span class="line">        #确定图片保存的路径</span><br><span class="line">        path = os.path.join(directory,&quot;&#123;0&#125;.jpg&quot;.format(name))</span><br><span class="line"></span><br><span class="line">        #将摄像机对准物体，以方便进行截图</span><br><span class="line">        cmds.viewFit()</span><br><span class="line">        #确定保存图片格式为jpg</span><br><span class="line">        cmds.setAttr(&quot;defaultRenderGlobals.imageFormat&quot;,8)</span><br><span class="line"></span><br><span class="line">        #进行截图,这个相当于渲染命令</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        completeFilename:导出图片的路径    forceOverwrite:是否覆盖现有的playblast     format:输出的格式</span><br><span class="line">        width,heigt:分辨率     showOrnaments:是否显示轴坐标图      viewer:是否启动播放查看器</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        cmds.playblast(completeFilename=path,forceOverwrite=True,format=&quot;image&quot;,width=200,height=200,</span><br><span class="line">                       showOrnaments=False,startTime=1,endTime=1,viewer=False)</span><br><span class="line"></span><br><span class="line">        return path</span><br></pre></td></tr></table></figure>
-
-<p>主要逻辑构建好，就可以构建UI了，UI构建在libraryUI.py中完成</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#-*-coding:gbk-*-</span><br><span class="line"></span><br><span class="line">import controllerLibrary</span><br><span class="line">from imp import reload</span><br><span class="line">reload(controllerLibrary)</span><br><span class="line">from PySide2 import QtWidgets,QtCore,QtGui</span><br><span class="line">import maya.OpenMayaUI as omui</span><br><span class="line">import maya.cmds as cmds</span><br><span class="line">from shiboken2 import wrapInstance</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#获取maya主窗口</span><br><span class="line">def maya_main_window():</span><br><span class="line">    main_window_ptr = omui.MQtUtil.mainWindow()</span><br><span class="line">    return wrapInstance(long(main_window_ptr),QtWidgets.QWidget)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#ui类</span><br><span class="line">class ControllerLibraryUI(QtWidgets.QDialog):</span><br><span class="line"></span><br><span class="line">    #初始化</span><br><span class="line">    def __init__(self,parent=maya_main_window()):</span><br><span class="line">        super(ControllerLibraryUI, self).__init__(parent)</span><br><span class="line">        self.library = controllerLibrary.ControllerLibrary()</span><br><span class="line"></span><br><span class="line">        #图标size</span><br><span class="line">        self.size = 64</span><br><span class="line">        #格子Sizd</span><br><span class="line">        self.buffer=12</span><br><span class="line"></span><br><span class="line">        #设置窗口标题</span><br><span class="line">        self.setWindowTitle(u&quot;控制Library窗口&quot;)</span><br><span class="line">        #关闭问号按钮</span><br><span class="line">        self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)</span><br><span class="line"></span><br><span class="line">        self.createWidgets()</span><br><span class="line">        self.createLayouts()</span><br><span class="line">        self.createConnects()</span><br><span class="line"></span><br><span class="line">        #填充ListWidget</span><br><span class="line">        self.populate()</span><br><span class="line"></span><br><span class="line">    def createWidgets(self):</span><br><span class="line">        self.save_btn = QtWidgets.QPushButton(&quot;save&quot;)</span><br><span class="line">        self.saveName_lineEdit = QtWidgets.QLineEdit()</span><br><span class="line"></span><br><span class="line">        #设置listWidget</span><br><span class="line">        self.file_listWidget = QtWidgets.QListWidget()</span><br><span class="line">        #图标模式</span><br><span class="line">        self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)</span><br><span class="line">        #设置图标大小</span><br><span class="line">        self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))</span><br><span class="line">        #设置拉伸模式为Adjust</span><br><span class="line">        self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)</span><br><span class="line">        #设置GridSize</span><br><span class="line">        self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))</span><br><span class="line"></span><br><span class="line">        self.import_btn = QtWidgets.QPushButton(&quot;Import&quot;)</span><br><span class="line">        self.refresh_btn = QtWidgets.QPushButton(&quot;Refresh&quot;)</span><br><span class="line">        self.close_btn = QtWidgets.QPushButton(&quot;Close&quot;)</span><br><span class="line"></span><br><span class="line">    def createLayouts(self):</span><br><span class="line">        main_layout = QtWidgets.QVBoxLayout(self)</span><br><span class="line"></span><br><span class="line">        save_layout = QtWidgets.QHBoxLayout()</span><br><span class="line">        save_layout.addWidget(self.saveName_lineEdit)</span><br><span class="line">        save_layout.addWidget(self.save_btn)</span><br><span class="line">        main_layout.addLayout(save_layout)</span><br><span class="line"></span><br><span class="line">        main_layout.addWidget(self.file_listWidget)</span><br><span class="line"></span><br><span class="line">        btn_layout = QtWidgets.QHBoxLayout()</span><br><span class="line">        btn_layout.addWidget(self.import_btn)</span><br><span class="line">        btn_layout.addWidget(self.refresh_btn)</span><br><span class="line">        btn_layout.addWidget(self.close_btn)</span><br><span class="line">        main_layout.addLayout(btn_layout)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    def createConnects(self):</span><br><span class="line">        self.save_btn.clicked.connect(self.save)</span><br><span class="line"></span><br><span class="line">        self.import_btn.clicked.connect(self.load)</span><br><span class="line">        self.refresh_btn.clicked.connect(self.populate)</span><br><span class="line">        self.close_btn.clicked.connect(self.close)</span><br><span class="line"></span><br><span class="line">    def populate(self):</span><br><span class="line"></span><br><span class="line">        #清空file_list，避免重复增加</span><br><span class="line">        self.file_listWidget.clear()</span><br><span class="line">        #获取Directory文件夹下经过筛选的文件</span><br><span class="line">        self.library.find()</span><br><span class="line"></span><br><span class="line">        #获取键值对</span><br><span class="line">        for name,info in self.library.items():</span><br><span class="line">            #创建ListWidegtItem</span><br><span class="line">            item = QtWidgets.QListWidgetItem(name)</span><br><span class="line">            #添加到file_listWidget</span><br><span class="line">            self.file_listWidget.addItem(item)</span><br><span class="line"></span><br><span class="line">            #查看是否有截图</span><br><span class="line">            screenshot = info.get(&quot;screenshot&quot;)</span><br><span class="line">            if screenshot:</span><br><span class="line">                icon = QtGui.QIcon(screenshot)</span><br><span class="line">                item.setIcon(icon)</span><br><span class="line"></span><br><span class="line">    def load(self):</span><br><span class="line">        #获取当前选中的ListWidgetItem</span><br><span class="line">        currentItem = self.file_listWidget.currentItem()</span><br><span class="line">        #如果没有选中，则弹出警告</span><br><span class="line">        if not currentItem:</span><br><span class="line">            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;请选择文件！！&quot;)</span><br><span class="line">            return</span><br><span class="line"></span><br><span class="line">        self.library.load(currentItem.text())</span><br><span class="line"></span><br><span class="line">    def save(self):</span><br><span class="line">        #首先获取lineEdit的str</span><br><span class="line">        name = self.saveName_lineEdit.text()</span><br><span class="line"></span><br><span class="line">        #去除name的首尾空格</span><br><span class="line">        if not name.strip():</span><br><span class="line">            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;名字不合法！！&quot;)</span><br><span class="line">            return</span><br><span class="line"></span><br><span class="line">        self.library.save(name)</span><br><span class="line">        #重新更新ListWidget</span><br><span class="line">        self.populate()</span><br><span class="line">        #重置LineEdit</span><br><span class="line">        self.saveName_lineEdit.setText(&quot;&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def showUI():</span><br><span class="line">    ui = ControllerLibraryUI()</span><br><span class="line">    ui.show()</span><br><span class="line"></span><br><span class="line">    return ui</span><br></pre></td></tr></table></figure>
-
-<h2 id="QListView和QListWidget的区别"><a href="#QListView和QListWidget的区别" class="headerlink" title="QListView和QListWidget的区别"></a>QListView和QListWidget的区别</h2><p>我上次搞图片快速分类工具的时候，对于图片文件的预览我使用了QListView来进行数据的展示。这次我用QListWidget列表展示数据，那么他们到底有什么不一样呢？</p>
-<p><strong>QlistView类用于展示数据，它的子类是QListWIdget。QListView是基于模型（Model）的，需要程序来建立模型，然后再保存数据。QListWidget是一个升级版本的QListView，它已经建立了一个数据储存模型（QListWidgetItem），直接调用addItem（）函数，就可以添加条目（Item）</strong></p>
-<p>图片快速分类中QlistView的使用</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#创建QFileSystemModel</span><br><span class="line">      #QFileSystemModel是一个维护文件目录内容信息的模型，它本身不包含任何数据项，而只是表示本地文件系统上的文件和目录。</span><br><span class="line">      self.file_model = QtWidgets.QFileSystemModel()</span><br><span class="line">      #设置过滤器</span><br><span class="line">      self.file_model.setNameFilters(self.FILTERS)</span><br><span class="line">      #隐藏过滤掉的文件</span><br><span class="line">      self.file_model.setNameFilterDisables(False)</span><br><span class="line">      #设置Model</span><br><span class="line">      self.ui.image_list_view.setModel(self.file_model)</span><br></pre></td></tr></table></figure>
-
-<p>存储导入工具中QListWidget的使用</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#设置listWidget</span><br><span class="line">      self.file_listWidget = QtWidgets.QListWidget()</span><br><span class="line">      #图标模式</span><br><span class="line">      self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)</span><br><span class="line">      #设置图标大小</span><br><span class="line">      self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))</span><br><span class="line">      #设置拉伸模式为Adjust</span><br><span class="line">      self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)</span><br><span class="line">      #设置GridSize        				self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>Maya</category>
-      </categories>
-      <tags>
-        <tag>Maya</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>2019年---小记</title>
     <url>/2020/01/07/2019%E5%B9%B4---%E5%B0%8F%E8%AE%B0/</url>
     <content><![CDATA[<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>​    在三维动画，交互设计等等的课程实训，我掐指一算已经有两个月没有更新自己的笔记了，没办法，我也不知道为什么我这个专业的实训特别特别得多….其实早就放假啦，自己也摸鱼了一个星期恢复下元气。</p>
@@ -71,8 +39,9 @@
 <h2 id="3-最后一步"><a href="#3-最后一步" class="headerlink" title="3.最后一步"></a>3.最后一步</h2><p>我们还要在本地博客的source文件夹下新建一个CNAME.txt文本，在里面输入我们的自定义域名</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/7.png" alt></p>
 <p>最后我们Git Base重新部署一下博客就行啦！</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
-
+<pre><code class="base">hexo clean
+hexo g
+hexo d</code></pre>
 <h2 id="4-深坑"><a href="#4-深坑" class="headerlink" title="4.深坑"></a>4.深坑</h2><p>​        如果你是校园网用户的话，你要小心校园网DNS这个坑，会让你无法访问你自己的域名，所以解决方法就是修改我们的DNS就好了。</p>
 <p>打开我们的控制面板—网络共享中心</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/8.png" alt></p>
@@ -161,6 +130,585 @@
       </tags>
   </entry>
   <entry>
+    <title>Maya简易控制器</title>
+    <url>/2020/08/24/Maya%E7%AE%80%E6%98%93%E6%8E%A7%E5%88%B6%E5%99%A8/</url>
+    <content><![CDATA[<p>Maya教程笔记，过程中会记录自己所遇到的问题和新知识</p>
+<a id="more"></a>
+
+<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>控制器的简易添加，缩放控制器，控制器的颜色选择</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/GIF%202020-8-24%2022-52-16.gif" alt="GIF 2020-8-24 22-52-16"></p>
+<h2 id="QLabel"><a href="#QLabel" class="headerlink" title="QLabel"></a>QLabel</h2><p>QLabel提供了一个文本或者图像的显示，没有提供交互功能，在建议控制器中我利用QLabel进行了文字的显示和背景颜色显示</p>
+<pre><code>self.controlScale_label = QtWidgets.QLabel(u&quot;控制器Scale&quot;,alignment=QtCore.Qt.AlignCenter)
+#设置格式
+self.controlScale_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot;)</code></pre><h2 id="Constraints-约束"><a href="#Constraints-约束" class="headerlink" title="Constraints(约束)"></a>Constraints(约束)</h2><p>point constraints（点约束）：约束位移</p>
+<p>orient constraints（反向约束）：约束旋转</p>
+<p>parent constraints（父约束）：约束位移和旋转</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><pre><code>1.首先要获取选中的物体，然后判断是否为joint骨骼类型，如果是则获取选中物体的所有子物体
+2.根据joint数量生成一定的控制器，调整控制器的旋转和位置与joint一致
+3.进行parent约束限制，这样生成的Circle就可以控制joints
+4.利用Pyside2进行GUI的设置，完成交互</code></pre><h2 id="OverrideColor设置问题"><a href="#OverrideColor设置问题" class="headerlink" title="OverrideColor设置问题"></a>OverrideColor设置问题</h2><p>首先OverrideColor指的是Shape下的设置</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200824230019419.png" alt="image-20200824230019419"></p>
+<p>这里我需要将颜色设置为RGB而非索引，所以需要一下代码,这里应该可以直接设置overrideColorRGB属性的，但不知道哪里出了问题，所以我就曲线救国</p>
+<pre><code>            #获取选中物体的shape
+            shape = cmds.listRelatives(tempControl,children=True)[0]
+            cmds.setAttr(shape+&quot;.overrideEnabled&quot;,True)
+            cmds.setAttr(shape+&quot;.overrideRGBColors&quot;,1)
+
+            #设置颜色值
+            cmds.setAttr(shape+&quot;.overrideColorR &quot;,self.color.redF())
+            cmds.setAttr(shape + &quot;.overrideColorG &quot;, self.color.greenF())
+            cmds.setAttr(shape + &quot;.overrideColorB &quot;, self.color.blueF())
+            #print(cmds.getAttr(shape+&quot;.overrideColor&quot;))</code></pre><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200824230220071.png" alt="image-20200824230220071"></p>
+<h2 id="Circle-Scale问题"><a href="#Circle-Scale问题" class="headerlink" title="Circle Scale问题"></a>Circle Scale问题</h2><p>这里不是直接缩放Circle，而是缩放Circle的controlVertics（控制顶点），这样就可以直接连续缩放</p>
+<pre><code>    def smallScale(self):
+        #获得选中的物体
+        selectionControl = cmds.ls(selection=True)
+        #获取缩放值
+        scaleFactor = self.scale_DoubleSpinBox.value()
+        for tempControl in selectionControl:
+            # Scale控制顶点
+            cmds.scale(1-scaleFactor,1-scaleFactor,1-scaleFactor,tempControl+&quot;.cv[0:]&quot;)</code></pre><h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><pre><code># -*- coding: GBK -*-
+from PySide2 import QtWidgets,QtGui,QtCore
+from shiboken2 import wrapInstance
+from maya import OpenMayaUI as omui
+import maya.cmds as cmds
+
+#maya主窗口
+def maya_main_window():
+    main_window_ptr = omui.MQtUtil.mainWindow()
+    return wrapInstance(long(main_window_ptr),QtWidgets.QWidget)
+
+window_w = 200
+window_h = 168
+
+
+class RigTools_Dialog(QtWidgets.QDialog):
+
+    def __init__(self,parent = maya_main_window()):
+        super(RigTools_Dialog, self).__init__(parent)
+        #设置默认颜色
+        self.color = QtGui.QColor(&quot;#FFFFFF&quot;)
+        self.control_list=[]
+        self.offset_list=[]
+
+        #设置窗口名称
+        self.setWindowTitle(&quot;RigTools&quot;)
+        #设置窗口大小
+        self.setFixedWidth(window_w)
+        self.setFixedHeight(window_h)
+        #关闭问号按钮
+        self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
+
+        self.createWidgets()
+        self.createLayouts()
+        self.createConnects()
+
+
+    def createWidgets(self):
+        self.rig_btn = QtWidgets.QPushButton(&quot;Rig&quot;)
+        self.rig_btn.setFixedWidth(window_w)
+        self.rig_btn.setFixedHeight(40)
+
+        self.controlScale_label = QtWidgets.QLabel(u&quot;控制器Scale&quot;,alignment=QtCore.Qt.AlignCenter)
+        #设置格式
+        self.controlScale_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot;)
+
+        self.scale_DoubleSpinBox = QtWidgets.QDoubleSpinBox()
+        #设置范围，经度，步长
+        self.scale_DoubleSpinBox.setRange(0,1)
+        self.scale_DoubleSpinBox.setDecimals(2)
+        self.scale_DoubleSpinBox.setSingleStep(0.05)
+        self.smallScale_btn = QtWidgets.QPushButton(&quot;Small&quot;)
+        self.bigScale_btn = QtWidgets.QPushButton(&quot;Big&quot;)
+
+        self.controlColor_label = QtWidgets.QLabel(u&quot;控制器颜色&quot;,alignment=QtCore.Qt.AlignCenter)
+        self.controlColor_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot;)
+
+        self.color_pick_label = QtWidgets.QLabel()
+        self.color_pick_label.setStyleSheet(&quot;background-color:rgb(255,255,255,255)&quot;)
+        self.color_pick_btn = QtWidgets.QPushButton(u&quot;颜色选择&quot;)
+
+        self.color_set_btn = QtWidgets.QPushButton(u&quot;颜色设置&quot;)
+
+
+        pass
+
+    def createLayouts(self):
+        #主层级
+        main_layout = QtWidgets.QVBoxLayout(self)
+        main_layout.setMargin(0)
+        main_layout.setSpacing(0)
+
+        main_layout.addWidget(self.rig_btn)
+
+        main_layout.addWidget(self.controlScale_label)
+
+        HLayout = QtWidgets.QHBoxLayout()
+        main_layout.setSpacing(5)
+        HLayout.addWidget(self.scale_DoubleSpinBox)
+        HLayout.addWidget(self.smallScale_btn)
+        HLayout.addWidget(self.bigScale_btn)
+        main_layout.addLayout(HLayout)
+
+        main_layout.addWidget(self.controlColor_label)
+
+        H_Color_Layout = QtWidgets.QHBoxLayout()
+        H_Color_Layout.addWidget(self.color_pick_label)
+        H_Color_Layout.addWidget(self.color_pick_btn)
+        main_layout.addLayout(H_Color_Layout)
+
+        main_layout.addWidget(self.color_set_btn)
+
+        pass
+
+    def createConnects(self):
+        self.rig_btn.clicked.connect(self.rig_function)
+        self.smallScale_btn.clicked.connect(self.smallScale)
+        self.bigScale_btn.clicked.connect(self.bigScale)
+        self.color_pick_btn.clicked.connect(self.color_pick)
+        self.color_set_btn.clicked.connect(self.color_set)
+
+    def smallScale(self):
+        #获得选中的物体
+        selectionControl = cmds.ls(selection=True)
+        #获取缩放值
+        scaleFactor = self.scale_DoubleSpinBox.value()
+        for tempControl in selectionControl:
+            # Scale控制顶点
+            cmds.scale(1-scaleFactor,1-scaleFactor,1-scaleFactor,tempControl+&quot;.cv[0:]&quot;)
+        pass
+
+    def bigScale(self):
+        # 获得选中的物体
+        selectionControl = cmds.ls(selection=True)
+        # 获取缩放值
+        scaleFactor = self.scale_DoubleSpinBox.value()
+        print(scaleFactor)
+        for tempControl in selectionControl:
+            #Scale控制顶点
+            cmds.scale(1.0 + scaleFactor, 1.0 + scaleFactor, 1.0 + scaleFactor, tempControl+&quot;.cv[0:]&quot;)
+
+        pass
+
+    def color_pick(self):
+        #获取颜色选择
+        color = QtWidgets.QColorDialog.getColor()
+        self.color = color
+        self.color_pick_label.setStyleSheet(&quot;background-color: {0}&quot;.format(color.name()))
+
+    def color_set(self):
+        #获取选中的物体
+        selectionControl = cmds.ls(selection=True)
+        #设置颜色值
+        for tempControl in selectionControl:
+            #获取选中物体的shape
+            shape = cmds.listRelatives(tempControl,children=True)[0]
+            cmds.setAttr(shape+&quot;.overrideEnabled&quot;,True)
+            cmds.setAttr(shape+&quot;.overrideRGBColors&quot;,1)
+
+            #设置颜色值
+            cmds.setAttr(shape+&quot;.overrideColorR &quot;,self.color.redF())
+            cmds.setAttr(shape + &quot;.overrideColorG &quot;, self.color.greenF())
+            cmds.setAttr(shape + &quot;.overrideColorB &quot;, self.color.blueF())
+            #print(cmds.getAttr(shape+&quot;.overrideColor&quot;))
+        pass
+
+
+    def rig_function(self):
+        # 获取选中的物体
+        selected = cmds.ls(selection=True)
+
+        # 判断选择物体是否为空
+        if len(selected) == 0:
+            cmds.warning(u&quot;请选中物体!!!&quot;)
+            QtWidgets.QMessageBox.warning(self,u&quot;警告&quot;,u&quot;请选中物体!!!&quot;)
+        elif len(selected) &gt; 1:
+            cmds.warning(u&quot;只能选中一个物体！！！&quot;)
+            QtWidgets.QMessageBox.warning(self, u&quot;警告&quot;, u&quot;只能选中一个物体！！！&quot;)
+        else:
+            # 判断类型是否为joint骨骼
+            if cmds.objectType(selected[0]) != &quot;joint&quot;:
+                cmds.warning(u&quot;选择物体类型不为joint！！！&quot;)
+                QtWidgets.QMessageBox.warning(self, u&quot;警告&quot;, u&quot;选择物体类型不为joint！！！&quot;)
+
+            else:
+                # 选择该物体的包含的所有子物体和自身
+                cmds.select(selected[0], hierarchy=True)
+                # 获取选择的物体
+                all_Joints = cmds.ls(selection=True)
+                # 骨骼数
+                joints_number = len(all_Joints)
+
+
+                # 循环生成circle控制器
+                for i in range(joints_number - 1):
+                    # 生成circle
+                    control = cmds.circle(name=all_Joints[i] + &quot;_control&quot;)
+                    # 旋转变换
+                    cmds.rotate(0, 90, 0, control[0])
+
+                    # 冻结变换
+                    cmds.makeIdentity(apply=True)
+                    # 删除变换历史
+                    cmds.DeleteHistory()
+
+                    # 创建group组
+                    offset_grp = cmds.group(name=all_Joints[i] + &quot;_offset&quot;, empty=True)
+                    # 设置父类
+                    cmds.parent(control[0], offset_grp)
+
+                    # 获取骨骼的位置Position
+                    joint_position = cmds.xform(all_Joints[i], query=True, translation=True, worldSpace=True)
+                    # 将控制器移动到骨骼位置
+                    cmds.xform(offset_grp, translation=joint_position)
+
+                    # 利用orient约束将圆环旋转到骨骼方向一致
+                    orient_cons = cmds.orientConstraint(all_Joints[i], offset_grp)
+                    # 删除旋转约束
+                    cmds.delete(orient_cons)
+
+                    # parent约束，用于控制器控制骨骼移动
+                    cmds.parentConstraint(control[0], all_Joints[i])
+
+                    # 添加到list
+                    self.control_list.append(control[0])
+                    self.offset_list.append(offset_grp)
+
+                # 重新设置父类关系
+                for i in range(joints_number - 2):
+                    cmds.parent(self.offset_list[i + 1], self.control_list[i])
+
+
+if __name__ == &#39;__main__&#39;:
+    try:
+        rigTools_dialog.close()
+        rigTools_dialog.deleteLater()
+    except:
+        pass
+
+    rigTools_dialog = RigTools_Dialog()
+    rigTools_dialog.show()</code></pre>]]></content>
+      <categories>
+        <category>Maya</category>
+      </categories>
+      <tags>
+        <tag>Maya</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Maya导出存储文件工具</title>
+    <url>/2020/08/31/Maya%E5%AF%BC%E5%87%BA%E5%AD%98%E5%82%A8%E6%96%87%E4%BB%B6%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<p>笔记记录</p>
+<a id="more"></a>
+
+<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>保存场景为ma文件，并且可以加载，刷新等。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/GIF%202020-8-31%2015-49-31.gif" alt></p>
+<h2 id="主要思路"><a href="#主要思路" class="headerlink" title="主要思路"></a>主要思路</h2><p>主要逻辑在controllerLibrary.py脚本，save，find，load3个方法。创建ControllerLibrary类继承于dict字典类，数据存储name,path,screenshot的相关路径等等。</p>
+<p>主要API：cmds.file()进行文件的存储和读取    cmds.viewFit():将摄像机对准物体    cmds.playblast():渲染导出图片    json.dump()：json文件的编码写入    json.load():json文件的解码读取</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200831160940099.png" alt="image-20200831160940099"></p>
+<pre><code>#-*-coding:gbk-*-
+
+from maya import cmds
+import os
+import json
+import pprint
+
+#获取Maya文档路径
+USERAPPDIR = cmds.internalVar(userAppDir=True)
+#文件夹路径
+DIRECTORY = os.path.join(USERAPPDIR, &quot;controllerLibrary&quot;)
+
+
+def createDirectory(directory=DIRECTORY):
+    &quot;&quot;&quot;
+    根据文件路径创建文件夹
+    Args:
+        directory(str): 要创建的文件夹路径
+
+    Returns:
+
+    &quot;&quot;&quot;
+    #首先判断文件夹是否存在
+    if not os.path.exists(directory):
+        #如果不存在那就创建文件夹
+        os.mkdir(directory)
+
+
+#继承字典类
+class ControllerLibrary(dict):
+
+    #保存文件方法
+    #**info关键字参数
+    def save(self,name,screenshot=True,directory=DIRECTORY,**info):
+
+        #首先要确认要保存的路径是否存在
+        createDirectory(directory)
+
+        #保存文件路径
+        path = os.path.join(directory,&quot;{0}.ma&quot;.format(name))
+        #json保存文件
+        infoFile = os.path.join(directory,&quot;{0}.json&quot;.format(name))
+        info[&quot;name&quot;] = name
+        info[&quot;path&quot;] = path
+
+        #判是否需要screenShot
+        if screenshot:
+            self.saveScreenshot(name,directory)
+
+        #进行场景文件的保存,保存格式为mayaAscii
+        cmds.file(rename=path)
+
+        #如果进行了选择，就单独保存选择了的物体场景
+        if cmds.ls(selection=True):
+            cmds.file(force=True,type=&quot;mayaAscii&quot;,exportSelected=True)
+
+        #否则保存全部场景物体
+        else:
+            cmds.file(save=True,type=&quot;mayaAscii&quot;,force=True)
+
+        #打开infoFile文件,保存为json格式,写入文件
+        with open(infoFile,&quot;w&quot;) as f:
+            json.dump(info,f,indent=4)
+
+        self[name] = path
+
+    #获得文件夹下的所有文件
+    def find(self,directory=DIRECTORY):
+        # 进行清空，避免删除.ma文件时没有更新
+        self.clear()
+
+        if not os.path.exists(directory):
+            return None
+
+        files = os.listdir(directory)
+
+        #进行特定筛选，只获取ma文件
+        mayaFiles = [f for f in files if f.endswith(&quot;.ma&quot;)]
+
+        #进行键值对存储
+        for ma in mayaFiles:
+            #分离文件名和扩展名
+            name,ext = os.path.splitext(ma)
+            path = os.path.join(directory,ma)
+
+            #查看是否json文件
+            infoFile = &quot;{0}.json&quot;.format(name)
+            if infoFile in files:
+                infoFile = os.path.join(directory,infoFile)
+                #读取每个场景配置的json文件
+                with open(infoFile,&quot;r&quot;) as f:
+                    #进行读取
+                    info = json.load(f)
+
+            else:
+                print(u&quot;没有发现{0}文件&quot;.format(infoFile))
+                info = {}
+
+            #查看是否screenshot图片
+            screenshot = &quot;{0}.jpg&quot;.format(name)
+            if screenshot in files:
+                info[&quot;screenshot&quot;] = os.path.join(directory,screenshot)
+
+            info[&quot;name&quot;]=name
+            info[&quot;path&quot;]=path
+
+            self[name]=info
+            #print(info)
+
+    #加载
+    def load(self,name):
+        path = self[name][&quot;path&quot;]
+
+        #进行加载
+        cmds.file(path,i=True,usingNamespaces=False)
+
+    #保存屏幕截图
+    def saveScreenshot(self,name,directory=DIRECTORY):
+        #确定图片保存的路径
+        path = os.path.join(directory,&quot;{0}.jpg&quot;.format(name))
+
+        #将摄像机对准物体，以方便进行截图
+        cmds.viewFit()
+        #确定保存图片格式为jpg
+        cmds.setAttr(&quot;defaultRenderGlobals.imageFormat&quot;,8)
+
+        #进行截图,这个相当于渲染命令
+        &quot;&quot;&quot;
+        completeFilename:导出图片的路径    forceOverwrite:是否覆盖现有的playblast     format:输出的格式
+        width,heigt:分辨率     showOrnaments:是否显示轴坐标图      viewer:是否启动播放查看器
+        &quot;&quot;&quot;
+        cmds.playblast(completeFilename=path,forceOverwrite=True,format=&quot;image&quot;,width=200,height=200,
+                       showOrnaments=False,startTime=1,endTime=1,viewer=False)
+
+        return path
+
+</code></pre><p>主要逻辑构建好，就可以构建UI了，UI构建在libraryUI.py中完成</p>
+<pre><code>#-*-coding:gbk-*-
+
+import controllerLibrary
+from imp import reload
+reload(controllerLibrary)
+from PySide2 import QtWidgets,QtCore,QtGui
+import maya.OpenMayaUI as omui
+import maya.cmds as cmds
+from shiboken2 import wrapInstance
+
+
+#获取maya主窗口
+def maya_main_window():
+    main_window_ptr = omui.MQtUtil.mainWindow()
+    return wrapInstance(long(main_window_ptr),QtWidgets.QWidget)
+
+
+#ui类
+class ControllerLibraryUI(QtWidgets.QDialog):
+
+    #初始化
+    def __init__(self,parent=maya_main_window()):
+        super(ControllerLibraryUI, self).__init__(parent)
+        self.library = controllerLibrary.ControllerLibrary()
+
+        #图标size
+        self.size = 64
+        #格子Sizd
+        self.buffer=12
+
+        #设置窗口标题
+        self.setWindowTitle(u&quot;控制Library窗口&quot;)
+        #关闭问号按钮
+        self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
+
+        self.createWidgets()
+        self.createLayouts()
+        self.createConnects()
+
+        #填充ListWidget
+        self.populate()
+
+    def createWidgets(self):
+        self.save_btn = QtWidgets.QPushButton(&quot;save&quot;)
+        self.saveName_lineEdit = QtWidgets.QLineEdit()
+
+        #设置listWidget
+        self.file_listWidget = QtWidgets.QListWidget()
+        #图标模式
+        self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)
+        #设置图标大小
+        self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))
+        #设置拉伸模式为Adjust
+        self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)
+        #设置GridSize
+        self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))
+
+        self.import_btn = QtWidgets.QPushButton(&quot;Import&quot;)
+        self.refresh_btn = QtWidgets.QPushButton(&quot;Refresh&quot;)
+        self.close_btn = QtWidgets.QPushButton(&quot;Close&quot;)
+
+    def createLayouts(self):
+        main_layout = QtWidgets.QVBoxLayout(self)
+
+        save_layout = QtWidgets.QHBoxLayout()
+        save_layout.addWidget(self.saveName_lineEdit)
+        save_layout.addWidget(self.save_btn)
+        main_layout.addLayout(save_layout)
+
+        main_layout.addWidget(self.file_listWidget)
+
+        btn_layout = QtWidgets.QHBoxLayout()
+        btn_layout.addWidget(self.import_btn)
+        btn_layout.addWidget(self.refresh_btn)
+        btn_layout.addWidget(self.close_btn)
+        main_layout.addLayout(btn_layout)
+
+
+
+    def createConnects(self):
+        self.save_btn.clicked.connect(self.save)
+
+        self.import_btn.clicked.connect(self.load)
+        self.refresh_btn.clicked.connect(self.populate)
+        self.close_btn.clicked.connect(self.close)
+
+    def populate(self):
+
+        #清空file_list，避免重复增加
+        self.file_listWidget.clear()
+        #获取Directory文件夹下经过筛选的文件
+        self.library.find()
+
+        #获取键值对
+        for name,info in self.library.items():
+            #创建ListWidegtItem
+            item = QtWidgets.QListWidgetItem(name)
+            #添加到file_listWidget
+            self.file_listWidget.addItem(item)
+
+            #查看是否有截图
+            screenshot = info.get(&quot;screenshot&quot;)
+            if screenshot:
+                icon = QtGui.QIcon(screenshot)
+                item.setIcon(icon)
+
+    def load(self):
+        #获取当前选中的ListWidgetItem
+        currentItem = self.file_listWidget.currentItem()
+        #如果没有选中，则弹出警告
+        if not currentItem:
+            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;请选择文件！！&quot;)
+            return
+
+        self.library.load(currentItem.text())
+
+    def save(self):
+        #首先获取lineEdit的str
+        name = self.saveName_lineEdit.text()
+
+        #去除name的首尾空格
+        if not name.strip():
+            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;名字不合法！！&quot;)
+            return
+
+        self.library.save(name)
+        #重新更新ListWidget
+        self.populate()
+        #重置LineEdit
+        self.saveName_lineEdit.setText(&quot;&quot;)
+
+
+def showUI():
+    ui = ControllerLibraryUI()
+    ui.show()
+
+    return ui</code></pre><h2 id="QListView和QListWidget的区别"><a href="#QListView和QListWidget的区别" class="headerlink" title="QListView和QListWidget的区别"></a>QListView和QListWidget的区别</h2><p>我上次搞图片快速分类工具的时候，对于图片文件的预览我使用了QListView来进行数据的展示。这次我用QListWidget列表展示数据，那么他们到底有什么不一样呢？</p>
+<p><strong>QlistView类用于展示数据，它的子类是QListWIdget。QListView是基于模型（Model）的，需要程序来建立模型，然后再保存数据。QListWidget是一个升级版本的QListView，它已经建立了一个数据储存模型（QListWidgetItem），直接调用addItem（）函数，就可以添加条目（Item）</strong></p>
+<p>图片快速分类中QlistView的使用</p>
+<pre><code>        #创建QFileSystemModel
+        #QFileSystemModel是一个维护文件目录内容信息的模型，它本身不包含任何数据项，而只是表示本地文件系统上的文件和目录。
+        self.file_model = QtWidgets.QFileSystemModel()
+        #设置过滤器
+        self.file_model.setNameFilters(self.FILTERS)
+        #隐藏过滤掉的文件
+        self.file_model.setNameFilterDisables(False)
+        #设置Model
+        self.ui.image_list_view.setModel(self.file_model)
+</code></pre><p>存储导入工具中QListWidget的使用</p>
+<pre><code>        #设置listWidget
+        self.file_listWidget = QtWidgets.QListWidget()
+        #图标模式
+        self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)
+        #设置图标大小
+        self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))
+        #设置拉伸模式为Adjust
+        self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)
+        #设置GridSize                        self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))</code></pre>]]></content>
+      <categories>
+        <category>Maya</category>
+      </categories>
+      <tags>
+        <tag>Maya</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>UE4学习笔记(2)---蓝图接口-标签</title>
     <url>/2019/11/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/</url>
     <content><![CDATA[<h1 id="蓝图接口"><a href="#蓝图接口" class="headerlink" title="蓝图接口"></a>蓝图接口</h1><p> <strong>蓝图接口（Blueprint Interface）</strong> 是一个或多个函数的集合 - 只有名称，没有实现。可以添加到其他蓝图中。任何添加了该接口的蓝图都保证拥有这些函数。接口的函数 可以在添加它的每个蓝图中提供功能。在本质上，这类似于一般编程中的接口概念， 它允许多个不同类型的对象通过一个公共接口 共享和被访问。简单地说，蓝图接口允许不同的蓝图相互共享和发送数据。 </p>
@@ -185,41 +733,6 @@
       </categories>
       <tags>
         <tag>UE4</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity VEG实现烟花效果</title>
-    <url>/2019/11/01/Unity-VEG%E5%AE%9E%E7%8E%B0%E7%83%9F%E8%8A%B1%E6%95%88%E6%9E%9C/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这次利用VEG实现普通烟花效果。</p>
- <a id="more"></a> 
-
-<h2 id="主粒子"><a href="#主粒子" class="headerlink" title="主粒子"></a>主粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/1.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/2.png" alt></p>
-<p>设置主粒子的速度，位置，周期等参数。</p>
-<h3 id="Position-Line"><a href="#Position-Line" class="headerlink" title="Position(Line)"></a>Position(Line)</h3><p>用于设置粒子的初始化位置，从Start到End随机生成一个位置点。</p>
-<h2 id="烟花粒子"><a href="#烟花粒子" class="headerlink" title="烟花粒子"></a>烟花粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/3.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/4.png" alt></p>
-<p>这里利用GPU Event当主粒子消亡时生成新的眼花粒子。</p>
-<h3 id="GPU-Event"><a href="#GPU-Event" class="headerlink" title="GPU Event"></a>GPU Event</h3><p> GPU事件由系统在特定条件下触发，并且可以被其他系统捕获以生成新粒子。 可以通过读取Source或使用Inherit Source节点在子系统中访问事件数据。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/5.png" alt></p>
-<h2 id="主粒子的拖尾粒子"><a href="#主粒子的拖尾粒子" class="headerlink" title="主粒子的拖尾粒子"></a>主粒子的拖尾粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/6.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/7.png" alt></p>
-<h2 id="烟花粒子的拖尾"><a href="#烟花粒子的拖尾" class="headerlink" title="烟花粒子的拖尾"></a>烟花粒子的拖尾</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/8.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/9.png" alt></p>
-<p>就这样我们的烟花就完成啦</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/10.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/11.png" alt></p>
-<p>现在看起来还是有点难看的，但问题不大，给它加点后处理就好了，PostProcessVolume</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/12.png" alt></p>
-<p>就这样，好看多了</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/13.png" alt></p>
-<h1 id="未完待续"><a href="#未完待续" class="headerlink" title="未完待续"></a>未完待续</h1><p>可能后面还想加点其他的功能，所以未完待续。</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -266,6 +779,41 @@
       </categories>
       <tags>
         <tag>UE4</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity VEG实现烟花效果</title>
+    <url>/2019/11/01/Unity-VEG%E5%AE%9E%E7%8E%B0%E7%83%9F%E8%8A%B1%E6%95%88%E6%9E%9C/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这次利用VEG实现普通烟花效果。</p>
+ <a id="more"></a> 
+
+<h2 id="主粒子"><a href="#主粒子" class="headerlink" title="主粒子"></a>主粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/1.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/2.png" alt></p>
+<p>设置主粒子的速度，位置，周期等参数。</p>
+<h3 id="Position-Line"><a href="#Position-Line" class="headerlink" title="Position(Line)"></a>Position(Line)</h3><p>用于设置粒子的初始化位置，从Start到End随机生成一个位置点。</p>
+<h2 id="烟花粒子"><a href="#烟花粒子" class="headerlink" title="烟花粒子"></a>烟花粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/3.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/4.png" alt></p>
+<p>这里利用GPU Event当主粒子消亡时生成新的眼花粒子。</p>
+<h3 id="GPU-Event"><a href="#GPU-Event" class="headerlink" title="GPU Event"></a>GPU Event</h3><p> GPU事件由系统在特定条件下触发，并且可以被其他系统捕获以生成新粒子。 可以通过读取Source或使用Inherit Source节点在子系统中访问事件数据。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/5.png" alt></p>
+<h2 id="主粒子的拖尾粒子"><a href="#主粒子的拖尾粒子" class="headerlink" title="主粒子的拖尾粒子"></a>主粒子的拖尾粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/6.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/7.png" alt></p>
+<h2 id="烟花粒子的拖尾"><a href="#烟花粒子的拖尾" class="headerlink" title="烟花粒子的拖尾"></a>烟花粒子的拖尾</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/8.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/9.png" alt></p>
+<p>就这样我们的烟花就完成啦</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/10.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/11.png" alt></p>
+<p>现在看起来还是有点难看的，但问题不大，给它加点后处理就好了，PostProcessVolume</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/12.png" alt></p>
+<p>就这样，好看多了</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/13.png" alt></p>
+<h1 id="未完待续"><a href="#未完待续" class="headerlink" title="未完待续"></a>未完待续</h1><p>可能后面还想加点其他的功能，所以未完待续。</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -335,39 +883,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Maya简易控制器</title>
-    <url>/2020/08/24/Maya%E7%AE%80%E6%98%93%E6%8E%A7%E5%88%B6%E5%99%A8/</url>
-    <content><![CDATA[<p>Maya教程笔记，过程中会记录自己所遇到的问题和新知识</p>
-<a id="more"></a>
-
-<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>控制器的简易添加，缩放控制器，控制器的颜色选择</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/GIF%202020-8-24%2022-52-16.gif" alt="GIF 2020-8-24 22-52-16"></p>
-<h2 id="QLabel"><a href="#QLabel" class="headerlink" title="QLabel"></a>QLabel</h2><p>QLabel提供了一个文本或者图像的显示，没有提供交互功能，在建议控制器中我利用QLabel进行了文字的显示和背景颜色显示</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.controlScale_label = QtWidgets.QLabel(u&quot;控制器Scale&quot;,alignment=QtCore.Qt.AlignCenter)</span><br><span class="line">#设置格式</span><br><span class="line">self.controlScale_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot;)</span><br></pre></td></tr></table></figure>
-
-<h2 id="Constraints-约束"><a href="#Constraints-约束" class="headerlink" title="Constraints(约束)"></a>Constraints(约束)</h2><p>point constraints（点约束）：约束位移</p>
-<p>orient constraints（反向约束）：约束旋转</p>
-<p>parent constraints（父约束）：约束位移和旋转</p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.首先要获取选中的物体，然后判断是否为joint骨骼类型，如果是则获取选中物体的所有子物体</span><br><span class="line">2.根据joint数量生成一定的控制器，调整控制器的旋转和位置与joint一致</span><br><span class="line">3.进行parent约束限制，这样生成的Circle就可以控制joints</span><br><span class="line">4.利用Pyside2进行GUI的设置，完成交互</span><br></pre></td></tr></table></figure>
-
-<h2 id="OverrideColor设置问题"><a href="#OverrideColor设置问题" class="headerlink" title="OverrideColor设置问题"></a>OverrideColor设置问题</h2><p>首先OverrideColor指的是Shape下的设置</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200824230019419.png" alt="image-20200824230019419"></p>
-<p>这里我需要将颜色设置为RGB而非索引，所以需要一下代码,这里应该可以直接设置overrideColorRGB属性的，但不知道哪里出了问题，所以我就曲线救国</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#获取选中物体的shape</span><br><span class="line">         shape = cmds.listRelatives(tempControl,children=True)[0]</span><br><span class="line">         cmds.setAttr(shape+&quot;.overrideEnabled&quot;,True)</span><br><span class="line">         cmds.setAttr(shape+&quot;.overrideRGBColors&quot;,1)</span><br><span class="line"></span><br><span class="line">         #设置颜色值</span><br><span class="line">         cmds.setAttr(shape+&quot;.overrideColorR &quot;,self.color.redF())</span><br><span class="line">         cmds.setAttr(shape + &quot;.overrideColorG &quot;, self.color.greenF())</span><br><span class="line">         cmds.setAttr(shape + &quot;.overrideColorB &quot;, self.color.blueF())</span><br><span class="line">         #print(cmds.getAttr(shape+&quot;.overrideColor&quot;))</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200824230220071.png" alt="image-20200824230220071"></p>
-<h2 id="Circle-Scale问题"><a href="#Circle-Scale问题" class="headerlink" title="Circle Scale问题"></a>Circle Scale问题</h2><p>这里不是直接缩放Circle，而是缩放Circle的controlVertics（控制顶点），这样就可以直接连续缩放</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def smallScale(self):</span><br><span class="line">    #获得选中的物体</span><br><span class="line">    selectionControl = cmds.ls(selection=True)</span><br><span class="line">    #获取缩放值</span><br><span class="line">    scaleFactor = self.scale_DoubleSpinBox.value()</span><br><span class="line">    for tempControl in selectionControl:</span><br><span class="line">        # Scale控制顶点</span><br><span class="line">        cmds.scale(1-scaleFactor,1-scaleFactor,1-scaleFactor,tempControl+&quot;.cv[0:]&quot;)</span><br></pre></td></tr></table></figure>
-
-<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># -*- coding: GBK -*-</span><br><span class="line">from PySide2 import QtWidgets,QtGui,QtCore</span><br><span class="line">from shiboken2 import wrapInstance</span><br><span class="line">from maya import OpenMayaUI as omui</span><br><span class="line">import maya.cmds as cmds</span><br><span class="line"></span><br><span class="line">#maya主窗口</span><br><span class="line">def maya_main_window():</span><br><span class="line">    main_window_ptr = omui.MQtUtil.mainWindow()</span><br><span class="line">    return wrapInstance(long(main_window_ptr),QtWidgets.QWidget)</span><br><span class="line"></span><br><span class="line">window_w = 200</span><br><span class="line">window_h = 168</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class RigTools_Dialog(QtWidgets.QDialog):</span><br><span class="line"></span><br><span class="line">    def __init__(self,parent = maya_main_window()):</span><br><span class="line">        super(RigTools_Dialog, self).__init__(parent)</span><br><span class="line">        #设置默认颜色</span><br><span class="line">        self.color = QtGui.QColor(&quot;#FFFFFF&quot;)</span><br><span class="line">        self.control_list=[]</span><br><span class="line">        self.offset_list=[]</span><br><span class="line"></span><br><span class="line">        #设置窗口名称</span><br><span class="line">        self.setWindowTitle(&quot;RigTools&quot;)</span><br><span class="line">        #设置窗口大小</span><br><span class="line">        self.setFixedWidth(window_w)</span><br><span class="line">        self.setFixedHeight(window_h)</span><br><span class="line">        #关闭问号按钮</span><br><span class="line">        self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)</span><br><span class="line"></span><br><span class="line">        self.createWidgets()</span><br><span class="line">        self.createLayouts()</span><br><span class="line">        self.createConnects()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    def createWidgets(self):</span><br><span class="line">        self.rig_btn = QtWidgets.QPushButton(&quot;Rig&quot;)</span><br><span class="line">        self.rig_btn.setFixedWidth(window_w)</span><br><span class="line">        self.rig_btn.setFixedHeight(40)</span><br><span class="line"></span><br><span class="line">        self.controlScale_label = QtWidgets.QLabel(u&quot;控制器Scale&quot;,alignment=QtCore.Qt.AlignCenter)</span><br><span class="line">        #设置格式</span><br><span class="line">        self.controlScale_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot;)</span><br><span class="line"></span><br><span class="line">        self.scale_DoubleSpinBox = QtWidgets.QDoubleSpinBox()</span><br><span class="line">        #设置范围，经度，步长</span><br><span class="line">        self.scale_DoubleSpinBox.setRange(0,1)</span><br><span class="line">        self.scale_DoubleSpinBox.setDecimals(2)</span><br><span class="line">        self.scale_DoubleSpinBox.setSingleStep(0.05)</span><br><span class="line">        self.smallScale_btn = QtWidgets.QPushButton(&quot;Small&quot;)</span><br><span class="line">        self.bigScale_btn = QtWidgets.QPushButton(&quot;Big&quot;)</span><br><span class="line"></span><br><span class="line">        self.controlColor_label = QtWidgets.QLabel(u&quot;控制器颜色&quot;,alignment=QtCore.Qt.AlignCenter)</span><br><span class="line">        self.controlColor_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot;)</span><br><span class="line"></span><br><span class="line">        self.color_pick_label = QtWidgets.QLabel()</span><br><span class="line">        self.color_pick_label.setStyleSheet(&quot;background-color:rgb(255,255,255,255)&quot;)</span><br><span class="line">        self.color_pick_btn = QtWidgets.QPushButton(u&quot;颜色选择&quot;)</span><br><span class="line"></span><br><span class="line">        self.color_set_btn = QtWidgets.QPushButton(u&quot;颜色设置&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line">    def createLayouts(self):</span><br><span class="line">        #主层级</span><br><span class="line">        main_layout = QtWidgets.QVBoxLayout(self)</span><br><span class="line">        main_layout.setMargin(0)</span><br><span class="line">        main_layout.setSpacing(0)</span><br><span class="line"></span><br><span class="line">        main_layout.addWidget(self.rig_btn)</span><br><span class="line"></span><br><span class="line">        main_layout.addWidget(self.controlScale_label)</span><br><span class="line"></span><br><span class="line">        HLayout = QtWidgets.QHBoxLayout()</span><br><span class="line">        main_layout.setSpacing(5)</span><br><span class="line">        HLayout.addWidget(self.scale_DoubleSpinBox)</span><br><span class="line">        HLayout.addWidget(self.smallScale_btn)</span><br><span class="line">        HLayout.addWidget(self.bigScale_btn)</span><br><span class="line">        main_layout.addLayout(HLayout)</span><br><span class="line"></span><br><span class="line">        main_layout.addWidget(self.controlColor_label)</span><br><span class="line"></span><br><span class="line">        H_Color_Layout = QtWidgets.QHBoxLayout()</span><br><span class="line">        H_Color_Layout.addWidget(self.color_pick_label)</span><br><span class="line">        H_Color_Layout.addWidget(self.color_pick_btn)</span><br><span class="line">        main_layout.addLayout(H_Color_Layout)</span><br><span class="line"></span><br><span class="line">        main_layout.addWidget(self.color_set_btn)</span><br><span class="line"></span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line">    def createConnects(self):</span><br><span class="line">        self.rig_btn.clicked.connect(self.rig_function)</span><br><span class="line">        self.smallScale_btn.clicked.connect(self.smallScale)</span><br><span class="line">        self.bigScale_btn.clicked.connect(self.bigScale)</span><br><span class="line">        self.color_pick_btn.clicked.connect(self.color_pick)</span><br><span class="line">        self.color_set_btn.clicked.connect(self.color_set)</span><br><span class="line"></span><br><span class="line">    def smallScale(self):</span><br><span class="line">        #获得选中的物体</span><br><span class="line">        selectionControl = cmds.ls(selection=True)</span><br><span class="line">        #获取缩放值</span><br><span class="line">        scaleFactor = self.scale_DoubleSpinBox.value()</span><br><span class="line">        for tempControl in selectionControl:</span><br><span class="line">            # Scale控制顶点</span><br><span class="line">            cmds.scale(1-scaleFactor,1-scaleFactor,1-scaleFactor,tempControl+&quot;.cv[0:]&quot;)</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line">    def bigScale(self):</span><br><span class="line">        # 获得选中的物体</span><br><span class="line">        selectionControl = cmds.ls(selection=True)</span><br><span class="line">        # 获取缩放值</span><br><span class="line">        scaleFactor = self.scale_DoubleSpinBox.value()</span><br><span class="line">        print(scaleFactor)</span><br><span class="line">        for tempControl in selectionControl:</span><br><span class="line">            #Scale控制顶点</span><br><span class="line">            cmds.scale(1.0 + scaleFactor, 1.0 + scaleFactor, 1.0 + scaleFactor, tempControl+&quot;.cv[0:]&quot;)</span><br><span class="line"></span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line">    def color_pick(self):</span><br><span class="line">        #获取颜色选择</span><br><span class="line">        color = QtWidgets.QColorDialog.getColor()</span><br><span class="line">        self.color = color</span><br><span class="line">        self.color_pick_label.setStyleSheet(&quot;background-color: &#123;0&#125;&quot;.format(color.name()))</span><br><span class="line"></span><br><span class="line">    def color_set(self):</span><br><span class="line">        #获取选中的物体</span><br><span class="line">        selectionControl = cmds.ls(selection=True)</span><br><span class="line">        #设置颜色值</span><br><span class="line">        for tempControl in selectionControl:</span><br><span class="line">            #获取选中物体的shape</span><br><span class="line">            shape = cmds.listRelatives(tempControl,children=True)[0]</span><br><span class="line">            cmds.setAttr(shape+&quot;.overrideEnabled&quot;,True)</span><br><span class="line">            cmds.setAttr(shape+&quot;.overrideRGBColors&quot;,1)</span><br><span class="line"></span><br><span class="line">            #设置颜色值</span><br><span class="line">            cmds.setAttr(shape+&quot;.overrideColorR &quot;,self.color.redF())</span><br><span class="line">            cmds.setAttr(shape + &quot;.overrideColorG &quot;, self.color.greenF())</span><br><span class="line">            cmds.setAttr(shape + &quot;.overrideColorB &quot;, self.color.blueF())</span><br><span class="line">            #print(cmds.getAttr(shape+&quot;.overrideColor&quot;))</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    def rig_function(self):</span><br><span class="line">        # 获取选中的物体</span><br><span class="line">        selected = cmds.ls(selection=True)</span><br><span class="line"></span><br><span class="line">        # 判断选择物体是否为空</span><br><span class="line">        if len(selected) == 0:</span><br><span class="line">            cmds.warning(u&quot;请选中物体!!!&quot;)</span><br><span class="line">            QtWidgets.QMessageBox.warning(self,u&quot;警告&quot;,u&quot;请选中物体!!!&quot;)</span><br><span class="line">        elif len(selected) &gt; 1:</span><br><span class="line">            cmds.warning(u&quot;只能选中一个物体！！！&quot;)</span><br><span class="line">            QtWidgets.QMessageBox.warning(self, u&quot;警告&quot;, u&quot;只能选中一个物体！！！&quot;)</span><br><span class="line">        else:</span><br><span class="line">            # 判断类型是否为joint骨骼</span><br><span class="line">            if cmds.objectType(selected[0]) != &quot;joint&quot;:</span><br><span class="line">                cmds.warning(u&quot;选择物体类型不为joint！！！&quot;)</span><br><span class="line">                QtWidgets.QMessageBox.warning(self, u&quot;警告&quot;, u&quot;选择物体类型不为joint！！！&quot;)</span><br><span class="line"></span><br><span class="line">            else:</span><br><span class="line">                # 选择该物体的包含的所有子物体和自身</span><br><span class="line">                cmds.select(selected[0], hierarchy=True)</span><br><span class="line">                # 获取选择的物体</span><br><span class="line">                all_Joints = cmds.ls(selection=True)</span><br><span class="line">                # 骨骼数</span><br><span class="line">                joints_number = len(all_Joints)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                # 循环生成circle控制器</span><br><span class="line">                for i in range(joints_number - 1):</span><br><span class="line">                    # 生成circle</span><br><span class="line">                    control = cmds.circle(name=all_Joints[i] + &quot;_control&quot;)</span><br><span class="line">                    # 旋转变换</span><br><span class="line">                    cmds.rotate(0, 90, 0, control[0])</span><br><span class="line"></span><br><span class="line">                    # 冻结变换</span><br><span class="line">                    cmds.makeIdentity(apply=True)</span><br><span class="line">                    # 删除变换历史</span><br><span class="line">                    cmds.DeleteHistory()</span><br><span class="line"></span><br><span class="line">                    # 创建group组</span><br><span class="line">                    offset_grp = cmds.group(name=all_Joints[i] + &quot;_offset&quot;, empty=True)</span><br><span class="line">                    # 设置父类</span><br><span class="line">                    cmds.parent(control[0], offset_grp)</span><br><span class="line"></span><br><span class="line">                    # 获取骨骼的位置Position</span><br><span class="line">                    joint_position = cmds.xform(all_Joints[i], query=True, translation=True, worldSpace=True)</span><br><span class="line">                    # 将控制器移动到骨骼位置</span><br><span class="line">                    cmds.xform(offset_grp, translation=joint_position)</span><br><span class="line"></span><br><span class="line">                    # 利用orient约束将圆环旋转到骨骼方向一致</span><br><span class="line">                    orient_cons = cmds.orientConstraint(all_Joints[i], offset_grp)</span><br><span class="line">                    # 删除旋转约束</span><br><span class="line">                    cmds.delete(orient_cons)</span><br><span class="line"></span><br><span class="line">                    # parent约束，用于控制器控制骨骼移动</span><br><span class="line">                    cmds.parentConstraint(control[0], all_Joints[i])</span><br><span class="line"></span><br><span class="line">                    # 添加到list</span><br><span class="line">                    self.control_list.append(control[0])</span><br><span class="line">                    self.offset_list.append(offset_grp)</span><br><span class="line"></span><br><span class="line">                # 重新设置父类关系</span><br><span class="line">                for i in range(joints_number - 2):</span><br><span class="line">                    cmds.parent(self.offset_list[i + 1], self.control_list[i])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    try:</span><br><span class="line">        rigTools_dialog.close()</span><br><span class="line">        rigTools_dialog.deleteLater()</span><br><span class="line">    except:</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line">    rigTools_dialog = RigTools_Dialog()</span><br><span class="line">    rigTools_dialog.show()</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>Maya</category>
-      </categories>
-      <tags>
-        <tag>Maya</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity实现米哈游的Mesh变换转场效果</title>
     <url>/2019/11/13/Unity%E5%AE%9E%E7%8E%B0%E7%B1%B3%E5%93%88%E6%B8%B8%E7%9A%84Mesh%E5%8F%98%E6%8D%A2%E8%BD%AC%E5%9C%BA%E6%95%88%E6%9E%9C/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前看过米哈游大佬制作的桃源恋歌MMD，被其中的Mesh变换转场效果所折服了，所以自己想模仿着实现这个效果，幸好kerjiro技术美术大神开源了这方面的视觉特效项目，感觉自己如果想成为TA还有好长的路要走。。。</p>
@@ -380,34 +895,524 @@
 <h2 id="几何着色器"><a href="#几何着色器" class="headerlink" title="几何着色器"></a>几何着色器</h2><p>相信大家接触的最多的应该是顶点着色器和像素着色器，那么什么是几何着色器呢？</p>
 <h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>在顶点和片段着色器之间有一个可选的着色器，叫做几何着色器(Geometry Shader)。几何着色器以一个或多个表示为一个单独基本图形（primitive）即图元的顶点作为输入，比如可以是一个点或者三角形。几何着色器在将这些顶点发送到下一个着色阶段之前，可以将这些顶点转变为它认为合适的内容。<strong>几何着色器有意思的地方在于它可以把（一个或多个）顶点转变为完全不同的基本图形（primitive），从而生成比原来多得多的顶点。</strong> </p>
 <h3 id="使用几何着色器进行图元转换"><a href="#使用几何着色器进行图元转换" class="headerlink" title="使用几何着色器进行图元转换"></a>使用几何着色器进行图元转换</h3><p>声明着色器</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#pragma geometry geom</span><br></pre></td></tr></table></figure>
+<pre><code>#pragma geometry geom</code></pre><p>设置输出顶点数量，其中N为几何着色器为单个调用输出的顶点最大数量，几何着色器每次输出的顶点数量是可变的，但是不能超过定义的最大值， 出于性能考虑，最大顶点数应尽可能小; 当GS输出在1到20个标量之间时，可以实现GS的性能峰值，如果GS输出在27-40个标量之间，则性能下降50％。每次调用的标量输出数是最大顶点输出数和输出顶点类型结构中的标量数的乘积。 </p>
+<pre><code>[maxvertexcount(N)]</code></pre><p>声明输入和输出的Struct</p>
+<pre><code>            //传递给几何着色器的数据
+            struct v2g
+            {
+                float4 vertex:POSITION;
+                float3 normal:TEXCOORD0;
+                //float2 uv:TEXCOORD1;
 
-<p>设置输出顶点数量，其中N为几何着色器为单个调用输出的顶点最大数量，几何着色器每次输出的顶点数量是可变的，但是不能超过定义的最大值， 出于性能考虑，最大顶点数应尽可能小; 当GS输出在1到20个标量之间时，可以实现GS的性能峰值，如果GS输出在27-40个标量之间，则性能下降50％。每次调用的标量输出数是最大顶点输出数和输出顶点类型结构中的标量数的乘积。 </p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[maxvertexcount(N)]</span><br></pre></td></tr></table></figure>
+            };
 
-<p>声明输入和输出的Struct</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">//传递给几何着色器的数据</span><br><span class="line">struct v2g</span><br><span class="line">&#123;</span><br><span class="line">	float4 vertex:POSITION;</span><br><span class="line">	float3 normal:TEXCOORD0;</span><br><span class="line">	//float2 uv:TEXCOORD1;</span><br><span class="line">	</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">//传递给像素着色器的数据</span><br><span class="line">struct g2f</span><br><span class="line">&#123;</span><br><span class="line">	float4 pos : SV_POSITION;</span><br><span class="line">	float3 normal:TEXCOORD0;</span><br><span class="line">	//float2 uv : TEXCOORD1;</span><br><span class="line">	float4 color:COLOR;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>设置几何着色器输入参数和输出参数，</p>
+            //传递给像素着色器的数据
+            struct g2f
+            {
+                float4 pos : SV_POSITION;
+                float3 normal:TEXCOORD0;
+                //float2 uv : TEXCOORD1;
+                float4 color:COLOR;
+            };</code></pre><p>设置几何着色器输入参数和输出参数，</p>
 <p>其中“triangle”为输入的图元类型， 输入参数一定为顶点数组 。</p>
-<figure class="highlight ruby"><table><tr><td class="code"><pre><span class="line">输入图元类型 <span class="params">| 所需顶点数  </span></span><br><span class="line"><span class="params">-|</span>-</span><br><span class="line">point <span class="params">| 输入1个点的1个顶点</span></span><br><span class="line"><span class="params">line |</span> 输入<span class="number">1</span>条直线的<span class="number">2</span>个顶点 </span><br><span class="line">lineadj <span class="params">| 输入1条具有邻接(lists或strips)的线段的4个顶点 </span></span><br><span class="line"><span class="params">triangle |</span> 输入<span class="number">1</span>个三角形的<span class="number">3</span>个顶点</span><br><span class="line">triangleadj <span class="params">| 输入1个具有邻接(lists或strips)的三角形的6个顶点</span></span><br></pre></td></tr></table></figure>
-
+<pre><code class="ruby">输入图元类型 | 所需顶点数  
+-|-
+point | 输入1个点的1个顶点
+line | 输入1条直线的2个顶点 
+lineadj | 输入1条具有邻接(lists或strips)的线段的4个顶点 
+triangle | 输入1个三角形的3个顶点
+triangleadj | 输入1个具有邻接(lists或strips)的三角形的6个顶点</code></pre>
 <p>TriangleStream为流类型(stream type)对象，还有 LineStream 和 PointStream ,存储着由几何着色器输出的几何体顶点列表。内置Append用于向输出流添加顶点序列， 若想扩展输入的图元，也可以用内置Append向输出流添加多出来的顶点。 </p>
 <p>当指定uint primID:SV_PrimitiveID时，输入汇编阶段会为每个图元自动生成一个图元ID。当调用draw方法绘制n个图元时，ID号为0到n-1，这里用到的原因是为了随机Cube化。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">void geom(triangle v2g input[3], uint pid : SV_PrimitiveID, inout TriangleStream&lt;g2f&gt; outStream)</span><br><span class="line">&#123;</span><br><span class="line">	//shader body</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code>void geom(triangle v2g input[3], uint pid : SV_PrimitiveID, inout TriangleStream&lt;g2f&gt; outStream)
+{
+    //shader body
+}</code></pre><p>将输出顶点传送至输出stream上</p>
+<pre><code>OutputStream.Append(o);</code></pre><h2 id="开始动手"><a href="#开始动手" class="headerlink" title="开始动手"></a>开始动手</h2><h3 id="CPU传递数据给Shader"><a href="#CPU传递数据给Shader" class="headerlink" title="CPU传递数据给Shader"></a>CPU传递数据给Shader</h3><p>首先我们需要新建一个脚本用于传递数据给Shader，以下就是K神的传递脚本，我已经写好注释。挂在一个空物体上面即可。</p>
+<pre><code>using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-<p>将输出顶点传送至输出stream上</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">OutputStream.Append(o);</span><br></pre></td></tr></table></figure>
+//在编辑器模式下也可运行
+[ExecuteInEditMode]
+public class Voxelizer : MonoBehaviour
+{
+    //SerializeField用于面板上显示非Public的参数
+    //Range(0,1)控制可滑选的范围
+
+    //控制生成方块的密度
+    [SerializeField, Range(0, 1)] float _density = 0.05f;
+    //控制生成方块的大小
+    [SerializeField, Range(0, 10)] float _scale = 3;
 
 
+    //动画参数
+    //用于控制方块变形后的长度
+    [SerializeField, Range(0, 20)] float _stretch = 5;
+    //用于控制方块变形后上升的最大距离
+    [SerializeField, Range(0, 1000)] float _fallDistance = 1;
+    //用于控制方块变形后的随机移动范围
+    [SerializeField, Range(0, 10)] float _fluctuation = 1;
 
-<h2 id="开始动手"><a href="#开始动手" class="headerlink" title="开始动手"></a>开始动手</h2><h3 id="CPU传递数据给Shader"><a href="#CPU传递数据给Shader" class="headerlink" title="CPU传递数据给Shader"></a>CPU传递数据给Shader</h3><p>首先我们需要新建一个脚本用于传递数据给Shader，以下就是K神的传递脚本，我已经写好注释。挂在一个空物体上面即可。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">using System.Collections;</span><br><span class="line">using System.Collections.Generic;</span><br><span class="line">using UnityEngine;</span><br><span class="line"></span><br><span class="line">//在编辑器模式下也可运行</span><br><span class="line">[ExecuteInEditMode]</span><br><span class="line">public class Voxelizer : MonoBehaviour</span><br><span class="line">&#123;</span><br><span class="line">    //SerializeField用于面板上显示非Public的参数</span><br><span class="line">    //Range(0,1)控制可滑选的范围</span><br><span class="line"></span><br><span class="line">    //控制生成方块的密度</span><br><span class="line">    [SerializeField, Range(0, 1)] float _density = 0.05f;</span><br><span class="line">    //控制生成方块的大小</span><br><span class="line">    [SerializeField, Range(0, 10)] float _scale = 3;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //动画参数</span><br><span class="line">    //用于控制方块变形后的长度</span><br><span class="line">    [SerializeField, Range(0, 20)] float _stretch = 5;</span><br><span class="line">    //用于控制方块变形后上升的最大距离</span><br><span class="line">    [SerializeField, Range(0, 1000)] float _fallDistance = 1;</span><br><span class="line">    //用于控制方块变形后的随机移动范围</span><br><span class="line">    [SerializeField, Range(0, 10)] float _fluctuation = 1;</span><br><span class="line"></span><br><span class="line">    //颜色参数</span><br><span class="line">    [SerializeField, ColorUsage(false, true)] Color _emissionColor1 = Color.black;</span><br><span class="line">    [SerializeField, ColorUsage(false, true)] Color _emissionColor2 = Color.black;</span><br><span class="line">    [SerializeField, ColorUsage(false, true)] Color _transitionColor = Color.white;</span><br><span class="line">    [SerializeField, ColorUsage(false, true)] Color _lineColor = Color.white;</span><br><span class="line"></span><br><span class="line">    //用于Mesh变换物体的Renderer</span><br><span class="line">    [SerializeField] Renderer[] _renderers = null;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //效果平面的位置与距离</span><br><span class="line">    Vector4 EffectorPlane</span><br><span class="line">    &#123;</span><br><span class="line">        get</span><br><span class="line">        &#123;</span><br><span class="line">            //获取向前的方向</span><br><span class="line">            var fwd = transform.forward / transform.localScale.z;</span><br><span class="line">            //获取向前方向上的移动距离</span><br><span class="line">            var dist = Vector3.Dot(fwd, transform.position);</span><br><span class="line">            return new Vector4(fwd.x, fwd.y, fwd.z, dist);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //将RGB颜色模型转为HSV颜色模型</span><br><span class="line">    Vector4  ColorToHsvm(Color color)</span><br><span class="line">    &#123;</span><br><span class="line">        //获取颜色的分量最大值</span><br><span class="line">        var max = color.maxColorComponent;</span><br><span class="line">        float h, s, v;</span><br><span class="line">        Color.RGBToHSV(color / max, out h, out s, out v);</span><br><span class="line">        return new Vector4(h, s, v, max);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //获取着色器属性的唯一标识符</span><br><span class="line">    //优点：使用属性标识符比将字符串传递给所有材料属性函数更有效。</span><br><span class="line">    //例如，如果您经常调用Material.SetColor或使用MaterialPropertyBlock，</span><br><span class="line">    //则最好只获取一次所需属性的标识符。</span><br><span class="line"></span><br><span class="line">    static class ShaderIDs</span><br><span class="line">    &#123;</span><br><span class="line">        public static readonly int VoxelParams = Shader.PropertyToID(&quot;_VoxelParams&quot;);</span><br><span class="line">        public static readonly int AnimParams = Shader.PropertyToID(&quot;_AnimParams&quot;);</span><br><span class="line">        public static readonly int EmissionHsvm1 = Shader.PropertyToID(&quot;_EmissionHsvm1&quot;);</span><br><span class="line">        public static readonly int EmissionHsvm2 = Shader.PropertyToID(&quot;_EmissionHsvm2&quot;);</span><br><span class="line">        public static readonly int TransitionColor = Shader.PropertyToID(&quot;_TransitionColor&quot;);</span><br><span class="line">        public static readonly int LineColor = Shader.PropertyToID(&quot;_LineColor&quot;);</span><br><span class="line">        public static readonly int EffectorPlane = Shader.PropertyToID(&quot;_EffectorPlane&quot;);</span><br><span class="line">        public static readonly int PrevEffectorPlane = Shader.PropertyToID(&quot;_PrevEffectorPlane&quot;);</span><br><span class="line">        public static readonly int LocalTime = Shader.PropertyToID(&quot;_LocalTime&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //在要使用相同材质但属性稍有不同的多个对象绘制的情况下使用MaterialPropertyBlock。</span><br><span class="line">    MaterialPropertyBlock _sheet;</span><br><span class="line">    Vector4 _prevEffectorPlane = Vector3.one * 1e+5f;</span><br><span class="line"></span><br><span class="line">    private void LateUpdate()</span><br><span class="line">    &#123;</span><br><span class="line">        //查看渲染列表是否为空</span><br><span class="line">        if (_renderers == null || _renderers.Length == 0) return;</span><br><span class="line">        //创建新的MaterialPropertyBlock</span><br><span class="line">        if (_sheet == null) _sheet = new MaterialPropertyBlock();</span><br><span class="line"></span><br><span class="line">        var plane = EffectorPlane;</span><br><span class="line">        // Filter out large deltas.</span><br><span class="line">        //过滤掉大的三角面片</span><br><span class="line">        if ((_prevEffectorPlane - plane).magnitude &gt; 100) _prevEffectorPlane = plane;</span><br><span class="line"></span><br><span class="line">        //存储参数</span><br><span class="line">        var vparams = new Vector2(_density, _scale);</span><br><span class="line">        var aparams = new Vector3(_stretch, _fallDistance, _fluctuation);</span><br><span class="line">        var emission1 = ColorToHsvm(_emissionColor1);</span><br><span class="line">        var emission2 = ColorToHsvm(_emissionColor2);</span><br><span class="line"></span><br><span class="line">        //将参数传递给shader</span><br><span class="line">        foreach (var renderer in _renderers)</span><br><span class="line">        &#123;</span><br><span class="line">            if (renderer == null) continue;</span><br><span class="line">            renderer.GetPropertyBlock(_sheet);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.VoxelParams, vparams);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.AnimParams, aparams);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.EmissionHsvm1, emission1);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.EmissionHsvm2, emission2);</span><br><span class="line">            _sheet.SetColor(ShaderIDs.TransitionColor, _transitionColor);</span><br><span class="line">            _sheet.SetColor(ShaderIDs.LineColor, _lineColor);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.EffectorPlane, plane);</span><br><span class="line">            _sheet.SetVector(ShaderIDs.PrevEffectorPlane, _prevEffectorPlane);</span><br><span class="line">            //_sheet.SetFloat(ShaderIDs.LocalTime, time);</span><br><span class="line">            renderer.SetPropertyBlock(_sheet);</span><br><span class="line">            print(plane);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //进行gizmo编辑器的实现,用于可视化Debug</span><br><span class="line">    Mesh _gridMesh;</span><br><span class="line"></span><br><span class="line">    void OnDestroy()</span><br><span class="line">    &#123;</span><br><span class="line">        if (_gridMesh != null)</span><br><span class="line">        &#123;</span><br><span class="line">            if (Application.isPlaying)</span><br><span class="line">                Destroy(_gridMesh);</span><br><span class="line">            else</span><br><span class="line">                DestroyImmediate(_gridMesh);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    void OnDrawGizmos()</span><br><span class="line">    &#123;</span><br><span class="line">        if (_gridMesh == null) InitGridMesh();</span><br><span class="line"></span><br><span class="line">        //矩阵用于控制Gizmos跟随物体的移动而移动</span><br><span class="line">        Gizmos.matrix = transform.localToWorldMatrix;</span><br><span class="line"></span><br><span class="line">        Gizmos.color = new Color(1, 1, 0, 0.5f);</span><br><span class="line">        Gizmos.DrawWireMesh(_gridMesh, Vector3.zero);</span><br><span class="line">        Gizmos.DrawWireMesh(_gridMesh, Vector3.forward);</span><br><span class="line"></span><br><span class="line">        Gizmos.color = new Color(1, 0, 0, 0.5f);</span><br><span class="line">        Gizmos.DrawWireCube(Vector3.forward / 2, new Vector3(0.02f, 0.02f, 1));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    void InitGridMesh()</span><br><span class="line">    &#123;</span><br><span class="line">        const float ext = 0.5f;</span><br><span class="line">        const int columns = 10;</span><br><span class="line"></span><br><span class="line">        var vertices = new List&lt;Vector3&gt;();</span><br><span class="line">        var indices = new List&lt;int&gt;();</span><br><span class="line"></span><br><span class="line">        for (var i = 0; i &lt; columns + 1; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            var x = ext * (2.0f * i / columns - 1);</span><br><span class="line"></span><br><span class="line">            indices.Add(vertices.Count);</span><br><span class="line">            vertices.Add(new Vector3(x, -ext, 0));</span><br><span class="line"></span><br><span class="line">            indices.Add(vertices.Count);</span><br><span class="line">            vertices.Add(new Vector3(x, +ext, 0));</span><br><span class="line"></span><br><span class="line">            indices.Add(vertices.Count);</span><br><span class="line">            vertices.Add(new Vector3(-ext, x, 0));</span><br><span class="line"></span><br><span class="line">            indices.Add(vertices.Count);</span><br><span class="line">            vertices.Add(new Vector3(+ext, x, 0));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        _gridMesh = new Mesh &#123; hideFlags = HideFlags.DontSave &#125;;</span><br><span class="line">        _gridMesh.SetVertices(vertices);</span><br><span class="line">        _gridMesh.SetNormals(vertices);</span><br><span class="line">        _gridMesh.SetIndices(indices.ToArray(), MeshTopology.Lines, 0);</span><br><span class="line">        _gridMesh.UploadMeshData(true);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    //颜色参数
+    [SerializeField, ColorUsage(false, true)] Color _emissionColor1 = Color.black;
+    [SerializeField, ColorUsage(false, true)] Color _emissionColor2 = Color.black;
+    [SerializeField, ColorUsage(false, true)] Color _transitionColor = Color.white;
+    [SerializeField, ColorUsage(false, true)] Color _lineColor = Color.white;
 
-<h3 id="MaterialPropertyBlock"><a href="#MaterialPropertyBlock" class="headerlink" title="MaterialPropertyBlock"></a>MaterialPropertyBlock</h3><p>研究代码的时候发现了MaterialPropertyBlock，查阅文档才发现是用于节约性能。实际应用可以查看这篇文章<a href="https://blog.csdn.net/liweizhao/article/details/81937590" target="_blank" rel="noopener">MaterialPropertyBlock</a>。</p>
-<h3 id="Shader的实现"><a href="#Shader的实现" class="headerlink" title="Shader的实现"></a>Shader的实现</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">// Upgrade NOTE: replaced &apos;_Object2World&apos; with &apos;unity_ObjectToWorld&apos;</span><br><span class="line"></span><br><span class="line">// Upgrade NOTE: replaced &apos;_Object2World&apos; with &apos;unity_ObjectToWorld&apos;</span><br><span class="line"></span><br><span class="line">Shader &quot;Custom/MeshShader&quot;</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    Properties</span><br><span class="line">    &#123;</span><br><span class="line">        _MainTex(&quot;主纹理贴图&quot;,2D)=&quot;white&quot;&#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    SubShader</span><br><span class="line">    &#123;</span><br><span class="line">		Tags &#123; &quot;RenderType&quot; = &quot;Opaque&quot; &#125;</span><br><span class="line">		LOD 100</span><br><span class="line">        Pass</span><br><span class="line">		&#123;</span><br><span class="line">			Tags&#123;&quot;LightMode&quot;=&quot;ForwardBase&quot;&#125;</span><br><span class="line">			CGPROGRAM</span><br><span class="line">			</span><br><span class="line">			//声明着色器</span><br><span class="line">			#pragma vertex vert </span><br><span class="line">			#pragma geometry geom</span><br><span class="line">			#pragma fragment frag</span><br><span class="line"></span><br><span class="line">			#include &quot;UnityCG.cginc&quot;</span><br><span class="line">			#include &quot;Assets/My/SimplexNoise3D.hlsl&quot;</span><br><span class="line">			//传递给顶点着色器的数据</span><br><span class="line">			struct a2v</span><br><span class="line">			&#123;</span><br><span class="line">				float4 vertex:POSITION;</span><br><span class="line">				float3 normal:NORMAL;</span><br><span class="line">				float4 texcoord:TEXCOORD0;</span><br><span class="line">			&#125;;</span><br><span class="line">			</span><br><span class="line">			//传递给几何着色器的数据</span><br><span class="line">			struct v2g</span><br><span class="line">			&#123;</span><br><span class="line">				float4 vertex:POSITION;</span><br><span class="line">				float3 normal:TEXCOORD0;</span><br><span class="line">				//float2 uv:TEXCOORD1;</span><br><span class="line">				</span><br><span class="line">			&#125;;</span><br><span class="line"></span><br><span class="line">			//传递给像素着色器的数据</span><br><span class="line">			struct g2f</span><br><span class="line">			&#123;</span><br><span class="line">				float4 pos : SV_POSITION;</span><br><span class="line">				float3 normal:TEXCOORD0;</span><br><span class="line">				//float2 uv : TEXCOORD1;</span><br><span class="line">				float4 color:COLOR;</span><br><span class="line">			&#125;;</span><br><span class="line"></span><br><span class="line">			sampler2D _MainTex;</span><br><span class="line">			float4 _MainTex_ST;</span><br><span class="line"></span><br><span class="line">			//用于几何着色器的数据</span><br><span class="line">			half2 _VoxelParams; // density, scale  密度，比例</span><br><span class="line">			half3 _AnimParams;  // stretch, fall distance, fluctuation   伸展、下降距离、波动</span><br><span class="line">			float4 _EffectorPlane;</span><br><span class="line">			float4 _PrevEffectorPlane;</span><br><span class="line"></span><br><span class="line">			//用于像素着色器的数据</span><br><span class="line">			half4 _EmissionHsvm1;</span><br><span class="line">			half4 _EmissionHsvm2;</span><br><span class="line">			half3 _TransitionColor;</span><br><span class="line">			half3 _LineColor;</span><br><span class="line"></span><br><span class="line">			</span><br><span class="line">			//顶点着色器</span><br><span class="line">			void vert(inout v2g input)</span><br><span class="line">			&#123;</span><br><span class="line">				</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			g2f VertexOutput(</span><br><span class="line">				float3 position0, float3 position1,</span><br><span class="line">				half3 normal0, half3 normal1, half param,</span><br><span class="line">				half emission = 0, half random = 0, half2 baryCoord = 0.5</span><br><span class="line">			)</span><br><span class="line">			&#123;</span><br><span class="line">				g2f i;</span><br><span class="line">				i.pos = UnityObjectToClipPos(float4(lerp(position0, position1, param),1));</span><br><span class="line">				i.normal = normalize(lerp(normal0, normal1, param));</span><br><span class="line">				i.color = float4(baryCoord, emission,random);</span><br><span class="line">				return i;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			// 计算方块的位置和大小</span><br><span class="line">			void CubePosScale(</span><br><span class="line">				float3 center, float size, float rand, float param,</span><br><span class="line">				out float3 pos, out float3 scale</span><br><span class="line">			)</span><br><span class="line">			&#123;</span><br><span class="line">				const float VoxelScale = _VoxelParams.y;</span><br><span class="line">				const float Stretch = _AnimParams.x;</span><br><span class="line">				const float FallDist = _AnimParams.y;</span><br><span class="line">				const float Fluctuation = _AnimParams.z;</span><br><span class="line"></span><br><span class="line">				// Noise field</span><br><span class="line">				//噪声场</span><br><span class="line">				float4 snoise = snoise_grad(float3(rand * 2378.34, param * 0.8, 0));</span><br><span class="line"></span><br><span class="line">				// Stretch/move param</span><br><span class="line">				float move = saturate(param * 4 - 3);</span><br><span class="line">				move = move * move;</span><br><span class="line"></span><br><span class="line">				// Cube position</span><br><span class="line">				pos = center + snoise.xyz * size * Fluctuation;</span><br><span class="line">				pos.y += move * move * lerp(0.25, 1, rand) * size * FallDist;</span><br><span class="line"></span><br><span class="line">				// Cube scale anim</span><br><span class="line">				scale = float2(1 - move, 1 + move * Stretch).xyx;</span><br><span class="line">				scale *= size * VoxelScale * saturate(1 + snoise.w * 2);</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">			//哈希值，用于随机觉得面片是三角面片还是Cube</span><br><span class="line">			float Hash(uint s)</span><br><span class="line">			&#123;</span><br><span class="line">				s = s ^ 2747636419u;</span><br><span class="line">				s = s * 2654435769u;</span><br><span class="line">				s = s ^ (s &gt;&gt; 16);</span><br><span class="line">				s = s * 2654435769u;</span><br><span class="line">				s = s ^ (s &gt;&gt; 16);</span><br><span class="line">				s = s * 2654435769u;</span><br><span class="line">				return float(s) * rcp(4294967296.0); // 2^-32</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			//几何着色器</span><br><span class="line">			[maxvertexcount(24)]</span><br><span class="line">			void geom(triangle v2g input[3], uint pid : SV_PrimitiveID, inout TriangleStream&lt;g2f&gt; outStream)</span><br><span class="line">			&#123;</span><br><span class="line">				//获取密度</span><br><span class="line">				const float VoxelDensity = _VoxelParams.x;</span><br><span class="line"></span><br><span class="line">				//获取传入顶点的位置</span><br><span class="line">				float3 p0 = input[0].vertex.xyz;</span><br><span class="line">				float3 p1 = input[1].vertex.xyz;</span><br><span class="line">				float3 p2 = input[2].vertex.xyz;</span><br><span class="line"></span><br><span class="line">				float3 p0_prev = p0;</span><br><span class="line">				float3 p1_prev = p1;</span><br><span class="line">				float3 p2_prev = p2;</span><br><span class="line"></span><br><span class="line">				//获取传入顶点的法线</span><br><span class="line">				float3 n0 = input[0].normal;</span><br><span class="line">				float3 n1 = input[1].normal;</span><br><span class="line">				float3 n2 = input[2].normal;</span><br><span class="line"></span><br><span class="line">				//计算中心点</span><br><span class="line">				float3 center = (p0 + p1 + p2) / 3;</span><br><span class="line">				float size = distance(p0, center);</span><br><span class="line"></span><br><span class="line">				//变形参数</span><br><span class="line">				//将中心点变换到世界空间中</span><br><span class="line">				float3 center_ws = mul(unity_ObjectToWorld, float4(center,1)).xyz;</span><br><span class="line">				float param = 1 - dot(_EffectorPlane.xyz, center_ws) + _EffectorPlane.w;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">				//如果变形还没开始那就将平常操作</span><br><span class="line">				if (param &lt; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					outStream.Append(VertexOutput(p0, 0, n0, 0, 0, 0, 0));</span><br><span class="line">					outStream.Append(VertexOutput(p1, 0, n1, 0, 0, 0, 0));</span><br><span class="line">					outStream.Append(VertexOutput(p2, 0, n2, 0, 0, 0, 0));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line">					return;</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">				</span><br><span class="line">				//变形结束后，不传递任何数据，从而使物体隐身</span><br><span class="line">				if (param &gt;= 1) return;</span><br><span class="line"></span><br><span class="line">				// Choose cube/triangle randomly.</span><br><span class="line">				//uint seed = float3(pid * 877, pid * 877, pid * 877);</span><br><span class="line">				uint seed = pid * 877;</span><br><span class="line">				if (Hash(seed) &lt; VoxelDensity)</span><br><span class="line">				&#123;</span><br><span class="line">					// -- Cube --</span><br><span class="line"></span><br><span class="line">					// Random numbers</span><br><span class="line">					float rand1 = Hash(seed + 1);</span><br><span class="line">					float rand2 = Hash(seed + 5);</span><br><span class="line"></span><br><span class="line">					// Cube position and scale</span><br><span class="line">					float3 pos, pos_prev, scale, scale_prev;</span><br><span class="line">					CubePosScale(center, size, rand1, param, pos, scale);</span><br><span class="line"></span><br><span class="line">					// Secondary animation parameters</span><br><span class="line">					float morph = smoothstep(0, 0.25, param);		</span><br><span class="line"></span><br><span class="line">					float em = smoothstep(0, 0.15, param) * 2; // initial emission</span><br><span class="line">					em = min(em, 1 + smoothstep(0.8, 0.9, 1 - param));</span><br><span class="line">					em += smoothstep(0.75, 1, param); // emission while falling</span><br><span class="line"></span><br><span class="line">					// Cube points calculation</span><br><span class="line">					float3 pc0 = pos + float3(-1, -1, -1) * scale;</span><br><span class="line">					float3 pc1 = pos + float3(+1, -1, -1) * scale;</span><br><span class="line">					float3 pc2 = pos + float3(-1, +1, -1) * scale;</span><br><span class="line">					float3 pc3 = pos + float3(+1, +1, -1) * scale;</span><br><span class="line">					float3 pc4 = pos + float3(-1, -1, +1) * scale;</span><br><span class="line">					float3 pc5 = pos + float3(+1, -1, +1) * scale;</span><br><span class="line">					float3 pc6 = pos + float3(-1, +1, +1) * scale;</span><br><span class="line">					float3 pc7 = pos + float3(+1, +1, +1) * scale;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">					// World space to object space conversion</span><br><span class="line"></span><br><span class="line">					// Vertex outputs</span><br><span class="line">					float3 nc = float3(-1, 0, 0);</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc2, n0, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc0, n2, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc6, n0, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc4, n2, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(1, 0, 0);</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc1, n2, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc3, n1, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc5, n2, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc7, n1, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(0, -1, 0);</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc0, n2, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc1, n2, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc4, n2, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc5, n2, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(0, 1, 0);</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc3, n1, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc2, n0, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc7, n1, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc6, n0, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(0, 0, -1);</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc1, n2, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc0, n2, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc3, n1, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc2, n0, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line"></span><br><span class="line">					nc = float3(0, 0, 1);</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc4, -n2, nc, morph, em, rand2, float2(0, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p2, pc5, -n2, nc, morph, em, rand2, float2(1, 0)));</span><br><span class="line">					outStream.Append(VertexOutput(p0, pc6, -n0, nc, morph, em, rand2, float2(0, 1)));</span><br><span class="line">					outStream.Append(VertexOutput(p1, pc7, -n1, nc, morph, em, rand2, float2(1, 1)));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line">				&#125;</span><br><span class="line">				else</span><br><span class="line">				&#123;</span><br><span class="line">					// -- Triangle --</span><br><span class="line">					half morph = smoothstep(0, 0.25, param);</span><br><span class="line">					//half morph = 0.25;</span><br><span class="line">					half em = smoothstep(0, 0.15, param) * 2;</span><br><span class="line">					outStream.Append(VertexOutput(p0, center, n0, n0, morph, em));</span><br><span class="line">					outStream.Append(VertexOutput(p1, center, n1, n1, morph, em));</span><br><span class="line">					outStream.Append(VertexOutput(p2, center, n2, n2, morph, em));</span><br><span class="line">					outStream.RestartStrip();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			//计算颜色</span><br><span class="line">			half3 SelfEmission(g2f input)</span><br><span class="line">			&#123;</span><br><span class="line">				half2 bcc = input.color.rg;</span><br><span class="line">				half em1 = saturate(input.color.b);</span><br><span class="line">				half em2 = saturate(input.color.b - 1);</span><br><span class="line">				half rand = input.color.a;</span><br><span class="line"></span><br><span class="line">				// Cube face color</span><br><span class="line">				half3 face = lerp(_EmissionHsvm1.xyz, _EmissionHsvm2.xyz, rand);</span><br><span class="line">				face *= lerp(_EmissionHsvm1.w, _EmissionHsvm2.w, rand);</span><br><span class="line"></span><br><span class="line">				// Cube face attenuation</span><br><span class="line">				face *= lerp(0.75, 1, smoothstep(0, 0.5, length(bcc - 0.5)));</span><br><span class="line"></span><br><span class="line">				// Edge detection</span><br><span class="line">				half2 fw = fwidth(bcc);</span><br><span class="line">				half2 edge2 = min(smoothstep(0, fw * 2, bcc),</span><br><span class="line">					smoothstep(0, fw * 2, 1 - bcc));</span><br><span class="line">				half edge = 1 - min(edge2.x, edge2.y);</span><br><span class="line"></span><br><span class="line">				return</span><br><span class="line">					face * em1 +</span><br><span class="line">					_TransitionColor * em2 * face +</span><br><span class="line">					edge * _LineColor * em1;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			half4 frag(g2f z):SV_Target</span><br><span class="line">			&#123;</span><br><span class="line">				half4 col = half4(SelfEmission(z),1);</span><br><span class="line">				return col;</span><br><span class="line">			&#125;</span><br><span class="line">				ENDCG</span><br><span class="line">		&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    FallBack &quot;Diffuse&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    //用于Mesh变换物体的Renderer
+    [SerializeField] Renderer[] _renderers = null;
 
-<p>这里运用到了三维噪声的知识，这里我只是简单的调用了K神写好的噪声函数，并没有深究，其实我还是看过了一些关于噪声的文章，以后已机会把笔记总结出来。</p>
+
+    //效果平面的位置与距离
+    Vector4 EffectorPlane
+    {
+        get
+        {
+            //获取向前的方向
+            var fwd = transform.forward / transform.localScale.z;
+            //获取向前方向上的移动距离
+            var dist = Vector3.Dot(fwd, transform.position);
+            return new Vector4(fwd.x, fwd.y, fwd.z, dist);
+        }
+    }
+
+
+    //将RGB颜色模型转为HSV颜色模型
+    Vector4  ColorToHsvm(Color color)
+    {
+        //获取颜色的分量最大值
+        var max = color.maxColorComponent;
+        float h, s, v;
+        Color.RGBToHSV(color / max, out h, out s, out v);
+        return new Vector4(h, s, v, max);
+    }
+
+
+    //获取着色器属性的唯一标识符
+    //优点：使用属性标识符比将字符串传递给所有材料属性函数更有效。
+    //例如，如果您经常调用Material.SetColor或使用MaterialPropertyBlock，
+    //则最好只获取一次所需属性的标识符。
+
+    static class ShaderIDs
+    {
+        public static readonly int VoxelParams = Shader.PropertyToID(&quot;_VoxelParams&quot;);
+        public static readonly int AnimParams = Shader.PropertyToID(&quot;_AnimParams&quot;);
+        public static readonly int EmissionHsvm1 = Shader.PropertyToID(&quot;_EmissionHsvm1&quot;);
+        public static readonly int EmissionHsvm2 = Shader.PropertyToID(&quot;_EmissionHsvm2&quot;);
+        public static readonly int TransitionColor = Shader.PropertyToID(&quot;_TransitionColor&quot;);
+        public static readonly int LineColor = Shader.PropertyToID(&quot;_LineColor&quot;);
+        public static readonly int EffectorPlane = Shader.PropertyToID(&quot;_EffectorPlane&quot;);
+        public static readonly int PrevEffectorPlane = Shader.PropertyToID(&quot;_PrevEffectorPlane&quot;);
+        public static readonly int LocalTime = Shader.PropertyToID(&quot;_LocalTime&quot;);
+    }
+
+    //在要使用相同材质但属性稍有不同的多个对象绘制的情况下使用MaterialPropertyBlock。
+    MaterialPropertyBlock _sheet;
+    Vector4 _prevEffectorPlane = Vector3.one * 1e+5f;
+
+    private void LateUpdate()
+    {
+        //查看渲染列表是否为空
+        if (_renderers == null || _renderers.Length == 0) return;
+        //创建新的MaterialPropertyBlock
+        if (_sheet == null) _sheet = new MaterialPropertyBlock();
+
+        var plane = EffectorPlane;
+        // Filter out large deltas.
+        //过滤掉大的三角面片
+        if ((_prevEffectorPlane - plane).magnitude &gt; 100) _prevEffectorPlane = plane;
+
+        //存储参数
+        var vparams = new Vector2(_density, _scale);
+        var aparams = new Vector3(_stretch, _fallDistance, _fluctuation);
+        var emission1 = ColorToHsvm(_emissionColor1);
+        var emission2 = ColorToHsvm(_emissionColor2);
+
+        //将参数传递给shader
+        foreach (var renderer in _renderers)
+        {
+            if (renderer == null) continue;
+            renderer.GetPropertyBlock(_sheet);
+            _sheet.SetVector(ShaderIDs.VoxelParams, vparams);
+            _sheet.SetVector(ShaderIDs.AnimParams, aparams);
+            _sheet.SetVector(ShaderIDs.EmissionHsvm1, emission1);
+            _sheet.SetVector(ShaderIDs.EmissionHsvm2, emission2);
+            _sheet.SetColor(ShaderIDs.TransitionColor, _transitionColor);
+            _sheet.SetColor(ShaderIDs.LineColor, _lineColor);
+            _sheet.SetVector(ShaderIDs.EffectorPlane, plane);
+            _sheet.SetVector(ShaderIDs.PrevEffectorPlane, _prevEffectorPlane);
+            //_sheet.SetFloat(ShaderIDs.LocalTime, time);
+            renderer.SetPropertyBlock(_sheet);
+            print(plane);
+        }
+    }
+
+
+    //进行gizmo编辑器的实现,用于可视化Debug
+    Mesh _gridMesh;
+
+    void OnDestroy()
+    {
+        if (_gridMesh != null)
+        {
+            if (Application.isPlaying)
+                Destroy(_gridMesh);
+            else
+                DestroyImmediate(_gridMesh);
+        }
+    }
+
+    void OnDrawGizmos()
+    {
+        if (_gridMesh == null) InitGridMesh();
+
+        //矩阵用于控制Gizmos跟随物体的移动而移动
+        Gizmos.matrix = transform.localToWorldMatrix;
+
+        Gizmos.color = new Color(1, 1, 0, 0.5f);
+        Gizmos.DrawWireMesh(_gridMesh, Vector3.zero);
+        Gizmos.DrawWireMesh(_gridMesh, Vector3.forward);
+
+        Gizmos.color = new Color(1, 0, 0, 0.5f);
+        Gizmos.DrawWireCube(Vector3.forward / 2, new Vector3(0.02f, 0.02f, 1));
+    }
+
+    void InitGridMesh()
+    {
+        const float ext = 0.5f;
+        const int columns = 10;
+
+        var vertices = new List&lt;Vector3&gt;();
+        var indices = new List&lt;int&gt;();
+
+        for (var i = 0; i &lt; columns + 1; i++)
+        {
+            var x = ext * (2.0f * i / columns - 1);
+
+            indices.Add(vertices.Count);
+            vertices.Add(new Vector3(x, -ext, 0));
+
+            indices.Add(vertices.Count);
+            vertices.Add(new Vector3(x, +ext, 0));
+
+            indices.Add(vertices.Count);
+            vertices.Add(new Vector3(-ext, x, 0));
+
+            indices.Add(vertices.Count);
+            vertices.Add(new Vector3(+ext, x, 0));
+        }
+
+        _gridMesh = new Mesh { hideFlags = HideFlags.DontSave };
+        _gridMesh.SetVertices(vertices);
+        _gridMesh.SetNormals(vertices);
+        _gridMesh.SetIndices(indices.ToArray(), MeshTopology.Lines, 0);
+        _gridMesh.UploadMeshData(true);
+    }
+}
+</code></pre><h3 id="MaterialPropertyBlock"><a href="#MaterialPropertyBlock" class="headerlink" title="MaterialPropertyBlock"></a>MaterialPropertyBlock</h3><p>研究代码的时候发现了MaterialPropertyBlock，查阅文档才发现是用于节约性能。实际应用可以查看这篇文章<a href="https://blog.csdn.net/liweizhao/article/details/81937590" target="_blank" rel="noopener">MaterialPropertyBlock</a>。</p>
+<h3 id="Shader的实现"><a href="#Shader的实现" class="headerlink" title="Shader的实现"></a>Shader的实现</h3><pre><code>// Upgrade NOTE: replaced &#39;_Object2World&#39; with &#39;unity_ObjectToWorld&#39;
+
+// Upgrade NOTE: replaced &#39;_Object2World&#39; with &#39;unity_ObjectToWorld&#39;
+
+Shader &quot;Custom/MeshShader&quot;
+{
+
+    Properties
+    {
+        _MainTex(&quot;主纹理贴图&quot;,2D)=&quot;white&quot;{}
+    }
+    SubShader
+    {
+        Tags { &quot;RenderType&quot; = &quot;Opaque&quot; }
+        LOD 100
+        Pass
+        {
+            Tags{&quot;LightMode&quot;=&quot;ForwardBase&quot;}
+            CGPROGRAM
+
+            //声明着色器
+            #pragma vertex vert 
+            #pragma geometry geom
+            #pragma fragment frag
+
+            #include &quot;UnityCG.cginc&quot;
+            #include &quot;Assets/My/SimplexNoise3D.hlsl&quot;
+            //传递给顶点着色器的数据
+            struct a2v
+            {
+                float4 vertex:POSITION;
+                float3 normal:NORMAL;
+                float4 texcoord:TEXCOORD0;
+            };
+
+            //传递给几何着色器的数据
+            struct v2g
+            {
+                float4 vertex:POSITION;
+                float3 normal:TEXCOORD0;
+                //float2 uv:TEXCOORD1;
+
+            };
+
+            //传递给像素着色器的数据
+            struct g2f
+            {
+                float4 pos : SV_POSITION;
+                float3 normal:TEXCOORD0;
+                //float2 uv : TEXCOORD1;
+                float4 color:COLOR;
+            };
+
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+
+            //用于几何着色器的数据
+            half2 _VoxelParams; // density, scale  密度，比例
+            half3 _AnimParams;  // stretch, fall distance, fluctuation   伸展、下降距离、波动
+            float4 _EffectorPlane;
+            float4 _PrevEffectorPlane;
+
+            //用于像素着色器的数据
+            half4 _EmissionHsvm1;
+            half4 _EmissionHsvm2;
+            half3 _TransitionColor;
+            half3 _LineColor;
+
+
+            //顶点着色器
+            void vert(inout v2g input)
+            {
+
+            }
+
+            g2f VertexOutput(
+                float3 position0, float3 position1,
+                half3 normal0, half3 normal1, half param,
+                half emission = 0, half random = 0, half2 baryCoord = 0.5
+            )
+            {
+                g2f i;
+                i.pos = UnityObjectToClipPos(float4(lerp(position0, position1, param),1));
+                i.normal = normalize(lerp(normal0, normal1, param));
+                i.color = float4(baryCoord, emission,random);
+                return i;
+            }
+
+            // 计算方块的位置和大小
+            void CubePosScale(
+                float3 center, float size, float rand, float param,
+                out float3 pos, out float3 scale
+            )
+            {
+                const float VoxelScale = _VoxelParams.y;
+                const float Stretch = _AnimParams.x;
+                const float FallDist = _AnimParams.y;
+                const float Fluctuation = _AnimParams.z;
+
+                // Noise field
+                //噪声场
+                float4 snoise = snoise_grad(float3(rand * 2378.34, param * 0.8, 0));
+
+                // Stretch/move param
+                float move = saturate(param * 4 - 3);
+                move = move * move;
+
+                // Cube position
+                pos = center + snoise.xyz * size * Fluctuation;
+                pos.y += move * move * lerp(0.25, 1, rand) * size * FallDist;
+
+                // Cube scale anim
+                scale = float2(1 - move, 1 + move * Stretch).xyx;
+                scale *= size * VoxelScale * saturate(1 + snoise.w * 2);
+            }
+
+            //哈希值，用于随机觉得面片是三角面片还是Cube
+            float Hash(uint s)
+            {
+                s = s ^ 2747636419u;
+                s = s * 2654435769u;
+                s = s ^ (s &gt;&gt; 16);
+                s = s * 2654435769u;
+                s = s ^ (s &gt;&gt; 16);
+                s = s * 2654435769u;
+                return float(s) * rcp(4294967296.0); // 2^-32
+            }
+
+            //几何着色器
+            [maxvertexcount(24)]
+            void geom(triangle v2g input[3], uint pid : SV_PrimitiveID, inout TriangleStream&lt;g2f&gt; outStream)
+            {
+                //获取密度
+                const float VoxelDensity = _VoxelParams.x;
+
+                //获取传入顶点的位置
+                float3 p0 = input[0].vertex.xyz;
+                float3 p1 = input[1].vertex.xyz;
+                float3 p2 = input[2].vertex.xyz;
+
+                float3 p0_prev = p0;
+                float3 p1_prev = p1;
+                float3 p2_prev = p2;
+
+                //获取传入顶点的法线
+                float3 n0 = input[0].normal;
+                float3 n1 = input[1].normal;
+                float3 n2 = input[2].normal;
+
+                //计算中心点
+                float3 center = (p0 + p1 + p2) / 3;
+                float size = distance(p0, center);
+
+                //变形参数
+                //将中心点变换到世界空间中
+                float3 center_ws = mul(unity_ObjectToWorld, float4(center,1)).xyz;
+                float param = 1 - dot(_EffectorPlane.xyz, center_ws) + _EffectorPlane.w;
+
+
+                //如果变形还没开始那就将平常操作
+                if (param &lt; 0)
+                {
+                    outStream.Append(VertexOutput(p0, 0, n0, 0, 0, 0, 0));
+                    outStream.Append(VertexOutput(p1, 0, n1, 0, 0, 0, 0));
+                    outStream.Append(VertexOutput(p2, 0, n2, 0, 0, 0, 0));
+                    outStream.RestartStrip();
+                    return;
+                }
+
+
+                //变形结束后，不传递任何数据，从而使物体隐身
+                if (param &gt;= 1) return;
+
+                // Choose cube/triangle randomly.
+                //uint seed = float3(pid * 877, pid * 877, pid * 877);
+                uint seed = pid * 877;
+                if (Hash(seed) &lt; VoxelDensity)
+                {
+                    // -- Cube --
+
+                    // Random numbers
+                    float rand1 = Hash(seed + 1);
+                    float rand2 = Hash(seed + 5);
+
+                    // Cube position and scale
+                    float3 pos, pos_prev, scale, scale_prev;
+                    CubePosScale(center, size, rand1, param, pos, scale);
+
+                    // Secondary animation parameters
+                    float morph = smoothstep(0, 0.25, param);        
+
+                    float em = smoothstep(0, 0.15, param) * 2; // initial emission
+                    em = min(em, 1 + smoothstep(0.8, 0.9, 1 - param));
+                    em += smoothstep(0.75, 1, param); // emission while falling
+
+                    // Cube points calculation
+                    float3 pc0 = pos + float3(-1, -1, -1) * scale;
+                    float3 pc1 = pos + float3(+1, -1, -1) * scale;
+                    float3 pc2 = pos + float3(-1, +1, -1) * scale;
+                    float3 pc3 = pos + float3(+1, +1, -1) * scale;
+                    float3 pc4 = pos + float3(-1, -1, +1) * scale;
+                    float3 pc5 = pos + float3(+1, -1, +1) * scale;
+                    float3 pc6 = pos + float3(-1, +1, +1) * scale;
+                    float3 pc7 = pos + float3(+1, +1, +1) * scale;
+
+
+                    // World space to object space conversion
+
+                    // Vertex outputs
+                    float3 nc = float3(-1, 0, 0);
+                    outStream.Append(VertexOutput(p0, pc2, n0, nc, morph, em, rand2, float2(0, 0)));
+                    outStream.Append(VertexOutput(p2, pc0, n2, nc, morph, em, rand2, float2(1, 0)));
+                    outStream.Append(VertexOutput(p0, pc6, n0, nc, morph, em, rand2, float2(0, 1)));
+                    outStream.Append(VertexOutput(p2, pc4, n2, nc, morph, em, rand2, float2(1, 1)));
+                    outStream.RestartStrip();
+
+                    nc = float3(1, 0, 0);
+                    outStream.Append(VertexOutput(p2, pc1, n2, nc, morph, em, rand2, float2(0, 0)));
+                    outStream.Append(VertexOutput(p1, pc3, n1, nc, morph, em, rand2, float2(1, 0)));
+                    outStream.Append(VertexOutput(p2, pc5, n2, nc, morph, em, rand2, float2(0, 1)));
+                    outStream.Append(VertexOutput(p1, pc7, n1, nc, morph, em, rand2, float2(1, 1)));
+                    outStream.RestartStrip();
+
+                    nc = float3(0, -1, 0);
+                    outStream.Append(VertexOutput(p2, pc0, n2, nc, morph, em, rand2, float2(0, 0)));
+                    outStream.Append(VertexOutput(p2, pc1, n2, nc, morph, em, rand2, float2(1, 0)));
+                    outStream.Append(VertexOutput(p2, pc4, n2, nc, morph, em, rand2, float2(0, 1)));
+                    outStream.Append(VertexOutput(p2, pc5, n2, nc, morph, em, rand2, float2(1, 1)));
+                    outStream.RestartStrip();
+
+                    nc = float3(0, 1, 0);
+                    outStream.Append(VertexOutput(p1, pc3, n1, nc, morph, em, rand2, float2(0, 0)));
+                    outStream.Append(VertexOutput(p0, pc2, n0, nc, morph, em, rand2, float2(1, 0)));
+                    outStream.Append(VertexOutput(p1, pc7, n1, nc, morph, em, rand2, float2(0, 1)));
+                    outStream.Append(VertexOutput(p0, pc6, n0, nc, morph, em, rand2, float2(1, 1)));
+                    outStream.RestartStrip();
+
+                    nc = float3(0, 0, -1);
+                    outStream.Append(VertexOutput(p2, pc1, n2, nc, morph, em, rand2, float2(0, 0)));
+                    outStream.Append(VertexOutput(p2, pc0, n2, nc, morph, em, rand2, float2(1, 0)));
+                    outStream.Append(VertexOutput(p1, pc3, n1, nc, morph, em, rand2, float2(0, 1)));
+                    outStream.Append(VertexOutput(p0, pc2, n0, nc, morph, em, rand2, float2(1, 1)));
+                    outStream.RestartStrip();
+
+                    nc = float3(0, 0, 1);
+                    outStream.Append(VertexOutput(p2, pc4, -n2, nc, morph, em, rand2, float2(0, 0)));
+                    outStream.Append(VertexOutput(p2, pc5, -n2, nc, morph, em, rand2, float2(1, 0)));
+                    outStream.Append(VertexOutput(p0, pc6, -n0, nc, morph, em, rand2, float2(0, 1)));
+                    outStream.Append(VertexOutput(p1, pc7, -n1, nc, morph, em, rand2, float2(1, 1)));
+                    outStream.RestartStrip();
+                }
+                else
+                {
+                    // -- Triangle --
+                    half morph = smoothstep(0, 0.25, param);
+                    //half morph = 0.25;
+                    half em = smoothstep(0, 0.15, param) * 2;
+                    outStream.Append(VertexOutput(p0, center, n0, n0, morph, em));
+                    outStream.Append(VertexOutput(p1, center, n1, n1, morph, em));
+                    outStream.Append(VertexOutput(p2, center, n2, n2, morph, em));
+                    outStream.RestartStrip();
+                }
+            }
+
+            //计算颜色
+            half3 SelfEmission(g2f input)
+            {
+                half2 bcc = input.color.rg;
+                half em1 = saturate(input.color.b);
+                half em2 = saturate(input.color.b - 1);
+                half rand = input.color.a;
+
+                // Cube face color
+                half3 face = lerp(_EmissionHsvm1.xyz, _EmissionHsvm2.xyz, rand);
+                face *= lerp(_EmissionHsvm1.w, _EmissionHsvm2.w, rand);
+
+                // Cube face attenuation
+                face *= lerp(0.75, 1, smoothstep(0, 0.5, length(bcc - 0.5)));
+
+                // Edge detection
+                half2 fw = fwidth(bcc);
+                half2 edge2 = min(smoothstep(0, fw * 2, bcc),
+                    smoothstep(0, fw * 2, 1 - bcc));
+                half edge = 1 - min(edge2.x, edge2.y);
+
+                return
+                    face * em1 +
+                    _TransitionColor * em2 * face +
+                    edge * _LineColor * em1;
+            }
+
+            half4 frag(g2f z):SV_Target
+            {
+                half4 col = half4(SelfEmission(z),1);
+                return col;
+            }
+                ENDCG
+        }
+    }
+    FallBack &quot;Diffuse&quot;
+}
+</code></pre><p>这里运用到了三维噪声的知识，这里我只是简单的调用了K神写好的噪声函数，并没有深究，其实我还是看过了一些关于噪声的文章，以后已机会把笔记总结出来。</p>
 <h1 id="最终结果"><a href="#最终结果" class="headerlink" title="最终结果"></a>最终结果</h1><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-MeshTransform/LastEffect.gif" alt="实现思路"></p>
 <h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>这个效果对于模型也是有要求的，模型的面片不能太小，不然就会得到以下的结果…</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-MeshTransform/Fail.gif" alt="失败效果"></p>
