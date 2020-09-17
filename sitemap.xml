@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2020/01/07/2019%E5%B9%B4---%E5%B0%8F%E8%AE%B0/</loc>
+    
+    <lastmod>2020-09-17</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/friends/index.html</loc>
     
     <lastmod>2020-09-17</lastmod>
@@ -33,13 +40,6 @@
     <loc>http://yoursite.com/2020/08/24/Maya%E7%AE%80%E6%98%93%E6%8E%A7%E5%88%B6%E5%99%A8/</loc>
     
     <lastmod>2020-08-24</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/2020/01/07/2019%E5%B9%B4---%E5%B0%8F%E8%AE%B0/</loc>
-    
-    <lastmod>2020-08-23</lastmod>
     
   </url>
   
@@ -116,14 +116,14 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/Hexo/</loc>
+    <loc>http://yoursite.com/tags/%E6%9D%82%E8%AE%B0cover/</loc>
     <lastmod>2020-09-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/%E6%9D%82%E8%AE%B0/</loc>
+    <loc>http://yoursite.com/tags/Hexo/</loc>
     <lastmod>2020-09-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -153,14 +153,14 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/categories/Hexo/</loc>
+    <loc>http://yoursite.com/categories/%E6%9D%82%E8%AE%B0/</loc>
     <lastmod>2020-09-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://yoursite.com/categories/%E6%9D%82%E8%AE%B0/</loc>
+    <loc>http://yoursite.com/categories/Hexo/</loc>
     <lastmod>2020-09-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
