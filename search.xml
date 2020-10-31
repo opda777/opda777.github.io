@@ -56,6 +56,354 @@ hexo d</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>Poof效果Niagara实现</title>
+    <url>/2020/10/31/Poof%E6%95%88%E6%9E%9CNiagara%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>教程：<a href="https://www.youtube.com/watch?v=aiw1slB4Mdo&amp;t=1677s这位老哥的Niagara教程非常的棒，思路很清晰。" target="_blank" rel="noopener">https://www.youtube.com/watch?v=aiw1slB4Mdo&amp;t=1677s这位老哥的Niagara教程非常的棒，思路很清晰。</a></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/Poof%E6%95%88%E6%9E%9C.gif" alt="Poof效果"></p>
+ <a id="more"></a> 
+
+<h2 id="分析实现点"><a href="#分析实现点" class="headerlink" title="分析实现点"></a>分析实现点</h2><p>1.底层的烟雾效果    2.四处飞散的烟雾效果    3.爆炸火花和漂浮火花效果</p>
+<h2 id="底层的烟雾效果"><a href="#底层的烟雾效果" class="headerlink" title="底层的烟雾效果"></a>底层的烟雾效果</h2><p><strong>主要思路</strong>：利用Cylinder Location生成沿圆柱体表面的粒子，再Add Velocity达到外扩效果，最后Scale Sprite Size调整大小。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031154142500.png" alt="image-20201031154142500"></p>
+<h3 id="Cylinder-Location"><a href="#Cylinder-Location" class="headerlink" title="Cylinder Location"></a>Cylinder Location</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031154347484.png" alt="image-20201031154347484"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170321744.png" alt="image-20201030170321744"></p>
+<p>可以通过勾选SurfaceOnly，让点只生成在圆柱的表面</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170359427.png" alt="image-20201030170359427"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170405653.png" alt="image-20201030170405653"></p>
+<p>也可以选择是否封盖模式，可以看到这样点就不会生成在圆柱的上下表面</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170548167.png" alt="image-20201030170548167"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170552930.png" alt="image-20201030170552930"></p>
+<h3 id="Drag"><a href="#Drag" class="headerlink" title="Drag"></a>Drag</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031154558620.png" alt="image-20201031154558620"></p>
+<p>其实在我看来就是摩擦力，能达到一个非常好的物理模拟效果。</p>
+<h3 id="为烟雾添加Light效果"><a href="#为烟雾添加Light效果" class="headerlink" title="为烟雾添加Light效果"></a>为烟雾添加Light效果</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031154937201.png" alt="image-20201031154937201"></p>
+<h2 id="四处飞散的烟雾效果"><a href="#四处飞散的烟雾效果" class="headerlink" title="四处飞散的烟雾效果"></a>四处飞散的烟雾效果</h2><p>思路：首先用一个Emitter发射出5个点来模拟烟雾的轨迹，Generate Location Event发出Event，然后另一个Emitter接受Event，完成了粒子之间的属性传递。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031155452425.png" alt="发出Event的Emitter"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031155533248.png" alt="接收Event的Emitter"></p>
+<h3 id="Add-Velocity-from-point"><a href="#Add-Velocity-from-point" class="headerlink" title="Add Velocity from point"></a>Add Velocity from point</h3><p>这个也是用于添加Velocity，大概意思是根据Velocity Origin 来计算粒子点的速度，Simulation Position指Niagara System中在场景中的位置</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031155754305.png" alt="image-20201031155754305"></p>
+<h3 id="Generate-Location-Event"><a href="#Generate-Location-Event" class="headerlink" title="Generate Location Event"></a>Generate Location Event</h3><p>这个需要在发射器属性中勾选持久ID，Event主要实现的是Emitter之间的信息传递，一个Emitter发出Event，另一个Emitter进行监听</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031160049739.png" alt="image-20201031160049739"></p>
+<p>Event Send Rate：Event发射的速率多少，会影响接收方Emitter生成粒子的数量</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031155942917.png" alt="image-20201031155942917"></p>
+<h3 id="Receive-Location-Event"><a href="#Receive-Location-Event" class="headerlink" title="Receive Location Event"></a>Receive Location Event</h3><p>顾名思义是接受Event</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031160428716.png" alt="image-20201031160428716"></p>
+<h2 id="爆炸火花和漂浮火花效果"><a href="#爆炸火花和漂浮火花效果" class="headerlink" title="爆炸火花和漂浮火花效果"></a>爆炸火花和漂浮火花效果</h2><p>这个比较简单，都是利用Add Velocity from point 添加了速度，让粒子往外扩，添加Curl Noise Force让粒子更飘动更随机一点，其中Hit Emitter的size是经过拉伸的，这样才能形成长方形效果，最后都是调整Size曲线</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031160730199.png" alt="image-20201031160730199"></p>
+<h2 id="特别注意"><a href="#特别注意" class="headerlink" title="特别注意"></a>特别注意</h2><p>如果在材质中开启默认光照，特别注意光照对粒子的效果，可能会照成粒子变黑</p>
+<h2 id="材质"><a href="#材质" class="headerlink" title="材质"></a>材质</h2><p>朴实无华</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031161649592.png" alt="image-20201031161649592"></p>
+]]></content>
+      <categories>
+        <category>UE4</category>
+      </categories>
+      <tags>
+        <tag>UE4</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>UE4--材质大师课程笔记</title>
+    <url>/2020/01/11/UE4--%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<h2 id="压缩和内存"><a href="#压缩和内存" class="headerlink" title="压缩和内存"></a>压缩和内存</h2><p>一般来说纹理导入UE4都是经过压缩的，压缩方式有BC(Block Compression块压缩)/DXTC(Directx Texture Compression DirectX纹理压缩)两种，其实都是用于PC的Directx平台的格式。但是法线贴图有点特殊，是无法通过这两种方式进行压缩的。</p>
+<a id="more"></a>
+
+<p>​    如下图所示就是贴图导入UE4后所选择的压缩方式。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/%E5%8E%8B%E7%BC%A9%E6%96%B9%E5%BC%8F.png" alt></p>
+<p>压缩方式后面所带的数字表明是不同的压缩格式，例如BC3(DXTC5)表示带透明度的纹理，BC1(DXTC1)表示不带透明度的纹理。</p>
+<p>法线贴图的压缩方式是通过剔除蓝色通道的方式进行压缩，这样可以存储更多的数据，同时对红色和绿色通道进行轻度压缩。最后通过对红绿色进行蓝色通道的复原，这些都是UE4内部自己调用的，不用我们去调整。如下图只是进行蓝色通道复原的演示。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/%E6%B3%95%E7%BA%BF%E8%B4%B4%E5%9B%BE.png" alt></p>
+<p>注意的是，法线贴图的导入方式必须是选择NormalMap。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/%E6%B3%95%E7%BA%BF%E8%B4%B4%E5%9B%BE%E5%8E%8B%E7%BC%A9%E6%96%B9%E5%BC%8F.png" alt></p>
+<h3 id="为什么要对纹理进行压缩"><a href="#为什么要对纹理进行压缩" class="headerlink" title="为什么要对纹理进行压缩"></a>为什么要对纹理进行压缩</h3><p>最主要是因为受限于内存和带宽，如果不对纹理进行压缩，可能导致卡顿。但帧率过低一般和纹理压缩没有什么关系。可以通过查看统计数据，来查看场景中哪些纹理在内存中的大小。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE.png" alt></p>
+<h2 id="多级渐进纹理-纹理尺寸和纹理池"><a href="#多级渐进纹理-纹理尺寸和纹理池" class="headerlink" title="多级渐进纹理 纹理尺寸和纹理池"></a>多级渐进纹理 纹理尺寸和纹理池</h2><h3 id="纹理池"><a href="#纹理池" class="headerlink" title="纹理池"></a>纹理池</h3><p>UE4在计算机内存中，会为纹理暴保留一定的空间，这个空间就是纹理池，我们可以手动调整纹理池的大小，当纹理池大小不够用的时候，会导致贴图的分辨率降低，效果下降。</p>
+<p>打开控制台，输入r.Streaming.PoolSize查看纹理池大小，并且可以进行修改。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/%E8%B0%83%E6%95%B4%E7%BA%B9%E7%90%86%E6%B1%A0.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/%E8%BF%87%E5%B0%8F%E7%BA%B9%E7%90%86%E6%B1%A0.png" alt></p>
+<h3 id="Mipmaps-多级渐进纹理"><a href="#Mipmaps-多级渐进纹理" class="headerlink" title="Mipmaps(多级渐进纹理)"></a>Mipmaps(多级渐进纹理)</h3><p>Mipmaps为原始纹理的副本，大小为1/4左右,使用Mipmaps的原因是为了减少噪点的生成。</p>
+<p>左侧是使用了Mipmaps，右边没有使用，可以看出右边的噪点非常多，所以Mipmaps可以看成我们手动进行模糊</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Mipmaps.png" alt></p>
+<p>UE4会对远处使用不同的Mipmaps来模拟模糊的效果，如下图离镜头最近的就使用Mipmaps0原始纹理，然后随着离镜头越来越远，使用不同的Mipmaps。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/MipmapsLerp.png" alt></p>
+<p>可以在贴图的LOD选择中进行Mipmaps的设置</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Mipmaps%E8%AE%BE%E7%BD%AE.png" alt></p>
+<h4 id="注意纹理尺寸"><a href="#注意纹理尺寸" class="headerlink" title="注意纹理尺寸"></a>注意纹理尺寸</h4><p>使用Mipmaps可以提高我们的性能，加快渲染速度和减少纹理锯齿，但注意不适于2的幂数的纹理无法生成Mipmaps，但是UI纹理可以是任意分辨率，因为UI纹理不会从远处到近处，所以没必要使用Mipmaps。</p>
+<h3 id="材质的纹理数限制"><a href="#材质的纹理数限制" class="headerlink" title="材质的纹理数限制"></a>材质的纹理数限制</h3><p>UE4的每个材质的纹理可采样数是16个，加上内部的光影贴图，其实我们可以用的大概是13个左右，其实已经够用了，但是如果要突破这个限制的话，我们可以把不同的贴图合成RGB通道就成为一张贴图，到使用的的时候就可以分RGB通道分为3张贴图。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/%E8%B4%B4%E5%9B%BE%E5%90%88%E6%88%90.png" alt></p>
+]]></content>
+      <categories>
+        <category>UE4</category>
+      </categories>
+      <tags>
+        <tag>UE4</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Maya简易控制器</title>
+    <url>/2020/08/24/Maya%E7%AE%80%E6%98%93%E6%8E%A7%E5%88%B6%E5%99%A8/</url>
+    <content><![CDATA[<p>Maya教程笔记，过程中会记录自己所遇到的问题和新知识</p>
+<a id="more"></a>
+
+<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>控制器的简易添加，缩放控制器，控制器的颜色选择</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/GIF%202020-8-24%2022-52-16.gif" alt="GIF 2020-8-24 22-52-16"></p>
+<h2 id="QLabel"><a href="#QLabel" class="headerlink" title="QLabel"></a>QLabel</h2><p>QLabel提供了一个文本或者图像的显示，没有提供交互功能，在建议控制器中我利用QLabel进行了文字的显示和背景颜色显示</p>
+<pre><code>self.controlScale_label = QtWidgets.QLabel(u&quot;控制器Scale&quot;,alignment=QtCore.Qt.AlignCenter)
+#设置格式
+self.controlScale_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot;)</code></pre><h2 id="Constraints-约束"><a href="#Constraints-约束" class="headerlink" title="Constraints(约束)"></a>Constraints(约束)</h2><p>point constraints（点约束）：约束位移</p>
+<p>orient constraints（反向约束）：约束旋转</p>
+<p>parent constraints（父约束）：约束位移和旋转</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><pre><code>1.首先要获取选中的物体，然后判断是否为joint骨骼类型，如果是则获取选中物体的所有子物体
+2.根据joint数量生成一定的控制器，调整控制器的旋转和位置与joint一致
+3.进行parent约束限制，这样生成的Circle就可以控制joints
+4.利用Pyside2进行GUI的设置，完成交互</code></pre><h2 id="OverrideColor设置问题"><a href="#OverrideColor设置问题" class="headerlink" title="OverrideColor设置问题"></a>OverrideColor设置问题</h2><p>首先OverrideColor指的是Shape下的设置</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200824230019419.png" alt="image-20200824230019419"></p>
+<p>这里我需要将颜色设置为RGB而非索引，所以需要一下代码,这里应该可以直接设置overrideColorRGB属性的，但不知道哪里出了问题，所以我就曲线救国</p>
+<pre><code>            #获取选中物体的shape
+            shape = cmds.listRelatives(tempControl,children=True)[0]
+            cmds.setAttr(shape+&quot;.overrideEnabled&quot;,True)
+            cmds.setAttr(shape+&quot;.overrideRGBColors&quot;,1)
+
+            #设置颜色值
+            cmds.setAttr(shape+&quot;.overrideColorR &quot;,self.color.redF())
+            cmds.setAttr(shape + &quot;.overrideColorG &quot;, self.color.greenF())
+            cmds.setAttr(shape + &quot;.overrideColorB &quot;, self.color.blueF())
+            #print(cmds.getAttr(shape+&quot;.overrideColor&quot;))</code></pre><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200824230220071.png" alt="image-20200824230220071"></p>
+<h2 id="Circle-Scale问题"><a href="#Circle-Scale问题" class="headerlink" title="Circle Scale问题"></a>Circle Scale问题</h2><p>这里不是直接缩放Circle，而是缩放Circle的controlVertics（控制顶点），这样就可以直接连续缩放</p>
+<pre><code>    def smallScale(self):
+        #获得选中的物体
+        selectionControl = cmds.ls(selection=True)
+        #获取缩放值
+        scaleFactor = self.scale_DoubleSpinBox.value()
+        for tempControl in selectionControl:
+            # Scale控制顶点
+            cmds.scale(1-scaleFactor,1-scaleFactor,1-scaleFactor,tempControl+&quot;.cv[0:]&quot;)</code></pre><h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><pre><code># -*- coding: GBK -*-
+from PySide2 import QtWidgets,QtGui,QtCore
+from shiboken2 import wrapInstance
+from maya import OpenMayaUI as omui
+import maya.cmds as cmds
+
+#maya主窗口
+def maya_main_window():
+    main_window_ptr = omui.MQtUtil.mainWindow()
+    return wrapInstance(long(main_window_ptr),QtWidgets.QWidget)
+
+window_w = 200
+window_h = 168
+
+
+class RigTools_Dialog(QtWidgets.QDialog):
+
+    def __init__(self,parent = maya_main_window()):
+        super(RigTools_Dialog, self).__init__(parent)
+        #设置默认颜色
+        self.color = QtGui.QColor(&quot;#FFFFFF&quot;)
+        self.control_list=[]
+        self.offset_list=[]
+
+        #设置窗口名称
+        self.setWindowTitle(&quot;RigTools&quot;)
+        #设置窗口大小
+        self.setFixedWidth(window_w)
+        self.setFixedHeight(window_h)
+        #关闭问号按钮
+        self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
+
+        self.createWidgets()
+        self.createLayouts()
+        self.createConnects()
+
+
+    def createWidgets(self):
+        self.rig_btn = QtWidgets.QPushButton(&quot;Rig&quot;)
+        self.rig_btn.setFixedWidth(window_w)
+        self.rig_btn.setFixedHeight(40)
+
+        self.controlScale_label = QtWidgets.QLabel(u&quot;控制器Scale&quot;,alignment=QtCore.Qt.AlignCenter)
+        #设置格式
+        self.controlScale_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot;)
+
+        self.scale_DoubleSpinBox = QtWidgets.QDoubleSpinBox()
+        #设置范围，经度，步长
+        self.scale_DoubleSpinBox.setRange(0,1)
+        self.scale_DoubleSpinBox.setDecimals(2)
+        self.scale_DoubleSpinBox.setSingleStep(0.05)
+        self.smallScale_btn = QtWidgets.QPushButton(&quot;Small&quot;)
+        self.bigScale_btn = QtWidgets.QPushButton(&quot;Big&quot;)
+
+        self.controlColor_label = QtWidgets.QLabel(u&quot;控制器颜色&quot;,alignment=QtCore.Qt.AlignCenter)
+        self.controlColor_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot;)
+
+        self.color_pick_label = QtWidgets.QLabel()
+        self.color_pick_label.setStyleSheet(&quot;background-color:rgb(255,255,255,255)&quot;)
+        self.color_pick_btn = QtWidgets.QPushButton(u&quot;颜色选择&quot;)
+
+        self.color_set_btn = QtWidgets.QPushButton(u&quot;颜色设置&quot;)
+
+
+        pass
+
+    def createLayouts(self):
+        #主层级
+        main_layout = QtWidgets.QVBoxLayout(self)
+        main_layout.setMargin(0)
+        main_layout.setSpacing(0)
+
+        main_layout.addWidget(self.rig_btn)
+
+        main_layout.addWidget(self.controlScale_label)
+
+        HLayout = QtWidgets.QHBoxLayout()
+        main_layout.setSpacing(5)
+        HLayout.addWidget(self.scale_DoubleSpinBox)
+        HLayout.addWidget(self.smallScale_btn)
+        HLayout.addWidget(self.bigScale_btn)
+        main_layout.addLayout(HLayout)
+
+        main_layout.addWidget(self.controlColor_label)
+
+        H_Color_Layout = QtWidgets.QHBoxLayout()
+        H_Color_Layout.addWidget(self.color_pick_label)
+        H_Color_Layout.addWidget(self.color_pick_btn)
+        main_layout.addLayout(H_Color_Layout)
+
+        main_layout.addWidget(self.color_set_btn)
+
+        pass
+
+    def createConnects(self):
+        self.rig_btn.clicked.connect(self.rig_function)
+        self.smallScale_btn.clicked.connect(self.smallScale)
+        self.bigScale_btn.clicked.connect(self.bigScale)
+        self.color_pick_btn.clicked.connect(self.color_pick)
+        self.color_set_btn.clicked.connect(self.color_set)
+
+    def smallScale(self):
+        #获得选中的物体
+        selectionControl = cmds.ls(selection=True)
+        #获取缩放值
+        scaleFactor = self.scale_DoubleSpinBox.value()
+        for tempControl in selectionControl:
+            # Scale控制顶点
+            cmds.scale(1-scaleFactor,1-scaleFactor,1-scaleFactor,tempControl+&quot;.cv[0:]&quot;)
+        pass
+
+    def bigScale(self):
+        # 获得选中的物体
+        selectionControl = cmds.ls(selection=True)
+        # 获取缩放值
+        scaleFactor = self.scale_DoubleSpinBox.value()
+        print(scaleFactor)
+        for tempControl in selectionControl:
+            #Scale控制顶点
+            cmds.scale(1.0 + scaleFactor, 1.0 + scaleFactor, 1.0 + scaleFactor, tempControl+&quot;.cv[0:]&quot;)
+
+        pass
+
+    def color_pick(self):
+        #获取颜色选择
+        color = QtWidgets.QColorDialog.getColor()
+        self.color = color
+        self.color_pick_label.setStyleSheet(&quot;background-color: {0}&quot;.format(color.name()))
+
+    def color_set(self):
+        #获取选中的物体
+        selectionControl = cmds.ls(selection=True)
+        #设置颜色值
+        for tempControl in selectionControl:
+            #获取选中物体的shape
+            shape = cmds.listRelatives(tempControl,children=True)[0]
+            cmds.setAttr(shape+&quot;.overrideEnabled&quot;,True)
+            cmds.setAttr(shape+&quot;.overrideRGBColors&quot;,1)
+
+            #设置颜色值
+            cmds.setAttr(shape+&quot;.overrideColorR &quot;,self.color.redF())
+            cmds.setAttr(shape + &quot;.overrideColorG &quot;, self.color.greenF())
+            cmds.setAttr(shape + &quot;.overrideColorB &quot;, self.color.blueF())
+            #print(cmds.getAttr(shape+&quot;.overrideColor&quot;))
+        pass
+
+
+    def rig_function(self):
+        # 获取选中的物体
+        selected = cmds.ls(selection=True)
+
+        # 判断选择物体是否为空
+        if len(selected) == 0:
+            cmds.warning(u&quot;请选中物体!!!&quot;)
+            QtWidgets.QMessageBox.warning(self,u&quot;警告&quot;,u&quot;请选中物体!!!&quot;)
+        elif len(selected) &gt; 1:
+            cmds.warning(u&quot;只能选中一个物体！！！&quot;)
+            QtWidgets.QMessageBox.warning(self, u&quot;警告&quot;, u&quot;只能选中一个物体！！！&quot;)
+        else:
+            # 判断类型是否为joint骨骼
+            if cmds.objectType(selected[0]) != &quot;joint&quot;:
+                cmds.warning(u&quot;选择物体类型不为joint！！！&quot;)
+                QtWidgets.QMessageBox.warning(self, u&quot;警告&quot;, u&quot;选择物体类型不为joint！！！&quot;)
+
+            else:
+                # 选择该物体的包含的所有子物体和自身
+                cmds.select(selected[0], hierarchy=True)
+                # 获取选择的物体
+                all_Joints = cmds.ls(selection=True)
+                # 骨骼数
+                joints_number = len(all_Joints)
+
+
+                # 循环生成circle控制器
+                for i in range(joints_number - 1):
+                    # 生成circle
+                    control = cmds.circle(name=all_Joints[i] + &quot;_control&quot;)
+                    # 旋转变换
+                    cmds.rotate(0, 90, 0, control[0])
+
+                    # 冻结变换
+                    cmds.makeIdentity(apply=True)
+                    # 删除变换历史
+                    cmds.DeleteHistory()
+
+                    # 创建group组
+                    offset_grp = cmds.group(name=all_Joints[i] + &quot;_offset&quot;, empty=True)
+                    # 设置父类
+                    cmds.parent(control[0], offset_grp)
+
+                    # 获取骨骼的位置Position
+                    joint_position = cmds.xform(all_Joints[i], query=True, translation=True, worldSpace=True)
+                    # 将控制器移动到骨骼位置
+                    cmds.xform(offset_grp, translation=joint_position)
+
+                    # 利用orient约束将圆环旋转到骨骼方向一致
+                    orient_cons = cmds.orientConstraint(all_Joints[i], offset_grp)
+                    # 删除旋转约束
+                    cmds.delete(orient_cons)
+
+                    # parent约束，用于控制器控制骨骼移动
+                    cmds.parentConstraint(control[0], all_Joints[i])
+
+                    # 添加到list
+                    self.control_list.append(control[0])
+                    self.offset_list.append(offset_grp)
+
+                # 重新设置父类关系
+                for i in range(joints_number - 2):
+                    cmds.parent(self.offset_list[i + 1], self.control_list[i])
+
+
+if __name__ == &#39;__main__&#39;:
+    try:
+        rigTools_dialog.close()
+        rigTools_dialog.deleteLater()
+    except:
+        pass
+
+    rigTools_dialog = RigTools_Dialog()
+    rigTools_dialog.show()</code></pre>]]></content>
+      <categories>
+        <category>Maya</category>
+      </categories>
+      <tags>
+        <tag>Maya</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Maya导出存储文件工具</title>
     <url>/2020/08/31/Maya%E5%AF%BC%E5%87%BA%E5%AD%98%E5%82%A8%E6%96%87%E4%BB%B6%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<p>笔记记录</p>
@@ -369,43 +717,6 @@ def showUI():
       </tags>
   </entry>
   <entry>
-    <title>UE4--材质大师课程笔记</title>
-    <url>/2020/01/11/UE4--%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[<h2 id="压缩和内存"><a href="#压缩和内存" class="headerlink" title="压缩和内存"></a>压缩和内存</h2><p>一般来说纹理导入UE4都是经过压缩的，压缩方式有BC(Block Compression块压缩)/DXTC(Directx Texture Compression DirectX纹理压缩)两种，其实都是用于PC的Directx平台的格式。但是法线贴图有点特殊，是无法通过这两种方式进行压缩的。</p>
-<a id="more"></a>
-
-<p>​    如下图所示就是贴图导入UE4后所选择的压缩方式。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/%E5%8E%8B%E7%BC%A9%E6%96%B9%E5%BC%8F.png" alt></p>
-<p>压缩方式后面所带的数字表明是不同的压缩格式，例如BC3(DXTC5)表示带透明度的纹理，BC1(DXTC1)表示不带透明度的纹理。</p>
-<p>法线贴图的压缩方式是通过剔除蓝色通道的方式进行压缩，这样可以存储更多的数据，同时对红色和绿色通道进行轻度压缩。最后通过对红绿色进行蓝色通道的复原，这些都是UE4内部自己调用的，不用我们去调整。如下图只是进行蓝色通道复原的演示。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/%E6%B3%95%E7%BA%BF%E8%B4%B4%E5%9B%BE.png" alt></p>
-<p>注意的是，法线贴图的导入方式必须是选择NormalMap。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/%E6%B3%95%E7%BA%BF%E8%B4%B4%E5%9B%BE%E5%8E%8B%E7%BC%A9%E6%96%B9%E5%BC%8F.png" alt></p>
-<h3 id="为什么要对纹理进行压缩"><a href="#为什么要对纹理进行压缩" class="headerlink" title="为什么要对纹理进行压缩"></a>为什么要对纹理进行压缩</h3><p>最主要是因为受限于内存和带宽，如果不对纹理进行压缩，可能导致卡顿。但帧率过低一般和纹理压缩没有什么关系。可以通过查看统计数据，来查看场景中哪些纹理在内存中的大小。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE.png" alt></p>
-<h2 id="多级渐进纹理-纹理尺寸和纹理池"><a href="#多级渐进纹理-纹理尺寸和纹理池" class="headerlink" title="多级渐进纹理 纹理尺寸和纹理池"></a>多级渐进纹理 纹理尺寸和纹理池</h2><h3 id="纹理池"><a href="#纹理池" class="headerlink" title="纹理池"></a>纹理池</h3><p>UE4在计算机内存中，会为纹理暴保留一定的空间，这个空间就是纹理池，我们可以手动调整纹理池的大小，当纹理池大小不够用的时候，会导致贴图的分辨率降低，效果下降。</p>
-<p>打开控制台，输入r.Streaming.PoolSize查看纹理池大小，并且可以进行修改。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/%E8%B0%83%E6%95%B4%E7%BA%B9%E7%90%86%E6%B1%A0.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/%E8%BF%87%E5%B0%8F%E7%BA%B9%E7%90%86%E6%B1%A0.png" alt></p>
-<h3 id="Mipmaps-多级渐进纹理"><a href="#Mipmaps-多级渐进纹理" class="headerlink" title="Mipmaps(多级渐进纹理)"></a>Mipmaps(多级渐进纹理)</h3><p>Mipmaps为原始纹理的副本，大小为1/4左右,使用Mipmaps的原因是为了减少噪点的生成。</p>
-<p>左侧是使用了Mipmaps，右边没有使用，可以看出右边的噪点非常多，所以Mipmaps可以看成我们手动进行模糊</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Mipmaps.png" alt></p>
-<p>UE4会对远处使用不同的Mipmaps来模拟模糊的效果，如下图离镜头最近的就使用Mipmaps0原始纹理，然后随着离镜头越来越远，使用不同的Mipmaps。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/MipmapsLerp.png" alt></p>
-<p>可以在贴图的LOD选择中进行Mipmaps的设置</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Mipmaps%E8%AE%BE%E7%BD%AE.png" alt></p>
-<h4 id="注意纹理尺寸"><a href="#注意纹理尺寸" class="headerlink" title="注意纹理尺寸"></a>注意纹理尺寸</h4><p>使用Mipmaps可以提高我们的性能，加快渲染速度和减少纹理锯齿，但注意不适于2的幂数的纹理无法生成Mipmaps，但是UI纹理可以是任意分辨率，因为UI纹理不会从远处到近处，所以没必要使用Mipmaps。</p>
-<h3 id="材质的纹理数限制"><a href="#材质的纹理数限制" class="headerlink" title="材质的纹理数限制"></a>材质的纹理数限制</h3><p>UE4的每个材质的纹理可采样数是16个，加上内部的光影贴图，其实我们可以用的大概是13个左右，其实已经够用了，但是如果要突破这个限制的话，我们可以把不同的贴图合成RGB通道就成为一张贴图，到使用的的时候就可以分RGB通道分为3张贴图。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/%E8%B4%B4%E5%9B%BE%E5%90%88%E6%88%90.png" alt></p>
-]]></content>
-      <categories>
-        <category>UE4</category>
-      </categories>
-      <tags>
-        <tag>UE4</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>UE4学习笔记(1)——简单框架</title>
     <url>/2019/11/06/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(1)%E2%80%94%E2%80%94%E7%AE%80%E5%8D%95%E6%A1%86%E6%9E%B6/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>纪录自己的UE4学习之路</p>
@@ -434,33 +745,6 @@ def showUI():
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>GamePlay框架使用了MVC架构，其中Pawn是视图，PlayerState是数据模型，PlayerController是控制器。</p>
 <p>一个游戏由游戏规则(GameMode)和游戏状态组成(GameState)；玩家在游戏里的化身是Pawn，玩家通过PlayerConroller控制着自己的化身，通过PlayerCameraManager观察世界，PlayerState记录了玩家的数据，HUD显示了这些状态；NPC则由AIConroller去控制，与玩家进行互动。 </p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note/GameFramework.jpg" alt="GameFramework"></p>
-]]></content>
-      <categories>
-        <category>UE4</category>
-      </categories>
-      <tags>
-        <tag>UE4</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>UE4学习笔记(2)---蓝图接口-标签</title>
-    <url>/2019/11/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/</url>
-    <content><![CDATA[<h1 id="蓝图接口"><a href="#蓝图接口" class="headerlink" title="蓝图接口"></a>蓝图接口</h1><p> <strong>蓝图接口（Blueprint Interface）</strong> 是一个或多个函数的集合 - 只有名称，没有实现。可以添加到其他蓝图中。任何添加了该接口的蓝图都保证拥有这些函数。接口的函数 可以在添加它的每个蓝图中提供功能。在本质上，这类似于一般编程中的接口概念， 它允许多个不同类型的对象通过一个公共接口 共享和被访问。简单地说，蓝图接口允许不同的蓝图相互共享和发送数据。 </p>
-<a id="more"></a>
-
-<h2 id="创建蓝图接口"><a href="#创建蓝图接口" class="headerlink" title="创建蓝图接口"></a>创建蓝图接口</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/1.png" alt></p>
-<p>新建函数和函数的输入输出值</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/2.png" alt></p>
-<p>要使用蓝图接口，就必须继承该接口，并且实现。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/3.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/4.png" alt></p>
-<p>实现接口之后，其他蓝图类就可以调用此方法，实现了蓝图之间的通信。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/5.png" alt></p>
-<h2 id="标签"><a href="#标签" class="headerlink" title="标签"></a>标签</h2><p>在调用蓝图接口方法前，先使用标签来判断是敌人还是友军，其实我感觉UE4的标签和Unity的标签还是挺相似的</p>
-<h3 id="标签的设置方法"><a href="#标签的设置方法" class="headerlink" title="标签的设置方法"></a>标签的设置方法</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/6.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/7.png" alt></p>
-<h2 id="调用蓝图接口方法"><a href="#调用蓝图接口方法" class="headerlink" title="调用蓝图接口方法"></a>调用蓝图接口方法</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/8.png" alt></p>
-<p>就这样完成了蓝图接口的调用</p>
 ]]></content>
       <categories>
         <category>UE4</category>
@@ -516,269 +800,114 @@ def showUI():
       </tags>
   </entry>
   <entry>
-    <title>Maya简易控制器</title>
-    <url>/2020/08/24/Maya%E7%AE%80%E6%98%93%E6%8E%A7%E5%88%B6%E5%99%A8/</url>
-    <content><![CDATA[<p>Maya教程笔记，过程中会记录自己所遇到的问题和新知识</p>
+    <title>UE4学习笔记(2)---蓝图接口-标签</title>
+    <url>/2019/11/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/</url>
+    <content><![CDATA[<h1 id="蓝图接口"><a href="#蓝图接口" class="headerlink" title="蓝图接口"></a>蓝图接口</h1><p> <strong>蓝图接口（Blueprint Interface）</strong> 是一个或多个函数的集合 - 只有名称，没有实现。可以添加到其他蓝图中。任何添加了该接口的蓝图都保证拥有这些函数。接口的函数 可以在添加它的每个蓝图中提供功能。在本质上，这类似于一般编程中的接口概念， 它允许多个不同类型的对象通过一个公共接口 共享和被访问。简单地说，蓝图接口允许不同的蓝图相互共享和发送数据。 </p>
 <a id="more"></a>
 
-<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>控制器的简易添加，缩放控制器，控制器的颜色选择</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/GIF%202020-8-24%2022-52-16.gif" alt="GIF 2020-8-24 22-52-16"></p>
-<h2 id="QLabel"><a href="#QLabel" class="headerlink" title="QLabel"></a>QLabel</h2><p>QLabel提供了一个文本或者图像的显示，没有提供交互功能，在建议控制器中我利用QLabel进行了文字的显示和背景颜色显示</p>
-<pre><code>self.controlScale_label = QtWidgets.QLabel(u&quot;控制器Scale&quot;,alignment=QtCore.Qt.AlignCenter)
-#设置格式
-self.controlScale_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot;)</code></pre><h2 id="Constraints-约束"><a href="#Constraints-约束" class="headerlink" title="Constraints(约束)"></a>Constraints(约束)</h2><p>point constraints（点约束）：约束位移</p>
-<p>orient constraints（反向约束）：约束旋转</p>
-<p>parent constraints（父约束）：约束位移和旋转</p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><pre><code>1.首先要获取选中的物体，然后判断是否为joint骨骼类型，如果是则获取选中物体的所有子物体
-2.根据joint数量生成一定的控制器，调整控制器的旋转和位置与joint一致
-3.进行parent约束限制，这样生成的Circle就可以控制joints
-4.利用Pyside2进行GUI的设置，完成交互</code></pre><h2 id="OverrideColor设置问题"><a href="#OverrideColor设置问题" class="headerlink" title="OverrideColor设置问题"></a>OverrideColor设置问题</h2><p>首先OverrideColor指的是Shape下的设置</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200824230019419.png" alt="image-20200824230019419"></p>
-<p>这里我需要将颜色设置为RGB而非索引，所以需要一下代码,这里应该可以直接设置overrideColorRGB属性的，但不知道哪里出了问题，所以我就曲线救国</p>
-<pre><code>            #获取选中物体的shape
-            shape = cmds.listRelatives(tempControl,children=True)[0]
-            cmds.setAttr(shape+&quot;.overrideEnabled&quot;,True)
-            cmds.setAttr(shape+&quot;.overrideRGBColors&quot;,1)
-
-            #设置颜色值
-            cmds.setAttr(shape+&quot;.overrideColorR &quot;,self.color.redF())
-            cmds.setAttr(shape + &quot;.overrideColorG &quot;, self.color.greenF())
-            cmds.setAttr(shape + &quot;.overrideColorB &quot;, self.color.blueF())
-            #print(cmds.getAttr(shape+&quot;.overrideColor&quot;))</code></pre><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200824230220071.png" alt="image-20200824230220071"></p>
-<h2 id="Circle-Scale问题"><a href="#Circle-Scale问题" class="headerlink" title="Circle Scale问题"></a>Circle Scale问题</h2><p>这里不是直接缩放Circle，而是缩放Circle的controlVertics（控制顶点），这样就可以直接连续缩放</p>
-<pre><code>    def smallScale(self):
-        #获得选中的物体
-        selectionControl = cmds.ls(selection=True)
-        #获取缩放值
-        scaleFactor = self.scale_DoubleSpinBox.value()
-        for tempControl in selectionControl:
-            # Scale控制顶点
-            cmds.scale(1-scaleFactor,1-scaleFactor,1-scaleFactor,tempControl+&quot;.cv[0:]&quot;)</code></pre><h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><pre><code># -*- coding: GBK -*-
-from PySide2 import QtWidgets,QtGui,QtCore
-from shiboken2 import wrapInstance
-from maya import OpenMayaUI as omui
-import maya.cmds as cmds
-
-#maya主窗口
-def maya_main_window():
-    main_window_ptr = omui.MQtUtil.mainWindow()
-    return wrapInstance(long(main_window_ptr),QtWidgets.QWidget)
-
-window_w = 200
-window_h = 168
-
-
-class RigTools_Dialog(QtWidgets.QDialog):
-
-    def __init__(self,parent = maya_main_window()):
-        super(RigTools_Dialog, self).__init__(parent)
-        #设置默认颜色
-        self.color = QtGui.QColor(&quot;#FFFFFF&quot;)
-        self.control_list=[]
-        self.offset_list=[]
-
-        #设置窗口名称
-        self.setWindowTitle(&quot;RigTools&quot;)
-        #设置窗口大小
-        self.setFixedWidth(window_w)
-        self.setFixedHeight(window_h)
-        #关闭问号按钮
-        self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
-
-        self.createWidgets()
-        self.createLayouts()
-        self.createConnects()
-
-
-    def createWidgets(self):
-        self.rig_btn = QtWidgets.QPushButton(&quot;Rig&quot;)
-        self.rig_btn.setFixedWidth(window_w)
-        self.rig_btn.setFixedHeight(40)
-
-        self.controlScale_label = QtWidgets.QLabel(u&quot;控制器Scale&quot;,alignment=QtCore.Qt.AlignCenter)
-        #设置格式
-        self.controlScale_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot;)
-
-        self.scale_DoubleSpinBox = QtWidgets.QDoubleSpinBox()
-        #设置范围，经度，步长
-        self.scale_DoubleSpinBox.setRange(0,1)
-        self.scale_DoubleSpinBox.setDecimals(2)
-        self.scale_DoubleSpinBox.setSingleStep(0.05)
-        self.smallScale_btn = QtWidgets.QPushButton(&quot;Small&quot;)
-        self.bigScale_btn = QtWidgets.QPushButton(&quot;Big&quot;)
-
-        self.controlColor_label = QtWidgets.QLabel(u&quot;控制器颜色&quot;,alignment=QtCore.Qt.AlignCenter)
-        self.controlColor_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot;)
-
-        self.color_pick_label = QtWidgets.QLabel()
-        self.color_pick_label.setStyleSheet(&quot;background-color:rgb(255,255,255,255)&quot;)
-        self.color_pick_btn = QtWidgets.QPushButton(u&quot;颜色选择&quot;)
-
-        self.color_set_btn = QtWidgets.QPushButton(u&quot;颜色设置&quot;)
-
-
-        pass
-
-    def createLayouts(self):
-        #主层级
-        main_layout = QtWidgets.QVBoxLayout(self)
-        main_layout.setMargin(0)
-        main_layout.setSpacing(0)
-
-        main_layout.addWidget(self.rig_btn)
-
-        main_layout.addWidget(self.controlScale_label)
-
-        HLayout = QtWidgets.QHBoxLayout()
-        main_layout.setSpacing(5)
-        HLayout.addWidget(self.scale_DoubleSpinBox)
-        HLayout.addWidget(self.smallScale_btn)
-        HLayout.addWidget(self.bigScale_btn)
-        main_layout.addLayout(HLayout)
-
-        main_layout.addWidget(self.controlColor_label)
-
-        H_Color_Layout = QtWidgets.QHBoxLayout()
-        H_Color_Layout.addWidget(self.color_pick_label)
-        H_Color_Layout.addWidget(self.color_pick_btn)
-        main_layout.addLayout(H_Color_Layout)
-
-        main_layout.addWidget(self.color_set_btn)
-
-        pass
-
-    def createConnects(self):
-        self.rig_btn.clicked.connect(self.rig_function)
-        self.smallScale_btn.clicked.connect(self.smallScale)
-        self.bigScale_btn.clicked.connect(self.bigScale)
-        self.color_pick_btn.clicked.connect(self.color_pick)
-        self.color_set_btn.clicked.connect(self.color_set)
-
-    def smallScale(self):
-        #获得选中的物体
-        selectionControl = cmds.ls(selection=True)
-        #获取缩放值
-        scaleFactor = self.scale_DoubleSpinBox.value()
-        for tempControl in selectionControl:
-            # Scale控制顶点
-            cmds.scale(1-scaleFactor,1-scaleFactor,1-scaleFactor,tempControl+&quot;.cv[0:]&quot;)
-        pass
-
-    def bigScale(self):
-        # 获得选中的物体
-        selectionControl = cmds.ls(selection=True)
-        # 获取缩放值
-        scaleFactor = self.scale_DoubleSpinBox.value()
-        print(scaleFactor)
-        for tempControl in selectionControl:
-            #Scale控制顶点
-            cmds.scale(1.0 + scaleFactor, 1.0 + scaleFactor, 1.0 + scaleFactor, tempControl+&quot;.cv[0:]&quot;)
-
-        pass
-
-    def color_pick(self):
-        #获取颜色选择
-        color = QtWidgets.QColorDialog.getColor()
-        self.color = color
-        self.color_pick_label.setStyleSheet(&quot;background-color: {0}&quot;.format(color.name()))
-
-    def color_set(self):
-        #获取选中的物体
-        selectionControl = cmds.ls(selection=True)
-        #设置颜色值
-        for tempControl in selectionControl:
-            #获取选中物体的shape
-            shape = cmds.listRelatives(tempControl,children=True)[0]
-            cmds.setAttr(shape+&quot;.overrideEnabled&quot;,True)
-            cmds.setAttr(shape+&quot;.overrideRGBColors&quot;,1)
-
-            #设置颜色值
-            cmds.setAttr(shape+&quot;.overrideColorR &quot;,self.color.redF())
-            cmds.setAttr(shape + &quot;.overrideColorG &quot;, self.color.greenF())
-            cmds.setAttr(shape + &quot;.overrideColorB &quot;, self.color.blueF())
-            #print(cmds.getAttr(shape+&quot;.overrideColor&quot;))
-        pass
-
-
-    def rig_function(self):
-        # 获取选中的物体
-        selected = cmds.ls(selection=True)
-
-        # 判断选择物体是否为空
-        if len(selected) == 0:
-            cmds.warning(u&quot;请选中物体!!!&quot;)
-            QtWidgets.QMessageBox.warning(self,u&quot;警告&quot;,u&quot;请选中物体!!!&quot;)
-        elif len(selected) &gt; 1:
-            cmds.warning(u&quot;只能选中一个物体！！！&quot;)
-            QtWidgets.QMessageBox.warning(self, u&quot;警告&quot;, u&quot;只能选中一个物体！！！&quot;)
-        else:
-            # 判断类型是否为joint骨骼
-            if cmds.objectType(selected[0]) != &quot;joint&quot;:
-                cmds.warning(u&quot;选择物体类型不为joint！！！&quot;)
-                QtWidgets.QMessageBox.warning(self, u&quot;警告&quot;, u&quot;选择物体类型不为joint！！！&quot;)
-
-            else:
-                # 选择该物体的包含的所有子物体和自身
-                cmds.select(selected[0], hierarchy=True)
-                # 获取选择的物体
-                all_Joints = cmds.ls(selection=True)
-                # 骨骼数
-                joints_number = len(all_Joints)
-
-
-                # 循环生成circle控制器
-                for i in range(joints_number - 1):
-                    # 生成circle
-                    control = cmds.circle(name=all_Joints[i] + &quot;_control&quot;)
-                    # 旋转变换
-                    cmds.rotate(0, 90, 0, control[0])
-
-                    # 冻结变换
-                    cmds.makeIdentity(apply=True)
-                    # 删除变换历史
-                    cmds.DeleteHistory()
-
-                    # 创建group组
-                    offset_grp = cmds.group(name=all_Joints[i] + &quot;_offset&quot;, empty=True)
-                    # 设置父类
-                    cmds.parent(control[0], offset_grp)
-
-                    # 获取骨骼的位置Position
-                    joint_position = cmds.xform(all_Joints[i], query=True, translation=True, worldSpace=True)
-                    # 将控制器移动到骨骼位置
-                    cmds.xform(offset_grp, translation=joint_position)
-
-                    # 利用orient约束将圆环旋转到骨骼方向一致
-                    orient_cons = cmds.orientConstraint(all_Joints[i], offset_grp)
-                    # 删除旋转约束
-                    cmds.delete(orient_cons)
-
-                    # parent约束，用于控制器控制骨骼移动
-                    cmds.parentConstraint(control[0], all_Joints[i])
-
-                    # 添加到list
-                    self.control_list.append(control[0])
-                    self.offset_list.append(offset_grp)
-
-                # 重新设置父类关系
-                for i in range(joints_number - 2):
-                    cmds.parent(self.offset_list[i + 1], self.control_list[i])
-
-
-if __name__ == &#39;__main__&#39;:
-    try:
-        rigTools_dialog.close()
-        rigTools_dialog.deleteLater()
-    except:
-        pass
-
-    rigTools_dialog = RigTools_Dialog()
-    rigTools_dialog.show()</code></pre>]]></content>
+<h2 id="创建蓝图接口"><a href="#创建蓝图接口" class="headerlink" title="创建蓝图接口"></a>创建蓝图接口</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/1.png" alt></p>
+<p>新建函数和函数的输入输出值</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/2.png" alt></p>
+<p>要使用蓝图接口，就必须继承该接口，并且实现。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/3.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/4.png" alt></p>
+<p>实现接口之后，其他蓝图类就可以调用此方法，实现了蓝图之间的通信。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/5.png" alt></p>
+<h2 id="标签"><a href="#标签" class="headerlink" title="标签"></a>标签</h2><p>在调用蓝图接口方法前，先使用标签来判断是敌人还是友军，其实我感觉UE4的标签和Unity的标签还是挺相似的</p>
+<h3 id="标签的设置方法"><a href="#标签的设置方法" class="headerlink" title="标签的设置方法"></a>标签的设置方法</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/6.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/7.png" alt></p>
+<h2 id="调用蓝图接口方法"><a href="#调用蓝图接口方法" class="headerlink" title="调用蓝图接口方法"></a>调用蓝图接口方法</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/8.png" alt></p>
+<p>就这样完成了蓝图接口的调用</p>
+]]></content>
       <categories>
-        <category>Maya</category>
+        <category>UE4</category>
       </categories>
       <tags>
-        <tag>Maya</tag>
+        <tag>UE4</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>秋招总结</title>
+    <url>/2020/10/12/%E7%A7%8B%E6%8B%9B%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>本科双非，有一段腾讯的暑期实习经历，岗位是TA技术美术，因为实习的时候被深圳的物价和房价给吓到了，再加上家在广州，所以基本目标都在广州的游戏公司，也投了北京上海的游戏公司，原本想拿来练练手的，可能是双非学历再加上简历内容确实不太与游戏行业相关，所以基本石沉大海哈哈哈，根本不给机会</p>
+ <a id="more"></a> 
+
+<h2 id="投递公司"><a href="#投递公司" class="headerlink" title="投递公司"></a>投递公司</h2><table>
+<thead>
+<tr>
+<th>公司</th>
+<th>进度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>网易互娱</td>
+<td>意向书</td>
+</tr>
+<tr>
+<td>诗悦网络</td>
+<td>意向书</td>
+</tr>
+<tr>
+<td>多益</td>
+<td>意向书</td>
+</tr>
+<tr>
+<td>西山居</td>
+<td>通过了面试但还有训练营？？</td>
+</tr>
+<tr>
+<td>4399</td>
+<td>笔试完等面试，投得比较晚</td>
+</tr>
+<tr>
+<td>完美世界</td>
+<td>简历筛选</td>
+</tr>
+<tr>
+<td>巨人网络</td>
+<td>简历筛选</td>
+</tr>
+<tr>
+<td>字节跳动</td>
+<td>笔试考算法直接开溜</td>
+</tr>
+<tr>
+<td>百奥</td>
+<td>笔试考算法直接开溜</td>
+</tr>
+<tr>
+<td>西山居剑心互娱</td>
+<td>笔试之后没消息</td>
+</tr>
+<tr>
+<td>心动网络</td>
+<td>笔试挂</td>
+</tr>
+</tbody></table>
+<p>TA这个岗位需求太少了，所以可投公司不多，也算尽自己的努力去得到一个最好的结果了，我其实也没想过一定要去大厂工作，只要是广州就好了。这里吐槽一下，由于TA这个岗位才刚出来，每家公司的招人标准都不一样，腾讯网易需要做测试题，字节百奥需要考算法，心动网络笔试考C++图形学基础，很混乱，导致需要准备很多东西，浪费时间。</p>
+<p><strong>吐槽一下字节游戏</strong>，昨天HR还加我微信叫我投简历，第二天就将我简历给挂掉了，就离谱，还叫我转去三维美术。</p>
+<h2 id="笔试"><a href="#笔试" class="headerlink" title="笔试"></a>笔试</h2><p>​    我参加的第一场笔试好像就是心动网络的笔试，那时候我以为TA的笔试大家都一样做做测试题，所以就没有做什么特别准备。我笔试做了30分钟我就做不下去了，考了C++，图形学，1.抗锯齿问题 2.GPU性能问题等等，比较久了有点忘记题目。反正我考完立刻心态崩了，没想到TA笔试还能这样玩，所以我立刻查漏补缺，对我后面影响挺大的。</p>
+<h2 id="面试"><a href="#面试" class="headerlink" title="面试"></a>面试</h2><p>由于时间过了太久了，我记性也不是很好，只记住了一些印象深刻的问题</p>
+<h3 id="网易"><a href="#网易" class="headerlink" title="网易"></a>网易</h3><p>​    面试阶段，网易就问了我测试题的细节问题，图形学也没怎么问，可能是因为我春招面试过了的原因吧，就是HR问了我春招为啥去了腾讯没来网易，哈哈哈有点尴尬</p>
+<h3 id="诗悦-西山居"><a href="#诗悦-西山居" class="headerlink" title="诗悦 西山居"></a>诗悦 西山居</h3><p>​    这个就比较常规正常点了，诗悦一开头就问了我算法题，我直接放弃思考，然后就问我图形学方面的问题，大概是什么是DrawCall，抗锯齿，PBR相关内容，卡通渲染的要点（主要是我项目写了这个），批处理，基本上是UnityShader入门精要上面的内容，刷一遍就好，幸好图形学加分了，不然我直接GG。</p>
+<p>​    西山居问的就比较难了，基本上是根据你简历的内容一直往下问，看到我简历写了PBR，就问我PBR的实现，答完之后问我知道IBL是什么吗？然后知道SDF距离场是什么？一套组合拳直接把我打懵。</p>
+<h3 id="多益"><a href="#多益" class="headerlink" title="多益"></a>多益</h3><p>​    面试官直接跟我聊天，问我哪里人，能不能接受加班，HR小姐姐问我有没有女朋友，我说没有，面试官还给我补了一刀：你看他那么宅肯定没有女朋友的啦……</p>
+<h2 id="学习历程"><a href="#学习历程" class="headerlink" title="学习历程"></a>学习历程</h2><p><strong>入门书籍</strong>：UnityShader入门精要，3D数学基础，龙书DX11（太厚了，我没看下去，引擎程序员可以看）</p>
+<p>C++ Primer（感觉TA不是很看重C++内容，只要基础就行，可以面向面经学习）</p>
+<p><strong>视频学习</strong>：GAMES101-现代计算机图形学入门，闫令琪大佬的现代图形学课程（真的非常好，帮我图形学知识重新梳理了一遍）</p>
+<p>UE4教程B站杨一鸣大佬视频都挺好的，看着撸一遍，Unity可以看看Siki学院的教程</p>
+<p><strong>关于数据结构和算法</strong>，不同公司不同标准，米哈游和字节的TA会考算法，但腾讯网易不会考算法，考测试题，我根本没刷算法题，所以考算法的公司直接开溜不考了，这里还是看要目标公司再决定算法要不要刷，毕竟需要的时间也是要很多的。</p>
+<p><strong>TA很需要审美</strong>，毕竟这也跟引擎程序员的最大不同，要做出好看的东西（虽然我做的东西不好看哈哈，春招找实习的时候还被面试官diss），所以我最近买个数位板在学板绘提高审美</p>
+<p>最后根据自己兴趣做几个游戏的demo，也可以写个光栅化渲染器（这个一般是引擎程序员干的）</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>​    这次秋招我感觉到实习经历非常重要，如果有一个好的大厂经历，秋招真的会好过很多。这里非常感谢我的师兄，如果没有他的分享我铁定今年春招的时候混吃等死，哪里会去找什么暑期实习，那秋招的时候双非学历可能简历都过不了。</p>
+<p>​    有了春招的铺垫和历练，秋招就比较容易地过去了（虽然还是很焦虑），也拿到自己想要的offer，希望自己能继续学下去，不再混吃等死吧</p>
+<p>​    最后，秋招终于结束辣，可以无忧无虑地看S赛了，LPL加油！</p>
+]]></content>
+      <categories>
+        <category>杂记</category>
+      </categories>
+      <tags>
+        <tag>杂记</tag>
       </tags>
   </entry>
   <entry>
@@ -808,6 +937,72 @@ if __name__ == &#39;__main__&#39;:
 <p>就这样，好看多了</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/13.png" alt></p>
 <h1 id="未完待续"><a href="#未完待续" class="headerlink" title="未完待续"></a>未完待续</h1><p>可能后面还想加点其他的功能，所以未完待续。</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity Visual Effect Graph初探</title>
+    <url>/2019/10/31/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近为了实现动画课程设计的烟花效果，所以要学习一下Unity的新特效工具Visual Effect Graph，特此记录学习的过程，避免以后会忘记。</p>
+ <a id="more"></a> 
+
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><blockquote>
+<p>目前Visual Effect Graph只能在HDRP中使用，也就是说必须使用Unity2018.3以上的版本。</p>
+</blockquote>
+<h2 id="为什么要使用VEF"><a href="#为什么要使用VEF" class="headerlink" title="为什么要使用VEF"></a>为什么要使用VEF</h2><p>我们已经有传统的Particle System系统，那为什么要用VEF呢？</p>
+<p>其实VEF能比传统的Particle System能做出更加复杂酷炫的特效，具体可以查看Unity的官方文档。而且我们认为VEF还有一个更加巨大有点就是可视化，我刚开始接触Particle System的时候，看到这么多参数，头都晕了….这次VEF的工作流非常的清楚。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/24.jpg" alt="VEF和传统Particle System区别"></p>
+<h2 id="VEF的工作流"><a href="#VEF的工作流" class="headerlink" title="VEF的工作流"></a>VEF的工作流</h2><p>关于VEF的安装和配置就不说了，官方文档有详细的讲解。</p>
+<p>首先我们来看一下VEF的画面，可以看出和shader Graph非常的相似。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/1.png" alt="VEG"></p>
+<p>VEF默认模板由4个流程构成(VEF称为Context)，包含着多个Block，整个VEF工作流抽象成4个部分</p>
+<h3 id="Spawn"><a href="#Spawn" class="headerlink" title="Spawn"></a>Spawn</h3><p>负责生成粒子，右键点击添加的Block都是与粒子生成相关。</p>
+<h3 id="Initialize"><a href="#Initialize" class="headerlink" title="Initialize"></a>Initialize</h3><p>初始化模块，负责初始化粒子的属性，如初始速度，生命周期。</p>
+<h3 id="Update"><a href="#Update" class="headerlink" title="Update"></a>Update</h3><p>每帧对粒子的参数进行更新，比如重力，移动速度，坐标等。</p>
+<h3 id="Output"><a href="#Output" class="headerlink" title="Output"></a>Output</h3><p>主要负责粒子的渲染，如颜色，形状等。</p>
+<h4 id="注意-1"><a href="#注意-1" class="headerlink" title="注意"></a>注意</h4><p>每个Context连接并不是唯一，比如一个Spawn可连接多个Initialize，朝多个方向发射</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/2.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/3.png" alt></p>
+<h2 id="VEF的使用"><a href="#VEF的使用" class="headerlink" title="VEF的使用"></a>VEF的使用</h2><h3 id="小测试"><a href="#小测试" class="headerlink" title="小测试"></a>小测试</h3><p>VEF的小测试，以粒子的初始速度为基准设置粒子的颜色</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/4.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/5.png" alt></p>
+<p>实现以原点为圆心，半径为1，圆以内的呈绿色，圆以外的呈紫色。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/6.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/7.png" alt></p>
+<p>也可添加Get Attribute：Color结点获取粒子原本的颜色，达到新效果。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/8.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/9.png" alt></p>
+<h3 id="Point-Cache-bake-tool-点阵缓存烘焙器"><a href="#Point-Cache-bake-tool-点阵缓存烘焙器" class="headerlink" title="Point Cache bake tool(点阵缓存烘焙器)"></a>Point Cache bake tool(点阵缓存烘焙器)</h3><p>这个是VEG添加的新工具，它的作用是把一张图或者Mesh的信息，烘焙成一张点阵图，然后再VEG中使用，可烘焙的信息有颜色，法线，位置，UV信息等。</p>
+<p>首先点开烘焙工具，烘焙工具在上方Window—Visual Effects—Utilities—Point Cache bake tool,选择要烘焙的网格和信息，这里我选择胶囊体作为测试。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/10.png" alt></p>
+<p>在VEG中使用以下两个节点，即可得到一个粒子形成的胶囊体</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/11.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/12.png" alt></p>
+<h3 id="Vector-Field-Force-矢量场力"><a href="#Vector-Field-Force-矢量场力" class="headerlink" title="Vector Field Force(矢量场力)"></a>Vector Field Force(矢量场力)</h3><p>官方文档解释：矢量场力施加从包含矢量数据的3D纹理中获取的力。我也不是很明白，以后有机会再研究。通过结合矢量场力和Point Cache我们可以实现粒子物体爆掉的感觉。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/13.png" alt></p>
+<h3 id="VFX-Binder脚本，参数与事件的绑定"><a href="#VFX-Binder脚本，参数与事件的绑定" class="headerlink" title="VFX Binder脚本，参数与事件的绑定"></a>VFX Binder脚本，参数与事件的绑定</h3><p>为了在游戏运行时根据游戏内的逻辑来实时动态改变VEG，我们可以用VFX Binder绑定脚本。</p>
+<h4 id="参数绑定"><a href="#参数绑定" class="headerlink" title="参数绑定"></a>参数绑定</h4><p>首先，我们为VFX添加VFX Parameter binder脚本</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/14.png" alt></p>
+<p>在Hierarchy面板新建一个Cube，这个Cube用于传递位置参数进VEG，实时更新粒子喷发的位置。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/15.png" alt></p>
+<p>进入VEG在参数面板新建一个Vector3用于存储Cube的位置参数，并传递给粒子。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/18.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/17.png" alt="最终结果"></p>
+<h4 id="事件绑定"><a href="#事件绑定" class="headerlink" title="事件绑定"></a>事件绑定</h4><p>在VEG里事件作为一个单独的Context，不能附加任何的Block并且只能和Spawn相连，作用是管理Spawn的发射开关。</p>
+<p>现在做鼠标点击位置生成粒子效果</p>
+<p>首先新建一个Plane作为脚本的载体，并且绑定VFX Mouse Event Blinder事件,拖入新建的VFX</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/22.png" alt></p>
+<p>双击VEX，新建一个Event，注意名字要和脚本上的EventName要一致。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/21.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/23.png" alt></p>
+<h5 id="注意-2"><a href="#注意-2" class="headerlink" title="注意"></a>注意</h5><p>Location为Source的Attribute只能用在Initializes中的Block上</p>
+<p>最后我们就能实现鼠标点击位置生成粒子的效果了。</p>
+<h1 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h1><p>第一次尝试这样做笔记，比较痛苦，但成就感也是满满的。</p>
 ]]></content>
       <categories>
         <category>Unity</category>
@@ -1356,156 +1551,6 @@ Shader &quot;Custom/MeshShader&quot;
       </categories>
       <tags>
         <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity Visual Effect Graph初探</title>
-    <url>/2019/10/31/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近为了实现动画课程设计的烟花效果，所以要学习一下Unity的新特效工具Visual Effect Graph，特此记录学习的过程，避免以后会忘记。</p>
- <a id="more"></a> 
-
-<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><blockquote>
-<p>目前Visual Effect Graph只能在HDRP中使用，也就是说必须使用Unity2018.3以上的版本。</p>
-</blockquote>
-<h2 id="为什么要使用VEF"><a href="#为什么要使用VEF" class="headerlink" title="为什么要使用VEF"></a>为什么要使用VEF</h2><p>我们已经有传统的Particle System系统，那为什么要用VEF呢？</p>
-<p>其实VEF能比传统的Particle System能做出更加复杂酷炫的特效，具体可以查看Unity的官方文档。而且我们认为VEF还有一个更加巨大有点就是可视化，我刚开始接触Particle System的时候，看到这么多参数，头都晕了….这次VEF的工作流非常的清楚。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/24.jpg" alt="VEF和传统Particle System区别"></p>
-<h2 id="VEF的工作流"><a href="#VEF的工作流" class="headerlink" title="VEF的工作流"></a>VEF的工作流</h2><p>关于VEF的安装和配置就不说了，官方文档有详细的讲解。</p>
-<p>首先我们来看一下VEF的画面，可以看出和shader Graph非常的相似。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/1.png" alt="VEG"></p>
-<p>VEF默认模板由4个流程构成(VEF称为Context)，包含着多个Block，整个VEF工作流抽象成4个部分</p>
-<h3 id="Spawn"><a href="#Spawn" class="headerlink" title="Spawn"></a>Spawn</h3><p>负责生成粒子，右键点击添加的Block都是与粒子生成相关。</p>
-<h3 id="Initialize"><a href="#Initialize" class="headerlink" title="Initialize"></a>Initialize</h3><p>初始化模块，负责初始化粒子的属性，如初始速度，生命周期。</p>
-<h3 id="Update"><a href="#Update" class="headerlink" title="Update"></a>Update</h3><p>每帧对粒子的参数进行更新，比如重力，移动速度，坐标等。</p>
-<h3 id="Output"><a href="#Output" class="headerlink" title="Output"></a>Output</h3><p>主要负责粒子的渲染，如颜色，形状等。</p>
-<h4 id="注意-1"><a href="#注意-1" class="headerlink" title="注意"></a>注意</h4><p>每个Context连接并不是唯一，比如一个Spawn可连接多个Initialize，朝多个方向发射</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/2.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/3.png" alt></p>
-<h2 id="VEF的使用"><a href="#VEF的使用" class="headerlink" title="VEF的使用"></a>VEF的使用</h2><h3 id="小测试"><a href="#小测试" class="headerlink" title="小测试"></a>小测试</h3><p>VEF的小测试，以粒子的初始速度为基准设置粒子的颜色</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/4.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/5.png" alt></p>
-<p>实现以原点为圆心，半径为1，圆以内的呈绿色，圆以外的呈紫色。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/6.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/7.png" alt></p>
-<p>也可添加Get Attribute：Color结点获取粒子原本的颜色，达到新效果。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/8.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/9.png" alt></p>
-<h3 id="Point-Cache-bake-tool-点阵缓存烘焙器"><a href="#Point-Cache-bake-tool-点阵缓存烘焙器" class="headerlink" title="Point Cache bake tool(点阵缓存烘焙器)"></a>Point Cache bake tool(点阵缓存烘焙器)</h3><p>这个是VEG添加的新工具，它的作用是把一张图或者Mesh的信息，烘焙成一张点阵图，然后再VEG中使用，可烘焙的信息有颜色，法线，位置，UV信息等。</p>
-<p>首先点开烘焙工具，烘焙工具在上方Window—Visual Effects—Utilities—Point Cache bake tool,选择要烘焙的网格和信息，这里我选择胶囊体作为测试。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/10.png" alt></p>
-<p>在VEG中使用以下两个节点，即可得到一个粒子形成的胶囊体</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/11.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/12.png" alt></p>
-<h3 id="Vector-Field-Force-矢量场力"><a href="#Vector-Field-Force-矢量场力" class="headerlink" title="Vector Field Force(矢量场力)"></a>Vector Field Force(矢量场力)</h3><p>官方文档解释：矢量场力施加从包含矢量数据的3D纹理中获取的力。我也不是很明白，以后有机会再研究。通过结合矢量场力和Point Cache我们可以实现粒子物体爆掉的感觉。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/13.png" alt></p>
-<h3 id="VFX-Binder脚本，参数与事件的绑定"><a href="#VFX-Binder脚本，参数与事件的绑定" class="headerlink" title="VFX Binder脚本，参数与事件的绑定"></a>VFX Binder脚本，参数与事件的绑定</h3><p>为了在游戏运行时根据游戏内的逻辑来实时动态改变VEG，我们可以用VFX Binder绑定脚本。</p>
-<h4 id="参数绑定"><a href="#参数绑定" class="headerlink" title="参数绑定"></a>参数绑定</h4><p>首先，我们为VFX添加VFX Parameter binder脚本</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/14.png" alt></p>
-<p>在Hierarchy面板新建一个Cube，这个Cube用于传递位置参数进VEG，实时更新粒子喷发的位置。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/15.png" alt></p>
-<p>进入VEG在参数面板新建一个Vector3用于存储Cube的位置参数，并传递给粒子。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/18.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/17.png" alt="最终结果"></p>
-<h4 id="事件绑定"><a href="#事件绑定" class="headerlink" title="事件绑定"></a>事件绑定</h4><p>在VEG里事件作为一个单独的Context，不能附加任何的Block并且只能和Spawn相连，作用是管理Spawn的发射开关。</p>
-<p>现在做鼠标点击位置生成粒子效果</p>
-<p>首先新建一个Plane作为脚本的载体，并且绑定VFX Mouse Event Blinder事件,拖入新建的VFX</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/22.png" alt></p>
-<p>双击VEX，新建一个Event，注意名字要和脚本上的EventName要一致。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/21.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/23.png" alt></p>
-<h5 id="注意-2"><a href="#注意-2" class="headerlink" title="注意"></a>注意</h5><p>Location为Source的Attribute只能用在Initializes中的Block上</p>
-<p>最后我们就能实现鼠标点击位置生成粒子的效果了。</p>
-<h1 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h1><p>第一次尝试这样做笔记，比较痛苦，但成就感也是满满的。</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>秋招总结</title>
-    <url>/2020/10/12/%E7%A7%8B%E6%8B%9B%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>本科双非，有一段腾讯的暑期实习经历，岗位是TA技术美术，因为实习的时候被深圳的物价和房价给吓到了，再加上家在广州，所以基本目标都在广州的游戏公司，也投了北京上海的游戏公司，原本想拿来练练手的，可能是双非学历再加上简历内容确实不太与游戏行业相关，所以基本石沉大海哈哈哈，根本不给机会</p>
- <a id="more"></a> 
-
-<h2 id="投递公司"><a href="#投递公司" class="headerlink" title="投递公司"></a>投递公司</h2><table>
-<thead>
-<tr>
-<th>公司</th>
-<th>进度</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>网易互娱</td>
-<td>意向书</td>
-</tr>
-<tr>
-<td>诗悦网络</td>
-<td>意向书</td>
-</tr>
-<tr>
-<td>多益</td>
-<td>意向书</td>
-</tr>
-<tr>
-<td>西山居</td>
-<td>通过了面试但还有训练营？？</td>
-</tr>
-<tr>
-<td>4399</td>
-<td>笔试完等面试，投得比较晚</td>
-</tr>
-<tr>
-<td>完美世界</td>
-<td>简历筛选</td>
-</tr>
-<tr>
-<td>巨人网络</td>
-<td>简历筛选</td>
-</tr>
-<tr>
-<td>字节跳动</td>
-<td>笔试考算法直接开溜</td>
-</tr>
-<tr>
-<td>百奥</td>
-<td>笔试考算法直接开溜</td>
-</tr>
-<tr>
-<td>西山居剑心互娱</td>
-<td>笔试之后没消息</td>
-</tr>
-<tr>
-<td>心动网络</td>
-<td>笔试挂</td>
-</tr>
-</tbody></table>
-<p>TA这个岗位需求太少了，所以可投公司不多，也算尽自己的努力去得到一个最好的结果了，我其实也没想过一定要去大厂工作，只要是广州就好了。这里吐槽一下，由于TA这个岗位才刚出来，每家公司的招人标准都不一样，腾讯网易需要做测试题，字节百奥需要考算法，心动网络笔试考C++图形学基础，很混乱，导致需要准备很多东西，浪费时间。</p>
-<p><strong>吐槽一下字节游戏</strong>，昨天HR还加我微信叫我投简历，第二天就将我简历给挂掉了，就离谱，还叫我转去三维美术。</p>
-<h2 id="笔试"><a href="#笔试" class="headerlink" title="笔试"></a>笔试</h2><p>​    我参加的第一场笔试好像就是心动网络的笔试，那时候我以为TA的笔试大家都一样做做测试题，所以就没有做什么特别准备。我笔试做了30分钟我就做不下去了，考了C++，图形学，1.抗锯齿问题 2.GPU性能问题等等，比较久了有点忘记题目。反正我考完立刻心态崩了，没想到TA笔试还能这样玩，所以我立刻查漏补缺，对我后面影响挺大的。</p>
-<h2 id="面试"><a href="#面试" class="headerlink" title="面试"></a>面试</h2><p>由于时间过了太久了，我记性也不是很好，只记住了一些印象深刻的问题</p>
-<pre><code>### 网易</code></pre><p>​    面试阶段，网易就问了我测试题的细节问题，图形学也没怎么问，可能是因为我春招面试过了的原因吧，就是HR问了我春招为啥去了腾讯没来网易，哈哈哈有点尴尬</p>
-<h2 id="诗悦-西山居"><a href="#诗悦-西山居" class="headerlink" title="诗悦 西山居"></a>诗悦 西山居</h2><p>​    这个就比较常规正常点了，诗悦一开头就问了我算法题，我直接放弃思考，然后就问我图形学方面的问题，大概是什么是DrawCall，抗锯齿，PBR相关内容，卡通渲染的要点（主要是我项目写了这个），批处理，基本上是UnityShader入门精要上面的内容，刷一遍就好，幸好图形学加分了，不然我直接GG。</p>
-<p>​    西山居问的就比较难了，基本上是根据你简历的内容一直往下问，看到我简历写了PBR，就问我PBR的实现，答完之后问我知道IBL是什么吗？然后知道SDF距离场是什么？一套组合拳直接把我打懵。</p>
-<h3 id="多益"><a href="#多益" class="headerlink" title="多益"></a>多益</h3><p>​    面试官直接跟我聊天，问我哪里人，能不能接受加班，HR小姐姐问我有没有女朋友，我说没有，面试官还给我补了一刀：你看他那么宅肯定没有女朋友的啦……</p>
-<h2 id="学习历程"><a href="#学习历程" class="headerlink" title="学习历程"></a>学习历程</h2><p><strong>入门书籍</strong>：UnityShader入门精要，3D数学基础，龙书DX11（太厚了，我没看下去，引擎程序员可以看）</p>
-<p>C++ Primer（感觉TA不是很看重C++内容，只要基础就行，可以面向面经学习）</p>
-<p><strong>视频学习</strong>：GAMES101-现代计算机图形学入门，闫令琪大佬的现代图形学课程（真的非常好，帮我图形学知识重新梳理了一遍）</p>
-<p>UE4教程B站杨一鸣大佬视频都挺好的，看着撸一遍，Unity可以看看Siki学院的教程</p>
-<p><strong>关于数据结构和算法</strong>，不同公司不同标准，米哈游和字节的TA会考算法，但腾讯网易不会考算法，考测试题，我根本没刷算法题，所以考算法的公司直接开溜不考了，这里还是看要目标公司再决定算法要不要刷，毕竟需要的时间也是要很多的。</p>
-<p><strong>TA很需要审美</strong>，毕竟这也跟引擎程序员的最大不同，要做出好看的东西（虽然我做的东西不好看哈哈，春招找实习的时候还被面试官diss），所以我最近买个数位板在学板绘提高审美</p>
-<p>最后根据自己兴趣做几个游戏的demo，也可以写个光栅化渲染器（这个一般是引擎程序员干的）</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>​    这次秋招我感觉到实习经历非常重要，如果有一个好的大厂经历，秋招真的会好过很多。这里非常感谢我的师兄，如果没有他的分享我铁定今年春招的时候混吃等死，哪里会去找什么暑期实习，那秋招的时候双非学历可能简历都过不了。</p>
-<p>​    有了春招的铺垫和历练，秋招就比较容易地过去了（虽然还是很焦虑），也拿到自己想要的offer，希望自己能继续学下去，不再混吃等死吧</p>
-<p>​    最后，秋招终于结束辣，可以无忧无虑地看S赛了，LPL加油！</p>
-]]></content>
-      <categories>
-        <category>杂记</category>
-      </categories>
-      <tags>
-        <tag>杂记</tag>
       </tags>
   </entry>
 </search>
