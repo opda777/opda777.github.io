@@ -137,13 +137,6 @@
 
   
   <url>
-    <loc>http://yoursite.com/tags/Hexo/</loc>
-    <lastmod>2020-11-01</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://yoursite.com/tags/%E6%9D%82%E8%AE%B0cover/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
@@ -151,7 +144,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/UE4/</loc>
+    <loc>http://yoursite.com/tags/Hexo/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -159,6 +152,13 @@
   
   <url>
     <loc>http://yoursite.com/tags/Maya/</loc>
+    <lastmod>2020-11-01</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/tags/UE4/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -181,13 +181,6 @@
 
   
   <url>
-    <loc>http://yoursite.com/categories/Hexo/</loc>
-    <lastmod>2020-11-01</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://yoursite.com/categories/%E6%9D%82%E8%AE%B0/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
@@ -195,7 +188,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/categories/UE4/</loc>
+    <loc>http://yoursite.com/categories/Hexo/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -203,6 +196,13 @@
   
   <url>
     <loc>http://yoursite.com/categories/Maya/</loc>
+    <lastmod>2020-11-01</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/categories/UE4/</loc>
     <lastmod>2020-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
