@@ -95,28 +95,28 @@
     <div class="article-entry" itemprop="articleBody">
        
   <p>继续Niagara的学习，教程地址：<a href="https://www.youtube.com/watch?v=P9Bk1Ibd0YY" target="_blank" rel="noopener">https://www.youtube.com/watch?v=P9Bk1Ibd0YY</a></p>
-<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p><img src="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/C:%5CUsers%5C86135%5CDesktop%5C%E5%86%B0%E7%81%AB%E9%A3%8E%E6%9A%B4.gif" alt="冰火风暴"></p>
+<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/%E5%86%B0%E7%81%AB%E9%A3%8E%E6%9A%B4.gif" alt="冰火风暴"></p>
 <a id="more"></a>
 
 <h2 id="分析实现点"><a href="#分析实现点" class="headerlink" title="分析实现点"></a>分析实现点</h2><p>1.龙卷风的实现    2.龙卷风吹起来的漩涡石头</p>
 <h2 id="龙卷风的实现"><a href="#龙卷风的实现" class="headerlink" title="龙卷风的实现"></a>龙卷风的实现</h2><p>首先需要准备好模型和相对应的贴图，模型为没封盖的圆柱体，贴图R通道是基本色，G通道是噪声图</p>
-<p><img src="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/C:%5CUsers%5C86135%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20201102023015499.png" alt="image-20201102023015499"></p>
-<p><img src="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/C:%5CUsers%5C86135%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20201102023034241.png" alt="image-20201102023034241"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102023015499.png" alt="image-20201102023015499"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102023034241.png" alt="image-20201102023034241"></p>
 <p>做好龙卷风的基本材质，蓝图系统就这点不好，没办法像代码一样复制粘贴</p>
-<p><img src="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/C:%5CUsers%5C86135%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20201102023206240.png" alt="image-20201102023206240"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102023206240.png" alt="image-20201102023206240"></p>
 <p>新建一个新的NiagaraSystem，创建Empty发射器。龙卷风最大的特点是下小上大，从底处慢慢升高，可以从这点进行着手。利用Scale Mesh Size完成曲线的从小到大的调整。</p>
-<p><img src="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/C:%5CUsers%5C86135%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20201102023421834.png" alt="image-20201102023421834"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102023421834.png" alt="image-20201102023421834"></p>
 <p>现在我们要完成的就剩下从底升高，同样调整曲线设置粒子的Position达到效果。同时龙卷风还会左右摇摆，我们利用cos和sin在xy方向完成摇摆效果。</p>
-<p><img src="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/C:%5CUsers%5C86135%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20201102023600003.png" alt="image-20201102023600003"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102023600003.png" alt="image-20201102023600003"></p>
 <p>再添加一点小细节，比如龙卷风底部的小漩涡效果和外部的亮度效果</p>
-<p><img src="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/C:%5CUsers%5C86135%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20201102023855355.png" alt="image-20201102023855355"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102023855355.png" alt="image-20201102023855355"></p>
 <h2 id="龙卷风吹起来的漩涡石头"><a href="#龙卷风吹起来的漩涡石头" class="headerlink" title="龙卷风吹起来的漩涡石头"></a>龙卷风吹起来的漩涡石头</h2><p>首先我们需要Add Rotational Velocity，因为石头被龙卷风吹起来，肯定是不停地进行旋转的。</p>
 <h3 id="Add-Rotational-Velocity"><a href="#Add-Rotational-Velocity" class="headerlink" title="Add Rotational Velocity"></a>Add Rotational Velocity</h3><p>添加旋转加速度，要搭配Add Inital Forces 和 Solve Rotational Forces and Velocity模块使用</p>
-<p><img src="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/C:%5CUsers%5C86135%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20201102013736029.png" alt="image-20201102013736029"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102013736029.png" alt="image-20201102013736029"></p>
 <h3 id="Votex-Force"><a href="#Votex-Force" class="headerlink" title="Votex Force"></a>Votex Force</h3><p>漩涡力，一般在粒子更新组里面使用，和其他加速度的模组一起使用会达到漩涡的效果，由Simulation Position升到Vortex Origin漩涡中心，在围绕着漩涡中心四处飘散</p>
-<p><img src="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/C:%5CUsers%5C86135%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20201102013130138.png" alt="image-20201102013130138"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102013130138.png" alt="image-20201102013130138"></p>
 <h3 id="Add-Velocity-in-Cone-和-Cylinder-Location"><a href="#Add-Velocity-in-Cone-和-Cylinder-Location" class="headerlink" title="Add Velocity in Cone 和 Cylinder Location"></a>Add Velocity in Cone 和 Cylinder Location</h3><p>最后我们利用Add Velocity in Cone 和Cylinder Location 来完成石头的随机分散和初始随机力。</p>
-<p><img src="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/C:%5CUsers%5C86135%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20201102024340085.png" alt="image-20201102024340085"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102024340085.png" alt="image-20201102024340085"></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这次的效果比较简单，只做个人简单的笔记，建议看原油管Up主的视频教程更佳。</p>
  
       <!-- reward -->
