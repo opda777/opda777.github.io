@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    龙卷风Niagara效果 |  
+    Houdini地形总结 |  
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -41,7 +41,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-龙卷风Niagara效果"
+  id="post-Houdini地形总结"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -52,18 +52,18 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  龙卷风Niagara效果
+  Houdini地形总结
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/" class="article-date">
-  <time datetime="2020-11-01T16:00:00.000Z" itemprop="datePublished">2020-11-02</time>
+      <a href="/2020/11/11/Houdini%E5%9C%B0%E5%BD%A2%E6%80%BB%E7%BB%93/" class="article-date">
+  <time datetime="2020-11-10T16:00:00.000Z" itemprop="datePublished">2020-11-11</time>
 </a> 
   <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
+    <a class="article-category-link" href="/categories/Houdini/">Houdini</a>
   </div>
   
 <div class="word_count">
@@ -71,7 +71,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">467</span>
+            <span class="post-count">999</span>
         </span>
     </span>
 
@@ -80,7 +80,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1 分钟</span>
+            <span class="post-count">3 分钟</span>
         </span>
     </span>
 </div>
@@ -95,30 +95,88 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p>继续Niagara的学习，教程地址：<a href="https://www.youtube.com/watch?v=P9Bk1Ibd0YY" target="_blank" rel="noopener">https://www.youtube.com/watch?v=P9Bk1Ibd0YY</a></p>
-<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/%E5%86%B0%E7%81%AB%E9%A3%8E%E6%9A%B4.gif" alt="冰火风暴"></p>
+  <h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201112104702922.png" alt="image-20201112104702922"></p>
 <a id="more"></a>
 
-<h2 id="分析实现点"><a href="#分析实现点" class="headerlink" title="分析实现点"></a>分析实现点</h2><p>1.龙卷风的实现    2.龙卷风吹起来的漩涡石头</p>
-<h2 id="龙卷风的实现"><a href="#龙卷风的实现" class="headerlink" title="龙卷风的实现"></a>龙卷风的实现</h2><p>首先需要准备好模型和相对应的贴图，模型为没封盖的圆柱体，贴图R通道是基本色，G通道是噪声图</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102023015499.png" alt="image-20201102023015499"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102023034241.png" alt="image-20201102023034241"></p>
-<p>做好龙卷风的基本材质，蓝图系统就这点不好，没办法像代码一样复制粘贴</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102023206240.png" alt="image-20201102023206240"></p>
-<p>新建一个新的NiagaraSystem，创建Empty发射器。龙卷风最大的特点是下小上大，从底处慢慢升高，可以从这点进行着手。利用Scale Mesh Size完成曲线的从小到大的调整。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102023421834.png" alt="image-20201102023421834"></p>
-<p>现在我们要完成的就剩下从底升高，同样调整曲线设置粒子的Position达到效果。同时龙卷风还会左右摇摆，我们利用cos和sin在xy方向完成摇摆效果。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102023600003.png" alt="image-20201102023600003"></p>
-<p>再添加一点小细节，比如龙卷风底部的小漩涡效果和外部的亮度效果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102023855355.png" alt="image-20201102023855355"></p>
-<h2 id="龙卷风吹起来的漩涡石头"><a href="#龙卷风吹起来的漩涡石头" class="headerlink" title="龙卷风吹起来的漩涡石头"></a>龙卷风吹起来的漩涡石头</h2><p>首先我们需要Add Rotational Velocity，因为石头被龙卷风吹起来，肯定是不停地进行旋转的。</p>
-<h3 id="Add-Rotational-Velocity"><a href="#Add-Rotational-Velocity" class="headerlink" title="Add Rotational Velocity"></a>Add Rotational Velocity</h3><p>添加旋转加速度，要搭配Add Inital Forces 和 Solve Rotational Forces and Velocity模块使用</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102013736029.png" alt="image-20201102013736029"></p>
-<h3 id="Votex-Force"><a href="#Votex-Force" class="headerlink" title="Votex Force"></a>Votex Force</h3><p>漩涡力，一般在粒子更新组里面使用，和其他加速度的模组一起使用会达到漩涡的效果，由Simulation Position升到Vortex Origin漩涡中心，在围绕着漩涡中心四处飘散</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102013130138.png" alt="image-20201102013130138"></p>
-<h3 id="Add-Velocity-in-Cone-和-Cylinder-Location"><a href="#Add-Velocity-in-Cone-和-Cylinder-Location" class="headerlink" title="Add Velocity in Cone 和 Cylinder Location"></a>Add Velocity in Cone 和 Cylinder Location</h3><p>最后我们利用Add Velocity in Cone 和Cylinder Location 来完成石头的随机分散和初始随机力。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201102024340085.png" alt="image-20201102024340085"></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这次的效果比较简单，只做个人简单的笔记，建议看原油管Up主的视频教程更佳。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>首先利用HoudiniField 创建基本地形，HeightFieldNoise 对地形进行扰动，HeightFieldDistort对地形再次轻微扭曲失真添加细节，最后用HeightFieldErode模拟水力侵蚀和热力侵蚀。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111205217529.png" alt="image-20201111205217529"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111205229801.png" alt="image-20201111205229801"></p>
+<p>利用HeightField slump 和HeightField flow 获取泥土坍塌堆积和水流流向Mask贴图，由于这两个节点的OutLayout名字都叫flowdir，为避免重复，需要用到heightField copylayout和heightfield Layer重新传递图层信息。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111205730008.png" alt="image-20201111205730008"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111205741959.png" alt="image-20201111205741959"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111205755804.png" alt="image-20201111205755804"></p>
+<p>利用maskByfeature，顾名思义是利用地形特点获取mask图，这里先获取平坦地面的mask图，然后利用blur和noise节点为平坦地面添加凹凸细节</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111211908052.png" alt="image-20201111211908052"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111211844494.png" alt="image-20201111211844494"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111212100019.png" alt="image-20201111212100019"></p>
+<h3 id="开始构造岩石，土壤，草地Mask"><a href="#开始构造岩石，土壤，草地Mask" class="headerlink" title="开始构造岩石，土壤，草地Mask"></a>开始构造岩石，土壤，草地Mask</h3><p> 底层是岩石，中间是土壤，最上层是草地，三者互不重叠</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201105144214013.png" alt="image-20201105144214013"></p>
+<h4 id="草地"><a href="#草地" class="headerlink" title="草地"></a>草地</h4><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111213252547.png" alt="image-20201111213252547"></p>
+<p>首先利用maskByFeature节点获取平坦地方的Mask，只用到了坡度来获取Mask</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111212520982.png" alt="image-20201111212520982"></p>
+<p>可以法线获取到的Mask存在瑕疵，居然山顶上也有Mask，所以我还需要下一个maskByFeature进行处理</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111212556907.png" alt="image-20201111212556907"></p>
+<p>这里模式为Subtract，即用上一个Mask图减去此节点得到的Mask，这里用到了Height和Valleys</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111212751592.png" alt="image-20201111212751592"></p>
+<p>可以看到效果好了许多，得到最基本的GrassMask</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111212837053.png" alt="image-20201111212837053"></p>
+<h4 id="土壤"><a href="#土壤" class="headerlink" title="土壤"></a>土壤</h4><p>土壤利用flow层级信息获取最基本的土壤信息</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111213235215.png" alt="image-20201111213235215"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111213322478.png" alt="image-20201111213322478"></p>
+<h4 id="岩石"><a href="#岩石" class="headerlink" title="岩石"></a>岩石</h4><p>岩石基础Mask比较简单，因为岩石是最底层，所以肯定为1全部覆盖，用maskbyClear即可得到</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111214259233.png" alt="image-20201111214259233"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111214246075.png" alt="image-20201111214246075"></p>
+<h4 id="土壤和草地混合Mask"><a href="#土壤和草地混合Mask" class="headerlink" title="土壤和草地混合Mask"></a>土壤和草地混合Mask</h4><p>为了得到更加随机混合的效果，我们需要将之前得到的土壤和草地BaseMask进行合并</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111213512156.png" alt="image-20201111213512156"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111213458102.png" alt="image-20201111213458102"></p>
+<p>得到效果如下</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111213545071.png" alt="image-20201111213545071"></p>
+<p>依然利用blur，remap获取一个新的草地Mask，然后利用maskByFeature的Valleys去除一部分草地的Mask</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111213902857.png" alt="image-20201111213902857"></p>
+<p>得到的最终草地Mask，土壤Mask用合并的Mask再减去新的草地Mask即可得到</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111213959576.png" alt="最终草地Mask"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111214029285.png" alt="最终土壤Mask"></p>
+<p>岩石Mask也是减去土壤和草地合并Mask即可得到</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111214138824.png" alt="最终岩石Mask"></p>
+<h4 id="存储得到的rock，soil，grass层级信息"><a href="#存储得到的rock，soil，grass层级信息" class="headerlink" title="存储得到的rock，soil，grass层级信息"></a>存储得到的rock，soil，grass层级信息</h4><p>利用copyLayout来生成新的层级来存储Mask，然后利用HeightFieldLayout存储刚才得到的层级信息</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111214453245.png" alt="image-20201111214453245"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111214537997.png" alt="image-20201111214537997"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111214723898.png" alt="image-20201111214723898"></p>
+<h3 id="开始散布点"><a href="#开始散布点" class="headerlink" title="开始散布点"></a>开始散布点</h3><p>树肯定是分布在grass层级，所以我们要在grass层级上copy生成一个tree层级，然后scatter散布点</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111215158189.png" alt="image-20201111215158189"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111215205219.png" alt="tree层级"></p>
+<p>利用HeightFieldScatter进行点的散布</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111215315583.png" alt="image-20201111215315583"></p>
+<p>这里根据CoverageMask进行覆盖，Coverage调整覆盖度（数量），剩下的OuterRadius和Falloff不大清楚是用来干嘛的，iteration大概是点生成的迭代次数，迭代越多越精准</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111215352253.png" alt="image-20201111215352253"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111215715422.png" alt="得到效果"></p>
+<p>散布完树的点之后，就要散布灌木，这里注意Tag名称，由于我们规定灌木要生长在树的周边，而我们之前生成好的树点都带有tree标签，我们根据Tag进行生成即可</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111215813278.png" alt="image-20201111215813278"></p>
+<p>分别控制生成数量，生成范围，生成大小</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111215954770.png" alt="image-20201111215954770"></p>
+<p>其他物体的生成也是如此推算即可。</p>
+<h3 id="生成HDA导入到UE4"><a href="#生成HDA导入到UE4" class="headerlink" title="生成HDA导入到UE4"></a>生成HDA导入到UE4</h3><p>首先把全部节点打包为一个subnet，右键生成HDA</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111220320744.png" alt="image-20201111220320744"></p>
+<p>可以暴露参数到UE4里面进行修改</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111220422258.png" alt="image-20201111220422258"></p>
+<p>这里暴露了HeightField的Size和GridSpace属性，这样在UE4就可以修改地形的大小</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111220440315.png" alt="image-20201111220440315"></p>
+<p>在UE4引擎中开启Houdini插件即可，<strong>注意：需要安装对应版本的Houdini才会有这个插件出现</strong></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111220624308.png" alt="image-20201111220624308"></p>
+<h3 id="地形材质LandScape"><a href="#地形材质LandScape" class="headerlink" title="地形材质LandScape"></a>地形材质LandScape</h3><p>主要用到节点LandScapeUV，LayerBlend</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111220820996.png" alt="image-20201111220820996"></p>
+<p>这里对应的图层信息为Houdini的图层名称，否则会出错</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111220846653.png" alt="image-20201111220846653"></p>
+<p>这里我学到一个新的种草技能，利用LandScapeOutPut进行物体的在指定图层的摆放。这里就在Grass种草和种花</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111221039097.png" alt="image-20201111221039097"></p>
+<p>需要landSpaceGrassTye</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111221205436.png" alt="image-20201111221205436"></p>
+<h3 id="进行模型的替换"><a href="#进行模型的替换" class="headerlink" title="进行模型的替换"></a>进行模型的替换</h3><p>这里有两种选择，一种在UE4进行手动替换</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111221407109.png" alt="image-20201111221407109"></p>
+<p>第二种在Houdini里用代码规定好，例如利用attributeCreate规定地形的材质，利用AttributeWrangle设定模型</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111221516447.png" alt="image-20201111221516447"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201111221842452.png" alt="image-20201111221842452"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Houdini地形创建先创造基本地形，然后利用各种Mask节点来构造土壤，岩石，草地的Mask分层，最后利用HeightFieldScatter进行点的散布，导进UE4进行地形材质的构造，种草种花完美结束。</p>
  
       <!-- reward -->
       
@@ -183,12 +241,12 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2020/11/11/Houdini%E5%9C%B0%E5%BD%A2%E6%80%BB%E7%BB%93/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UE4/" rel="tag">UE4</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Houdini/" rel="tag">Houdini</a></li></ul>
 
     </footer>
   </div>
@@ -196,19 +254,10 @@
    
   <nav class="article-nav">
     
-      <a href="/2020/11/11/Houdini%E5%9C%B0%E5%BD%A2%E6%80%BB%E7%BB%93/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            Houdini地形总结
-          
-        </div>
-      </a>
     
-    
-      <a href="/2020/10/31/Poof%E6%95%88%E6%9E%9CNiagara%E5%AE%9E%E7%8E%B0/" class="article-nav-link">
+      <a href="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">Poof效果Niagara实现</div>
+        <div class="article-nav-title">龙卷风Niagara效果</div>
       </a>
     
   </nav>
