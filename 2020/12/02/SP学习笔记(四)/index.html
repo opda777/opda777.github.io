@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    Houdini创建通道和铁路(三) |  
+    SP学习笔记(四) |  
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -41,7 +41,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-Houdini创建通道和铁路"
+  id="post-SP学习笔记(四)"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -52,18 +52,18 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  Houdini创建通道和铁路(三)
+  SP学习笔记(四)
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2020/11/30/Houdini%E5%88%9B%E5%BB%BA%E9%80%9A%E9%81%93%E5%92%8C%E9%93%81%E8%B7%AF/" class="article-date">
-  <time datetime="2020-11-29T16:00:00.000Z" itemprop="datePublished">2020-11-30</time>
+      <a href="/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E5%9B%9B)/" class="article-date">
+  <time datetime="2020-12-01T16:00:00.000Z" itemprop="datePublished">2020-12-02</time>
 </a> 
   <div class="article-category">
-    <a class="article-category-link" href="/categories/Houdini/">Houdini</a>
+    <a class="article-category-link" href="/categories/Substance-painter/">Substance painter</a>
   </div>
   
 <div class="word_count">
@@ -71,7 +71,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">809</span>
+            <span class="post-count">662</span>
         </span>
     </span>
 
@@ -95,60 +95,57 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>首先利用curve节点绘制出道路和铁路的路径轨迹，利用ray节点将曲线投射在地形的表面，根据投射得到的Mask对道路和铁路的地形进行修改，最后copy to points节点将石块和铁轨放置在点上。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130154350820.png" alt="image-20201130154350820"></p>
+  <h2 id="理解笔刷系统"><a href="#理解笔刷系统" class="headerlink" title="理解笔刷系统"></a>理解笔刷系统</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00005.png" alt="HighresScreenshot00005"></p>
 <a id="more"></a>
 
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130131722045.png" alt="image-20201130131722045"></p>
-<h3 id="curve曲线投射地形"><a href="#curve曲线投射地形" class="headerlink" title="curve曲线投射地形"></a>curve曲线投射地形</h3><p>curve节点绘制出道路和铁路的基本形状</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130124839080.png" alt="image-20201130124839080"></p>
-<p>ray节点将曲线投射在地形上，在此之前要将HeightField转换为geometry</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130125041029.png" alt="image-20201130125041029"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130125057280.png" alt="image-20201130125057280"></p>
-<h3 id="利用投射曲线创造Mask并修改Mask地形"><a href="#利用投射曲线创造Mask并修改Mask地形" class="headerlink" title="利用投射曲线创造Mask并修改Mask地形"></a>利用投射曲线创造Mask并修改Mask地形</h3><p>curve节点随便构建一个用于sweep的横截面，要在前视图创建曲线，根据需求用Transfrom对曲线进行scale的修改</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130125402354.png" alt="image-20201130125402354"></p>
-<p>sweep得到的图形</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130125457068.png" alt="image-20201130125457068"></p>
-<p>为了让sweep构成的图形朝上的方向为Y轴，可能是为了平面更平，需要修改一下选项（虽然我也不知道这些东西有啥用）</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130131102923.png" alt="image-20201130131102923"></p>
-<p>接下来就可以maskByObject得到道路和铁路的Mask</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130131701548.png" alt="image-20201130131701548"></p>
-<p>用project节点将道路和铁路的object投射到地形上，造成地形的不平坦</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130131939120.png" alt="image-20201130131939120"></p>
-<p>可以看到project造成的地形拉起有一点过于明显，需要blur模糊一下</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130132129245.png" alt="image-20201130132129245"></p>
-<p>同样mask遮罩也过于生硬，用maskblur进行模糊</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130132210644.png" alt="image-20201130132210644"></p>
-<p>接下来就可以为道路和铁路的地形添加noise细节，更多的不平坦效果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130132326994.png" alt="image-20201130132326994"></p>
-<p>用blend混合模式来混合原有地形和noise地形的结合</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130132417556.png" alt="image-20201130132417556"></p>
-<p>最后要对mask的区域进行erode侵蚀效果处理，由于我们只想要mask地区进行侵蚀而非全部heightField，我们需要blast节点删除我们不需要的信息层。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130142430191.png" alt="image-20201130142430191"></p>
-<p>同时早erode节点开启mask on表示使用mask，否则还是会应用到全地形</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130142519084.png" alt="image-20201130142519084"></p>
-<p>接下来就是将计算出来的mask层存储为Layer_03层级，在此之前我们需要将mask减去一些层级信息，最后maskclear</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130142753497.png" alt="image-20201130142753497"></p>
-<p>地形就能处理好了</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130142854698.png" alt="image-20201130142854698"></p>
-<h3 id="利用点生成石块和铁轨"><a href="#利用点生成石块和铁轨" class="headerlink" title="利用点生成石块和铁轨"></a>利用点生成石块和铁轨</h3><p>同样先将我们的曲线resample，得到更多的点，可以修改Treat Polygons As 方法得到更加平滑的曲线</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130143101334.png" alt="image-20201130143101334"></p>
-<p>利用rand函数随机删除几个点，达到不规则的效果，其次为了让物体跟随曲线的旋转而旋转，需要添加orientalongcurve节点计算，得到属性N和up，这两个属性共同控制物体的朝向和旋转，如果不这样做，就会出现一下错误结果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130143712900.png" alt="错误结果"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130143754077.png" alt="正确结果"></p>
-<p>同时为了让生成物体更好的卡在地形表面而非被地形淹没，我们需要将地形转换为geometry然后smooth重新计算法线，将法线N更改为up，attributetransfer将地形的up传递给曲线的up属性，这样得到的效果会更好</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130144120978.png" alt="image-20201130144120978"></p>
-<p>同理铁路也一样的处理方式，最后我们可以利用Mask在道路和铁路周围散布植物的点云。</p>
-<p>首先利用blur节点的expand方法将layer_03往外扩一点</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130144348579.png" alt="image-20201130144348579"></p>
-<p>再减去利用maskByfeature得到的斜坡遮罩，最后减去layer_03得到植物的mask遮罩，scatter散布点即可</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130144520872.png" alt="image-20201130144520872"></p>
-<p>生成模型合并在一起，得到最后结果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130153048776.png" alt="image-20201130153048776"></p>
-<h3 id="输出结果"><a href="#输出结果" class="headerlink" title="输出结果"></a>输出结果</h3><p>OutPut总共分为3个，一个输出地形，一个输出生成的模型，一个输出点云</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130153318367.png" alt="image-20201130153318367"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130153328375.png" alt="image-20201130153328375"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130153338818.png" alt="image-20201130153338818"></p>
+<h3 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h3><p>ctrl + 鼠标右键左右移动控制笔刷大小</p>
+<p>ctrl + 鼠标右键上下移动控制笔刷软硬</p>
+<p>ctrl + 鼠标左键左右控制笔刷透明度</p>
+<p>ctrl + 鼠标左键上下控制笔刷旋转</p>
+<p>左上的画笔调节栏</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201221236504.png" alt="image-20201201221236504"></p>
+<p>当我们把笔刷透明度调整为少于100的时候，他会自动叠加到100透明度的效果，如果不想叠加可以按着A + 鼠标左键进行绘制</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/%E7%AC%94%E5%88%B7%E9%80%8F%E6%98%8E%E5%BA%A6.gif" alt="笔刷透明度"></p>
+<p>平滑笔刷可以绘制曲线的时候变得很漂亮平滑</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202115810636.png" alt="image-20201202115810636"></p>
+<p>跟随路径作用是让绘制的图案跟随曲线的旋转而旋转</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202120102297.png" alt="image-20201202120102297"></p>
+<p>绘画面板右键可以看到有：创建工具预设，创建材质预设，创建笔刷预设</p>
+<p>工具预设：保存材质和笔刷</p>
+<p>材质预设：只保存材质</p>
+<p>笔刷预设：只保存笔刷</p>
+<p>根据校准的选择会造成绘制的不同</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132143033.png" alt="image-20201202132143033"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132341569.png" alt="image-20201202132341569"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132400295.png" alt="image-20201202132400295"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132413256.png" alt="image-20201202132413256"></p>
+<p>添加绘制模板Stencil，其实就是提供一个基于屏幕空间的遮罩</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132739768.png" alt="image-20201202132739768"></p>
+<h2 id="使用绘画特效，映射和克隆工具"><a href="#使用绘画特效，映射和克隆工具" class="headerlink" title="使用绘画特效，映射和克隆工具"></a>使用绘画特效，映射和克隆工具</h2><p>绘画特效其实就是人为绘制遮罩，X快速切换绘制的黑白颜色</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202133248432.png" alt="image-20201202133248432"></p>
+<p>映射工具就是基于屏幕空间的纹理绘制</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202133551413.png" alt="image-20201202133551413"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202133716766.png" alt="image-20201202133716766"></p>
+<p>克隆工具就是PS的仿制图章，需要将用到的通道混合模式都设置为Passthrough才有效，按V键对源区域进行采样</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202134301094.png" alt="image-20201202134301094"></p>
+<h2 id="使用锚定点"><a href="#使用锚定点" class="headerlink" title="使用锚定点"></a>使用锚定点</h2><p>锚定点是一种在一个图层中设置目标通道，让其他图层使用的工具</p>
+<p>添加文字layer，需要将笔刷的Alpha选为文字贴图Font Chathura</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202134640596.png" alt="image-20201202134640596"></p>
+<p>切换到AO通道，可以看到刚才添加的文字层并没有AO信息，所以我们可以为其添加AO信息</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202134848402.png" alt="image-20201202134848402"></p>
+<p>添加HBAO滤镜就可以为文字layer的AO信息</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202135059369.png" alt="image-20201202135059369"></p>
+<p>最后添加一下Blur滤镜</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202135451556.png" alt="image-20201202135451556"></p>
+<p>可以看到我们的文字并没有和rust铁锈材质进行结合，因为rust铁锈材质的遮罩是根据模型烘焙好的信息进行区分的，但是文字layer的height信息和AO信息都是后面加的，并没有存在烘焙好的贴图上，这时候锚定点的作用就来了。</p>
+<p>首先为文字layer右键添加一个锚定点</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202140128258.png" alt="image-20201202140128258"></p>
+<p>在rust的mask editor中微高度添加锚定点，由于我们文字layer只输出height信息，所以引用通道也要选择为Height</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202140503858.png" alt="image-20201202140503858"></p>
+<p>其次在微细节中进行细节的调整，并打开微高度开关，可以看到文字上也有了铁锈的痕迹</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202140857193.png" alt="image-20201202140857193"></p>
+<p>添加个人标记嘻嘻嘻</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202142517637.png" alt="image-20201202142517637"></p>
  
       <!-- reward -->
       
@@ -213,12 +210,12 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2020/11/30/Houdini%E5%88%9B%E5%BB%BA%E9%80%9A%E9%81%93%E5%92%8C%E9%93%81%E8%B7%AF/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E5%9B%9B)/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Houdini/" rel="tag">Houdini</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Substance-painter/" rel="tag">Substance painter</a></li></ul>
 
     </footer>
   </div>
@@ -226,19 +223,19 @@
    
   <nav class="article-nav">
     
-      <a href="/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E5%9B%9B)/" class="article-nav-link">
+      <a href="/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E5%85%AD)/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            SP学习笔记(四)
+            SP学习笔记(六)---最终成果
           
         </div>
       </a>
     
     
-      <a href="/2020/11/29/Houdini%E5%88%9B%E5%BB%BA%E5%9C%B0%E5%BD%A2%E5%8E%9F%E5%9E%8B%E6%90%AD%E5%BB%BA%E5%B7%A5%E5%85%B7/" class="article-nav-link">
+      <a href="/2020/11/30/Houdini%E5%88%9B%E5%BB%BA%E9%80%9A%E9%81%93%E5%92%8C%E9%93%81%E8%B7%AF/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">Houdini创建地形原型搭建工具(二)</div>
+        <div class="article-nav-title">Houdini创建通道和铁路(三)</div>
       </a>
     
   </nav>
