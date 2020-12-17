@@ -6,7 +6,7 @@
   <link href="http://yoursite.com/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-12-15T02:13:19.621Z</updated>
+  <updated>2020-12-17T13:12:21.304Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,44 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>DirectX11入门笔记---DirectX初始化</title>
+    <link href="http://yoursite.com/2020/12/17/Directx11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---DirectX%E5%88%9D%E5%A7%8B%E5%8C%96/"/>
+    <id>http://yoursite.com/2020/12/17/Directx11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---DirectX%E5%88%9D%E5%A7%8B%E5%8C%96/</id>
+    <published>2020-12-17T05:00:00.000Z</published>
+    <updated>2020-12-17T13:12:21.304Z</updated>
+    
+    
+    <summary type="html">&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png&quot; alt=&quot;image-20201217210042177&quot; style=&quot;zoom: 50%;&quot;&gt;</summary>
+    
+    
+    
+    <category term="DirectX11" scheme="http://yoursite.com/categories/DirectX11/"/>
+    
+    
+    <category term="DirectX11" scheme="http://yoursite.com/tags/DirectX11/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Unity实现玉石效果学习笔记</title>
+    <link href="http://yoursite.com/2020/12/17/Unity%E5%AE%9E%E7%8E%B0%E7%8E%89%E7%9F%B3%E6%95%88%E6%9E%9C%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    <id>http://yoursite.com/2020/12/17/Unity%E5%AE%9E%E7%8E%B0%E7%8E%89%E7%9F%B3%E6%95%88%E6%9E%9C%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</id>
+    <published>2020-12-17T04:00:00.000Z</published>
+    <updated>2020-12-17T13:26:06.725Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;效果展示&quot;&gt;&lt;a href=&quot;#效果展示&quot; class=&quot;headerlink&quot; title=&quot;效果展示&quot;&gt;&lt;/a&gt;效果展示&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/%E6%9C%80%E7%BB%88%E6%95%88%E6%9E%9C.gif&quot; alt=&quot;最终效果&quot;&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Unity" scheme="http://yoursite.com/categories/Unity/"/>
+    
+    
+    <category term="Unity" scheme="http://yoursite.com/tags/Unity/"/>
+    
+  </entry>
   
   <entry>
     <title>Win32入门笔记(一)</title>
@@ -354,50 +392,6 @@
     
     
     <summary type="html">&lt;h2 id=&quot;压缩和内存&quot;&gt;&lt;a href=&quot;#压缩和内存&quot; class=&quot;headerlink&quot; title=&quot;压缩和内存&quot;&gt;&lt;/a&gt;压缩和内存&lt;/h2&gt;&lt;p&gt;一般来说纹理导入UE4都是经过压缩的，压缩方式有BC(Block Compression块压缩)/DXTC(Directx Texture Compression DirectX纹理压缩)两种，其实都是用于PC的Directx平台的格式。但是法线贴图有点特殊，是无法通过这两种方式进行压缩的。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="UE4" scheme="http://yoursite.com/categories/UE4/"/>
-    
-    
-    <category term="UE4" scheme="http://yoursite.com/tags/UE4/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>2019年---小记</title>
-    <link href="http://yoursite.com/2020/01/07/2019%E5%B9%B4---%E5%B0%8F%E8%AE%B0/"/>
-    <id>http://yoursite.com/2020/01/07/2019%E5%B9%B4---%E5%B0%8F%E8%AE%B0/</id>
-    <published>2020-01-06T16:00:00.000Z</published>
-    <updated>2020-09-17T09:29:12.038Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;总结&quot;&gt;&lt;a href=&quot;#总结&quot; class=&quot;headerlink&quot; title=&quot;总结&quot;&gt;&lt;/a&gt;总结&lt;/h1&gt;&lt;p&gt;​   </summary>
-        
-      
-    
-    
-    
-    <category term="杂记" scheme="http://yoursite.com/categories/%E6%9D%82%E8%AE%B0/"/>
-    
-    
-    <category term="杂记cover" scheme="http://yoursite.com/tags/%E6%9D%82%E8%AE%B0cover/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>UE4学习笔记(2)---蓝图接口-标签</title>
-    <link href="http://yoursite.com/2019/11/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/"/>
-    <id>http://yoursite.com/2019/11/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/</id>
-    <published>2019-11-12T16:00:00.000Z</published>
-    <updated>2020-08-23T09:14:34.134Z</updated>
-    
-    
-    <summary type="html">&lt;h1 id=&quot;蓝图接口&quot;&gt;&lt;a href=&quot;#蓝图接口&quot; class=&quot;headerlink&quot; title=&quot;蓝图接口&quot;&gt;&lt;/a&gt;蓝图接口&lt;/h1&gt;&lt;p&gt; &lt;strong&gt;蓝图接口（Blueprint Interface）&lt;/strong&gt; 是一个或多个函数的集合 - 只有名称，没有实现。可以添加到其他蓝图中。任何添加了该接口的蓝图都保证拥有这些函数。接口的函数 可以在添加它的每个蓝图中提供功能。在本质上，这类似于一般编程中的接口概念， 它允许多个不同类型的对象通过一个公共接口 共享和被访问。简单地说，蓝图接口允许不同的蓝图相互共享和发送数据。 &lt;/p&gt;</summary>
     
     
     
