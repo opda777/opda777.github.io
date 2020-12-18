@@ -6,7 +6,7 @@
   <link href="http://yoursite.com/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-12-17T13:12:21.304Z</updated>
+  <updated>2020-12-18T12:11:59.774Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,25 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>DirectX11入门笔记---计时器实现</title>
+    <link href="http://yoursite.com/2020/12/18/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E8%AE%A1%E6%97%B6%E5%99%A8%E5%AE%9E%E7%8E%B0/"/>
+    <id>http://yoursite.com/2020/12/18/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E8%AE%A1%E6%97%B6%E5%99%A8%E5%AE%9E%E7%8E%B0/</id>
+    <published>2020-12-18T05:00:00.000Z</published>
+    <updated>2020-12-18T12:11:59.774Z</updated>
+    
+    
+    <summary type="html">&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png&quot; alt=&quot;image-20201217210042177&quot; style=&quot;zoom: 50%;&quot;&gt;</summary>
+    
+    
+    
+    <category term="DirectX11" scheme="http://yoursite.com/categories/DirectX11/"/>
+    
+    
+    <category term="DirectX11" scheme="http://yoursite.com/tags/DirectX11/"/>
+    
+  </entry>
   
   <entry>
     <title>DirectX11入门笔记---DirectX初始化</title>
@@ -373,25 +392,6 @@
     
     
     <summary type="html">&lt;h1 id=&quot;RenderTarget&quot;&gt;&lt;a href=&quot;#RenderTarget&quot; class=&quot;headerlink&quot; title=&quot;RenderTarget&quot;&gt;&lt;/a&gt;RenderTarget&lt;/h1&gt;&lt;p&gt;UE4的RenderTarget感觉和Unity的差不多，都是获得一个摄像机的渲染结果，然后存在RenderTarget里面进行读取使用。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="UE4" scheme="http://yoursite.com/categories/UE4/"/>
-    
-    
-    <category term="UE4" scheme="http://yoursite.com/tags/UE4/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>UE4--材质大师课程笔记</title>
-    <link href="http://yoursite.com/2020/01/11/UE4--%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/"/>
-    <id>http://yoursite.com/2020/01/11/UE4--%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/</id>
-    <published>2020-01-10T16:00:00.000Z</published>
-    <updated>2020-08-23T09:43:11.789Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;压缩和内存&quot;&gt;&lt;a href=&quot;#压缩和内存&quot; class=&quot;headerlink&quot; title=&quot;压缩和内存&quot;&gt;&lt;/a&gt;压缩和内存&lt;/h2&gt;&lt;p&gt;一般来说纹理导入UE4都是经过压缩的，压缩方式有BC(Block Compression块压缩)/DXTC(Directx Texture Compression DirectX纹理压缩)两种，其实都是用于PC的Directx平台的格式。但是法线贴图有点特殊，是无法通过这两种方式进行压缩的。&lt;/p&gt;</summary>
     
     
     
