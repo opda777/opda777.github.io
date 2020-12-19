@@ -1,6 +1,169 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>2019年---小记</title>
+    <url>/2020/01/07/2019%E5%B9%B4---%E5%B0%8F%E8%AE%B0/</url>
+    <content><![CDATA[<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>​    在三维动画，交互设计等等的课程实训，我掐指一算已经有两个月没有更新自己的笔记了，没办法，我也不知道为什么我这个专业的实训特别特别得多….其实早就放假啦，自己也摸鱼了一个星期恢复下元气。</p>
+<p>​    对于2019我感觉还行，虽然没有参加什么比赛，但是在实训课程的过程中还是学到了很多东西，做出来的成品也让我感到满意，所以希望下一年也再接再厉，希望寒假没有摸鱼，能找到实习就最好了，哈哈哈。</p>
+<p>​    加油！！！奥利给！！！</p>
+]]></content>
+      <categories>
+        <category>杂记</category>
+      </categories>
+      <tags>
+        <tag>杂记cover</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>DirectX11入门笔记---计时器实现</title>
+    <url>/2020/12/18/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E8%AE%A1%E6%97%B6%E5%99%A8%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
+<a id="more"></a>
+<h2 id="计时器"><a href="#计时器" class="headerlink" title="计时器"></a>计时器</h2><p>计时器支持暂停，开始，重置，每帧调用功能，程序中每一帧调用一次计数，并随时返回距离上一次计数之间的差值。这个差值就是控制游戏、动画更新的最重要的数据。</p>
+<p> 这个定时器用到了Windows中高精度的计时函数：<strong>QueryPerformanceCounter</strong>（用于计算调用的时间差）</p>
+<p><strong>QueryPerformanceFrequency</strong>（返回计时器的计算频率，每秒的计算次数，用于转换秒的转换因子）</p>
+<pre><code>BOOL QueryPerformanceCounter(  LARGE_INTEGER* lpPerformanceCount );
+BOOL QueryPerformanceFrequency(  LARGE_INTEGER* lpFrequency );
+</code></pre><h3 id="计时器类"><a href="#计时器类" class="headerlink" title="计时器类"></a>计时器类</h3><pre><code>#pragma once
+
+// 计时器
+class Timer
+{
+public:
+    // 构造函数
+    Timer();
+
+    float TotalTime() const;        //返回从开始计时到现在的总时间
+    float DeltaTime() const;        //返回时间差
+
+    void Start();        //取消暂停时调用
+    void Stop();        //暂停时调用
+    void Reset();        //消息循环前调用
+    void Tick();        //每帧调用
+
+private:
+    float secsPerCount;        //系统有关，把时间单位转换为秒的转换因子
+    float deltaTime;        //时间差
+
+    __int64 baseTime;        //计时器开始工作的起始时间点
+    __int64 stopTime;        //暂停状态的起始时间点
+    __int64 pauseTime;        //累计的暂停时间
+    __int64 currTime;        //当前起始时间点
+    __int64 prevTime;        //上次起始时间点
+
+    bool IsStop;        //是否暂停
+
+};
+</code></pre><pre><code>#include &quot;Timer.h&quot;
+#include &lt;Windows.h&gt;
+
+// 进行初始化
+Timer::Timer():secsPerCount(0.0f),deltaTime(0),pauseTime(0),prevTime(0),
+currTime(0),IsStop(false)
+{
+    //计算秒转换因子
+    __int64 countPerSec;
+    QueryPerformanceFrequency((LARGE_INTEGER*)&amp;countPerSec);
+    secsPerCount = 1.0f / (double)countPerSec;
+}
+
+float Timer::TotalTime() const
+{
+    //判断是否处于暂停状态
+    if (IsStop)
+    {
+        return (float)((stopTime - pauseTime) - baseTime * secsPerCount);
+    }
+    else
+    {
+        return (float)((currTime - pauseTime) - baseTime * secsPerCount);
+    }
+}
+
+float Timer::DeltaTime() const
+{
+    return deltaTime;
+}
+
+void Timer::Start()
+{
+    //记录当前时间
+    __int64 currTime_Temp;
+    QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
+
+    //判断是否处于暂停状态
+    if (IsStop)
+    {
+        //添加上暂停的这段时间
+        pauseTime += currTime_Temp - stopTime;
+        //因为重新计时，所以我们要重新设置
+        prevTime = currTime;
+        stopTime = 0;
+        IsStop = false;
+    }
+}
+
+void Timer::Stop()
+{
+    //判断是否处于暂停状态
+    if (!IsStop)
+    {
+        //记录暂停的时间
+        __int64 currTime_Temp;
+        QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
+        //设置暂停标志
+        stopTime = currTime_Temp;
+        IsStop = true;
+    }
+}
+
+void Timer::Reset()
+{
+    __int64 currTime_Temp;
+    QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
+    //因为重置计时器，所以baseTime，prevTime，stopTime要重新设置
+    baseTime = currTime_Temp;
+    prevTime = currTime_Temp;
+    stopTime = 0;
+    IsStop = false;
+}
+
+void Timer::Tick()
+{
+    //判断是否暂停
+    if (IsStop)
+    {
+        deltaTime = 0.0;
+        return;
+    }
+
+    //获取当前时间值
+    __int64 currTime_Temp;
+    QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
+    currTime = currTime_Temp;
+
+    //计算时间差
+    deltaTime = (currTime - prevTime) * secsPerCount;
+
+    //为计算下一帧做准备
+    prevTime = currTime;
+
+    //确保deltaTime不是负值
+    //出现负值的情况：1.处理器进入节电模式        2.切换到另外一个处理器
+    if (deltaTime &lt; 0)
+    {
+        deltaTime = 0;
+    }
+}
+</code></pre>]]></content>
+      <categories>
+        <category>DirectX11</category>
+      </categories>
+      <tags>
+        <tag>DirectX11</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo博客搭建过程(踩坑)</title>
     <url>/2019/10/30/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​         本文主要用来记录自己Hexo博客搭建过程中遇到的坑。</p>
@@ -39,20 +202,6 @@ hexo d
       </categories>
       <tags>
         <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>2019年---小记</title>
-    <url>/2020/01/07/2019%E5%B9%B4---%E5%B0%8F%E8%AE%B0/</url>
-    <content><![CDATA[<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>​    在三维动画，交互设计等等的课程实训，我掐指一算已经有两个月没有更新自己的笔记了，没办法，我也不知道为什么我这个专业的实训特别特别得多….其实早就放假啦，自己也摸鱼了一个星期恢复下元气。</p>
-<p>​    对于2019我感觉还行，虽然没有参加什么比赛，但是在实训课程的过程中还是学到了很多东西，做出来的成品也让我感到满意，所以希望下一年也再接再厉，希望寒假没有摸鱼，能找到实习就最好了，哈哈哈。</p>
-<p>​    加油！！！奥利给！！！</p>
-]]></content>
-      <categories>
-        <category>杂记</category>
-      </categories>
-      <tags>
-        <tag>杂记cover</tag>
       </tags>
   </entry>
   <entry>
@@ -241,155 +390,6 @@ m22+\frac{m32}{f} = 1 \\
       </tags>
   </entry>
   <entry>
-    <title>DirectX11入门笔记---计时器实现</title>
-    <url>/2020/12/18/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E8%AE%A1%E6%97%B6%E5%99%A8%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
-<a id="more"></a>
-<h2 id="计时器"><a href="#计时器" class="headerlink" title="计时器"></a>计时器</h2><p>计时器支持暂停，开始，重置，每帧调用功能，程序中每一帧调用一次计数，并随时返回距离上一次计数之间的差值。这个差值就是控制游戏、动画更新的最重要的数据。</p>
-<p> 这个定时器用到了Windows中高精度的计时函数：<strong>QueryPerformanceCounter</strong>（用于计算调用的时间差）</p>
-<p><strong>QueryPerformanceFrequency</strong>（返回计时器的计算频率，每秒的计算次数，用于转换秒的转换因子）</p>
-<pre><code>BOOL QueryPerformanceCounter(  LARGE_INTEGER* lpPerformanceCount );
-BOOL QueryPerformanceFrequency(  LARGE_INTEGER* lpFrequency );
-</code></pre><h3 id="计时器类"><a href="#计时器类" class="headerlink" title="计时器类"></a>计时器类</h3><pre><code>#pragma once
-
-// 计时器
-class Timer
-{
-public:
-    // 构造函数
-    Timer();
-
-    float TotalTime() const;        //返回从开始计时到现在的总时间
-    float DeltaTime() const;        //返回时间差
-
-    void Start();        //取消暂停时调用
-    void Stop();        //暂停时调用
-    void Reset();        //消息循环前调用
-    void Tick();        //每帧调用
-
-private:
-    float secsPerCount;        //系统有关，把时间单位转换为秒的转换因子
-    float deltaTime;        //时间差
-
-    __int64 baseTime;        //计时器开始工作的起始时间点
-    __int64 stopTime;        //暂停状态的起始时间点
-    __int64 pauseTime;        //累计的暂停时间
-    __int64 currTime;        //当前起始时间点
-    __int64 prevTime;        //上次起始时间点
-
-    bool IsStop;        //是否暂停
-
-};
-</code></pre><pre><code>#include &quot;Timer.h&quot;
-#include &lt;Windows.h&gt;
-
-// 进行初始化
-Timer::Timer():secsPerCount(0.0f),deltaTime(0),pauseTime(0),prevTime(0),
-currTime(0),IsStop(false)
-{
-    //计算秒转换因子
-    __int64 countPerSec;
-    QueryPerformanceFrequency((LARGE_INTEGER*)&amp;countPerSec);
-    secsPerCount = 1.0f / (double)countPerSec;
-}
-
-float Timer::TotalTime() const
-{
-    //判断是否处于暂停状态
-    if (IsStop)
-    {
-        return (float)((stopTime - pauseTime) - baseTime * secsPerCount);
-    }
-    else
-    {
-        return (float)((currTime - pauseTime) - baseTime * secsPerCount);
-    }
-}
-
-float Timer::DeltaTime() const
-{
-    return deltaTime;
-}
-
-void Timer::Start()
-{
-    //记录当前时间
-    __int64 currTime_Temp;
-    QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
-
-    //判断是否处于暂停状态
-    if (IsStop)
-    {
-        //添加上暂停的这段时间
-        pauseTime += currTime_Temp - stopTime;
-        //因为重新计时，所以我们要重新设置
-        prevTime = currTime;
-        stopTime = 0;
-        IsStop = false;
-    }
-}
-
-void Timer::Stop()
-{
-    //判断是否处于暂停状态
-    if (!IsStop)
-    {
-        //记录暂停的时间
-        __int64 currTime_Temp;
-        QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
-        //设置暂停标志
-        stopTime = currTime_Temp;
-        IsStop = true;
-    }
-}
-
-void Timer::Reset()
-{
-    __int64 currTime_Temp;
-    QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
-    //因为重置计时器，所以baseTime，prevTime，stopTime要重新设置
-    baseTime = currTime_Temp;
-    prevTime = currTime_Temp;
-    stopTime = 0;
-    IsStop = false;
-}
-
-void Timer::Tick()
-{
-    //判断是否暂停
-    if (IsStop)
-    {
-        deltaTime = 0.0;
-        return;
-    }
-
-    //获取当前时间值
-    __int64 currTime_Temp;
-    QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
-    currTime = currTime_Temp;
-
-    //计算时间差
-    deltaTime = (currTime - prevTime) * secsPerCount;
-
-    //为计算下一帧做准备
-    prevTime = currTime;
-
-    //确保deltaTime不是负值
-    //出现负值的情况：1.处理器进入节电模式        2.切换到另外一个处理器
-    if (deltaTime &lt; 0)
-    {
-        deltaTime = 0;
-    }
-}
-</code></pre>]]></content>
-      <categories>
-        <category>DirectX11</category>
-      </categories>
-      <tags>
-        <tag>DirectX11</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Houdini创建地形原型搭建工具(二)</title>
     <url>/2020/11/29/Houdini%E5%88%9B%E5%BB%BA%E5%9C%B0%E5%BD%A2%E5%8E%9F%E5%9E%8B%E6%90%AD%E5%BB%BA%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>利用curve搭建模型，搭配object_merge在UE4中进行地形的构建，可以在引擎中使用此工具达到快速搭建的效果</p>
@@ -426,70 +426,6 @@ void Timer::Tick()
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201129131147266.png" alt="image-20201129131147266"></p>
 <p>最后结果，UE4的地形就能根据你摆放的原型搭建工具进行改变</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201129131236728.png" alt="image-20201129131236728"></p>
-]]></content>
-      <categories>
-        <category>Houdini</category>
-      </categories>
-      <tags>
-        <tag>Houdini</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Houdini创建通道和铁路(三)</title>
-    <url>/2020/11/30/Houdini%E5%88%9B%E5%BB%BA%E9%80%9A%E9%81%93%E5%92%8C%E9%93%81%E8%B7%AF/</url>
-    <content><![CDATA[<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>首先利用curve节点绘制出道路和铁路的路径轨迹，利用ray节点将曲线投射在地形的表面，根据投射得到的Mask对道路和铁路的地形进行修改，最后copy to points节点将石块和铁轨放置在点上。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130154350820.png" alt="image-20201130154350820"></p>
-<a id="more"></a>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130131722045.png" alt="image-20201130131722045"></p>
-<h3 id="curve曲线投射地形"><a href="#curve曲线投射地形" class="headerlink" title="curve曲线投射地形"></a>curve曲线投射地形</h3><p>curve节点绘制出道路和铁路的基本形状</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130124839080.png" alt="image-20201130124839080"></p>
-<p>ray节点将曲线投射在地形上，在此之前要将HeightField转换为geometry</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130125041029.png" alt="image-20201130125041029"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130125057280.png" alt="image-20201130125057280"></p>
-<h3 id="利用投射曲线创造Mask并修改Mask地形"><a href="#利用投射曲线创造Mask并修改Mask地形" class="headerlink" title="利用投射曲线创造Mask并修改Mask地形"></a>利用投射曲线创造Mask并修改Mask地形</h3><p>curve节点随便构建一个用于sweep的横截面，要在前视图创建曲线，根据需求用Transfrom对曲线进行scale的修改</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130125402354.png" alt="image-20201130125402354"></p>
-<p>sweep得到的图形</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130125457068.png" alt="image-20201130125457068"></p>
-<p>为了让sweep构成的图形朝上的方向为Y轴，可能是为了平面更平，需要修改一下选项（虽然我也不知道这些东西有啥用）</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130131102923.png" alt="image-20201130131102923"></p>
-<p>接下来就可以maskByObject得到道路和铁路的Mask</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130131701548.png" alt="image-20201130131701548"></p>
-<p>用project节点将道路和铁路的object投射到地形上，造成地形的不平坦</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130131939120.png" alt="image-20201130131939120"></p>
-<p>可以看到project造成的地形拉起有一点过于明显，需要blur模糊一下</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130132129245.png" alt="image-20201130132129245"></p>
-<p>同样mask遮罩也过于生硬，用maskblur进行模糊</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130132210644.png" alt="image-20201130132210644"></p>
-<p>接下来就可以为道路和铁路的地形添加noise细节，更多的不平坦效果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130132326994.png" alt="image-20201130132326994"></p>
-<p>用blend混合模式来混合原有地形和noise地形的结合</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130132417556.png" alt="image-20201130132417556"></p>
-<p>最后要对mask的区域进行erode侵蚀效果处理，由于我们只想要mask地区进行侵蚀而非全部heightField，我们需要blast节点删除我们不需要的信息层。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130142430191.png" alt="image-20201130142430191"></p>
-<p>同时早erode节点开启mask on表示使用mask，否则还是会应用到全地形</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130142519084.png" alt="image-20201130142519084"></p>
-<p>接下来就是将计算出来的mask层存储为Layer_03层级，在此之前我们需要将mask减去一些层级信息，最后maskclear</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130142753497.png" alt="image-20201130142753497"></p>
-<p>地形就能处理好了</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130142854698.png" alt="image-20201130142854698"></p>
-<h3 id="利用点生成石块和铁轨"><a href="#利用点生成石块和铁轨" class="headerlink" title="利用点生成石块和铁轨"></a>利用点生成石块和铁轨</h3><p>同样先将我们的曲线resample，得到更多的点，可以修改Treat Polygons As 方法得到更加平滑的曲线</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130143101334.png" alt="image-20201130143101334"></p>
-<p>利用rand函数随机删除几个点，达到不规则的效果，其次为了让物体跟随曲线的旋转而旋转，需要添加orientalongcurve节点计算，得到属性N和up，这两个属性共同控制物体的朝向和旋转，如果不这样做，就会出现一下错误结果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130143712900.png" alt="错误结果"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130143754077.png" alt="正确结果"></p>
-<p>同时为了让生成物体更好的卡在地形表面而非被地形淹没，我们需要将地形转换为geometry然后smooth重新计算法线，将法线N更改为up，attributetransfer将地形的up传递给曲线的up属性，这样得到的效果会更好</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130144120978.png" alt="image-20201130144120978"></p>
-<p>同理铁路也一样的处理方式，最后我们可以利用Mask在道路和铁路周围散布植物的点云。</p>
-<p>首先利用blur节点的expand方法将layer_03往外扩一点</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130144348579.png" alt="image-20201130144348579"></p>
-<p>再减去利用maskByfeature得到的斜坡遮罩，最后减去layer_03得到植物的mask遮罩，scatter散布点即可</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130144520872.png" alt="image-20201130144520872"></p>
-<p>生成模型合并在一起，得到最后结果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130153048776.png" alt="image-20201130153048776"></p>
-<h3 id="输出结果"><a href="#输出结果" class="headerlink" title="输出结果"></a>输出结果</h3><p>OutPut总共分为3个，一个输出地形，一个输出生成的模型，一个输出点云</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130153318367.png" alt="image-20201130153318367"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130153328375.png" alt="image-20201130153328375"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130153338818.png" alt="image-20201130153338818"></p>
 ]]></content>
       <categories>
         <category>Houdini</category>
@@ -747,6 +683,70 @@ IDXGISwapChain **ppSwapChain);         // 返回创建后的交换链
       </tags>
   </entry>
   <entry>
+    <title>Houdini创建通道和铁路(三)</title>
+    <url>/2020/11/30/Houdini%E5%88%9B%E5%BB%BA%E9%80%9A%E9%81%93%E5%92%8C%E9%93%81%E8%B7%AF/</url>
+    <content><![CDATA[<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>首先利用curve节点绘制出道路和铁路的路径轨迹，利用ray节点将曲线投射在地形的表面，根据投射得到的Mask对道路和铁路的地形进行修改，最后copy to points节点将石块和铁轨放置在点上。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130154350820.png" alt="image-20201130154350820"></p>
+<a id="more"></a>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130131722045.png" alt="image-20201130131722045"></p>
+<h3 id="curve曲线投射地形"><a href="#curve曲线投射地形" class="headerlink" title="curve曲线投射地形"></a>curve曲线投射地形</h3><p>curve节点绘制出道路和铁路的基本形状</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130124839080.png" alt="image-20201130124839080"></p>
+<p>ray节点将曲线投射在地形上，在此之前要将HeightField转换为geometry</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130125041029.png" alt="image-20201130125041029"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130125057280.png" alt="image-20201130125057280"></p>
+<h3 id="利用投射曲线创造Mask并修改Mask地形"><a href="#利用投射曲线创造Mask并修改Mask地形" class="headerlink" title="利用投射曲线创造Mask并修改Mask地形"></a>利用投射曲线创造Mask并修改Mask地形</h3><p>curve节点随便构建一个用于sweep的横截面，要在前视图创建曲线，根据需求用Transfrom对曲线进行scale的修改</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130125402354.png" alt="image-20201130125402354"></p>
+<p>sweep得到的图形</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130125457068.png" alt="image-20201130125457068"></p>
+<p>为了让sweep构成的图形朝上的方向为Y轴，可能是为了平面更平，需要修改一下选项（虽然我也不知道这些东西有啥用）</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130131102923.png" alt="image-20201130131102923"></p>
+<p>接下来就可以maskByObject得到道路和铁路的Mask</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130131701548.png" alt="image-20201130131701548"></p>
+<p>用project节点将道路和铁路的object投射到地形上，造成地形的不平坦</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130131939120.png" alt="image-20201130131939120"></p>
+<p>可以看到project造成的地形拉起有一点过于明显，需要blur模糊一下</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130132129245.png" alt="image-20201130132129245"></p>
+<p>同样mask遮罩也过于生硬，用maskblur进行模糊</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130132210644.png" alt="image-20201130132210644"></p>
+<p>接下来就可以为道路和铁路的地形添加noise细节，更多的不平坦效果</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130132326994.png" alt="image-20201130132326994"></p>
+<p>用blend混合模式来混合原有地形和noise地形的结合</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130132417556.png" alt="image-20201130132417556"></p>
+<p>最后要对mask的区域进行erode侵蚀效果处理，由于我们只想要mask地区进行侵蚀而非全部heightField，我们需要blast节点删除我们不需要的信息层。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130142430191.png" alt="image-20201130142430191"></p>
+<p>同时早erode节点开启mask on表示使用mask，否则还是会应用到全地形</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130142519084.png" alt="image-20201130142519084"></p>
+<p>接下来就是将计算出来的mask层存储为Layer_03层级，在此之前我们需要将mask减去一些层级信息，最后maskclear</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130142753497.png" alt="image-20201130142753497"></p>
+<p>地形就能处理好了</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130142854698.png" alt="image-20201130142854698"></p>
+<h3 id="利用点生成石块和铁轨"><a href="#利用点生成石块和铁轨" class="headerlink" title="利用点生成石块和铁轨"></a>利用点生成石块和铁轨</h3><p>同样先将我们的曲线resample，得到更多的点，可以修改Treat Polygons As 方法得到更加平滑的曲线</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130143101334.png" alt="image-20201130143101334"></p>
+<p>利用rand函数随机删除几个点，达到不规则的效果，其次为了让物体跟随曲线的旋转而旋转，需要添加orientalongcurve节点计算，得到属性N和up，这两个属性共同控制物体的朝向和旋转，如果不这样做，就会出现一下错误结果</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130143712900.png" alt="错误结果"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130143754077.png" alt="正确结果"></p>
+<p>同时为了让生成物体更好的卡在地形表面而非被地形淹没，我们需要将地形转换为geometry然后smooth重新计算法线，将法线N更改为up，attributetransfer将地形的up传递给曲线的up属性，这样得到的效果会更好</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130144120978.png" alt="image-20201130144120978"></p>
+<p>同理铁路也一样的处理方式，最后我们可以利用Mask在道路和铁路周围散布植物的点云。</p>
+<p>首先利用blur节点的expand方法将layer_03往外扩一点</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130144348579.png" alt="image-20201130144348579"></p>
+<p>再减去利用maskByfeature得到的斜坡遮罩，最后减去layer_03得到植物的mask遮罩，scatter散布点即可</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130144520872.png" alt="image-20201130144520872"></p>
+<p>生成模型合并在一起，得到最后结果</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130153048776.png" alt="image-20201130153048776"></p>
+<h3 id="输出结果"><a href="#输出结果" class="headerlink" title="输出结果"></a>输出结果</h3><p>OutPut总共分为3个，一个输出地形，一个输出生成的模型，一个输出点云</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130153318367.png" alt="image-20201130153318367"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130153328375.png" alt="image-20201130153328375"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130153338818.png" alt="image-20201130153338818"></p>
+]]></content>
+      <categories>
+        <category>Houdini</category>
+      </categories>
+      <tags>
+        <tag>Houdini</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Houdini利用基本形状构建地形(一)</title>
     <url>/2020/11/28/Houdini%E5%88%A9%E7%94%A8%E5%9F%BA%E6%9C%AC%E5%BD%A2%E7%8A%B6%E6%9E%84%E5%BB%BA%E5%9C%B0%E5%BD%A2/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Houdini官方教程笔记，随手记录，会比较乱</p>
@@ -794,319 +794,6 @@ IDXGISwapChain **ppSwapChain);         // 返回创建后的交换链
       </categories>
       <tags>
         <tag>Houdini</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Maya导出存储文件工具</title>
-    <url>/2020/08/31/Maya%E5%AF%BC%E5%87%BA%E5%AD%98%E5%82%A8%E6%96%87%E4%BB%B6%E5%B7%A5%E5%85%B7/</url>
-    <content><![CDATA[<p>笔记记录</p>
-<a id="more"></a>
-<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>保存场景为ma文件，并且可以加载，刷新等。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/GIF%202020-8-31%2015-49-31.gif" alt></p>
-<h2 id="主要思路"><a href="#主要思路" class="headerlink" title="主要思路"></a>主要思路</h2><p>主要逻辑在controllerLibrary.py脚本，save，find，load3个方法。创建ControllerLibrary类继承于dict字典类，数据存储name,path,screenshot的相关路径等等。</p>
-<p>主要API：cmds.file()进行文件的存储和读取    cmds.viewFit():将摄像机对准物体    cmds.playblast():渲染导出图片    json.dump()：json文件的编码写入    json.load():json文件的解码读取</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200831160940099.png" alt="image-20200831160940099"></p>
-<pre><code>#-*-coding:gbk-*-
-
-from maya import cmds
-import os
-import json
-import pprint
-
-#获取Maya文档路径
-USERAPPDIR = cmds.internalVar(userAppDir=True)
-#文件夹路径
-DIRECTORY = os.path.join(USERAPPDIR, &quot;controllerLibrary&quot;)
-
-
-def createDirectory(directory=DIRECTORY):
-    &quot;&quot;&quot;
-    根据文件路径创建文件夹
-    Args:
-        directory(str): 要创建的文件夹路径
-
-    Returns:
-
-    &quot;&quot;&quot;
-    #首先判断文件夹是否存在
-    if not os.path.exists(directory):
-        #如果不存在那就创建文件夹
-        os.mkdir(directory)
-
-
-#继承字典类
-class ControllerLibrary(dict):
-
-    #保存文件方法
-    #**info关键字参数
-    def save(self,name,screenshot=True,directory=DIRECTORY,**info):
-
-        #首先要确认要保存的路径是否存在
-        createDirectory(directory)
-
-        #保存文件路径
-        path = os.path.join(directory,&quot;{0}.ma&quot;.format(name))
-        #json保存文件
-        infoFile = os.path.join(directory,&quot;{0}.json&quot;.format(name))
-        info[&quot;name&quot;] = name
-        info[&quot;path&quot;] = path
-
-        #判是否需要screenShot
-        if screenshot:
-            self.saveScreenshot(name,directory)
-
-        #进行场景文件的保存,保存格式为mayaAscii
-        cmds.file(rename=path)
-
-        #如果进行了选择，就单独保存选择了的物体场景
-        if cmds.ls(selection=True):
-            cmds.file(force=True,type=&quot;mayaAscii&quot;,exportSelected=True)
-
-        #否则保存全部场景物体
-        else:
-            cmds.file(save=True,type=&quot;mayaAscii&quot;,force=True)
-
-        #打开infoFile文件,保存为json格式,写入文件
-        with open(infoFile,&quot;w&quot;) as f:
-            json.dump(info,f,indent=4)
-
-        self[name] = path
-
-    #获得文件夹下的所有文件
-    def find(self,directory=DIRECTORY):
-        # 进行清空，避免删除.ma文件时没有更新
-        self.clear()
-
-        if not os.path.exists(directory):
-            return None
-
-        files = os.listdir(directory)
-
-        #进行特定筛选，只获取ma文件
-        mayaFiles = [f for f in files if f.endswith(&quot;.ma&quot;)]
-
-        #进行键值对存储
-        for ma in mayaFiles:
-            #分离文件名和扩展名
-            name,ext = os.path.splitext(ma)
-            path = os.path.join(directory,ma)
-
-            #查看是否json文件
-            infoFile = &quot;{0}.json&quot;.format(name)
-            if infoFile in files:
-                infoFile = os.path.join(directory,infoFile)
-                #读取每个场景配置的json文件
-                with open(infoFile,&quot;r&quot;) as f:
-                    #进行读取
-                    info = json.load(f)
-
-            else:
-                print(u&quot;没有发现{0}文件&quot;.format(infoFile))
-                info = {}
-
-            #查看是否screenshot图片
-            screenshot = &quot;{0}.jpg&quot;.format(name)
-            if screenshot in files:
-                info[&quot;screenshot&quot;] = os.path.join(directory,screenshot)
-
-            info[&quot;name&quot;]=name
-            info[&quot;path&quot;]=path
-
-            self[name]=info
-            #print(info)
-
-    #加载
-    def load(self,name):
-        path = self[name][&quot;path&quot;]
-
-        #进行加载
-        cmds.file(path,i=True,usingNamespaces=False)
-
-    #保存屏幕截图
-    def saveScreenshot(self,name,directory=DIRECTORY):
-        #确定图片保存的路径
-        path = os.path.join(directory,&quot;{0}.jpg&quot;.format(name))
-
-        #将摄像机对准物体，以方便进行截图
-        cmds.viewFit()
-        #确定保存图片格式为jpg
-        cmds.setAttr(&quot;defaultRenderGlobals.imageFormat&quot;,8)
-
-        #进行截图,这个相当于渲染命令
-        &quot;&quot;&quot;
-        completeFilename:导出图片的路径    forceOverwrite:是否覆盖现有的playblast     format:输出的格式
-        width,heigt:分辨率     showOrnaments:是否显示轴坐标图      viewer:是否启动播放查看器
-        &quot;&quot;&quot;
-        cmds.playblast(completeFilename=path,forceOverwrite=True,format=&quot;image&quot;,width=200,height=200,
-                       showOrnaments=False,startTime=1,endTime=1,viewer=False)
-
-        return path
-</code></pre><p>主要逻辑构建好，就可以构建UI了，UI构建在libraryUI.py中完成</p>
-<pre><code>#-*-coding:gbk-*-
-
-import controllerLibrary
-from imp import reload
-reload(controllerLibrary)
-from PySide2 import QtWidgets,QtCore,QtGui
-import maya.OpenMayaUI as omui
-import maya.cmds as cmds
-from shiboken2 import wrapInstance
-
-
-#获取maya主窗口
-def maya_main_window():
-    main_window_ptr = omui.MQtUtil.mainWindow()
-    return wrapInstance(long(main_window_ptr),QtWidgets.QWidget)
-
-
-#ui类
-class ControllerLibraryUI(QtWidgets.QDialog):
-
-    #初始化
-    def __init__(self,parent=maya_main_window()):
-        super(ControllerLibraryUI, self).__init__(parent)
-        self.library = controllerLibrary.ControllerLibrary()
-
-        #图标size
-        self.size = 64
-        #格子Sizd
-        self.buffer=12
-
-        #设置窗口标题
-        self.setWindowTitle(u&quot;控制Library窗口&quot;)
-        #关闭问号按钮
-        self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
-
-        self.createWidgets()
-        self.createLayouts()
-        self.createConnects()
-
-        #填充ListWidget
-        self.populate()
-
-    def createWidgets(self):
-        self.save_btn = QtWidgets.QPushButton(&quot;save&quot;)
-        self.saveName_lineEdit = QtWidgets.QLineEdit()
-
-        #设置listWidget
-        self.file_listWidget = QtWidgets.QListWidget()
-        #图标模式
-        self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)
-        #设置图标大小
-        self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))
-        #设置拉伸模式为Adjust
-        self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)
-        #设置GridSize
-        self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))
-
-        self.import_btn = QtWidgets.QPushButton(&quot;Import&quot;)
-        self.refresh_btn = QtWidgets.QPushButton(&quot;Refresh&quot;)
-        self.close_btn = QtWidgets.QPushButton(&quot;Close&quot;)
-
-    def createLayouts(self):
-        main_layout = QtWidgets.QVBoxLayout(self)
-
-        save_layout = QtWidgets.QHBoxLayout()
-        save_layout.addWidget(self.saveName_lineEdit)
-        save_layout.addWidget(self.save_btn)
-        main_layout.addLayout(save_layout)
-
-        main_layout.addWidget(self.file_listWidget)
-
-        btn_layout = QtWidgets.QHBoxLayout()
-        btn_layout.addWidget(self.import_btn)
-        btn_layout.addWidget(self.refresh_btn)
-        btn_layout.addWidget(self.close_btn)
-        main_layout.addLayout(btn_layout)
-
-
-
-    def createConnects(self):
-        self.save_btn.clicked.connect(self.save)
-
-        self.import_btn.clicked.connect(self.load)
-        self.refresh_btn.clicked.connect(self.populate)
-        self.close_btn.clicked.connect(self.close)
-
-    def populate(self):
-
-        #清空file_list，避免重复增加
-        self.file_listWidget.clear()
-        #获取Directory文件夹下经过筛选的文件
-        self.library.find()
-
-        #获取键值对
-        for name,info in self.library.items():
-            #创建ListWidegtItem
-            item = QtWidgets.QListWidgetItem(name)
-            #添加到file_listWidget
-            self.file_listWidget.addItem(item)
-
-            #查看是否有截图
-            screenshot = info.get(&quot;screenshot&quot;)
-            if screenshot:
-                icon = QtGui.QIcon(screenshot)
-                item.setIcon(icon)
-
-    def load(self):
-        #获取当前选中的ListWidgetItem
-        currentItem = self.file_listWidget.currentItem()
-        #如果没有选中，则弹出警告
-        if not currentItem:
-            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;请选择文件！！&quot;)
-            return
-
-        self.library.load(currentItem.text())
-
-    def save(self):
-        #首先获取lineEdit的str
-        name = self.saveName_lineEdit.text()
-
-        #去除name的首尾空格
-        if not name.strip():
-            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;名字不合法！！&quot;)
-            return
-
-        self.library.save(name)
-        #重新更新ListWidget
-        self.populate()
-        #重置LineEdit
-        self.saveName_lineEdit.setText(&quot;&quot;)
-
-
-def showUI():
-    ui = ControllerLibraryUI()
-    ui.show()
-
-    return ui
-</code></pre><h2 id="QListView和QListWidget的区别"><a href="#QListView和QListWidget的区别" class="headerlink" title="QListView和QListWidget的区别"></a>QListView和QListWidget的区别</h2><p>我上次搞图片快速分类工具的时候，对于图片文件的预览我使用了QListView来进行数据的展示。这次我用QListWidget列表展示数据，那么他们到底有什么不一样呢？</p>
-<p><strong>QlistView类用于展示数据，它的子类是QListWIdget。QListView是基于模型（Model）的，需要程序来建立模型，然后再保存数据。QListWidget是一个升级版本的QListView，它已经建立了一个数据储存模型（QListWidgetItem），直接调用addItem（）函数，就可以添加条目（Item）</strong></p>
-<p>图片快速分类中QlistView的使用</p>
-<pre><code>        #创建QFileSystemModel
-        #QFileSystemModel是一个维护文件目录内容信息的模型，它本身不包含任何数据项，而只是表示本地文件系统上的文件和目录。
-        self.file_model = QtWidgets.QFileSystemModel()
-        #设置过滤器
-        self.file_model.setNameFilters(self.FILTERS)
-        #隐藏过滤掉的文件
-        self.file_model.setNameFilterDisables(False)
-        #设置Model
-        self.ui.image_list_view.setModel(self.file_model)
-</code></pre><p>存储导入工具中QListWidget的使用</p>
-<pre><code>        #设置listWidget
-        self.file_listWidget = QtWidgets.QListWidget()
-        #图标模式
-        self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)
-        #设置图标大小
-        self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))
-        #设置拉伸模式为Adjust
-        self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)
-        #设置GridSize                        self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))
-</code></pre>]]></content>
-      <categories>
-        <category>Maya</category>
-      </categories>
-      <tags>
-        <tag>Maya</tag>
       </tags>
   </entry>
   <entry>
@@ -1472,6 +1159,319 @@ if __name__ == &#39;__main__&#39;:
       </tags>
   </entry>
   <entry>
+    <title>Maya导出存储文件工具</title>
+    <url>/2020/08/31/Maya%E5%AF%BC%E5%87%BA%E5%AD%98%E5%82%A8%E6%96%87%E4%BB%B6%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<p>笔记记录</p>
+<a id="more"></a>
+<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>保存场景为ma文件，并且可以加载，刷新等。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/GIF%202020-8-31%2015-49-31.gif" alt></p>
+<h2 id="主要思路"><a href="#主要思路" class="headerlink" title="主要思路"></a>主要思路</h2><p>主要逻辑在controllerLibrary.py脚本，save，find，load3个方法。创建ControllerLibrary类继承于dict字典类，数据存储name,path,screenshot的相关路径等等。</p>
+<p>主要API：cmds.file()进行文件的存储和读取    cmds.viewFit():将摄像机对准物体    cmds.playblast():渲染导出图片    json.dump()：json文件的编码写入    json.load():json文件的解码读取</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200831160940099.png" alt="image-20200831160940099"></p>
+<pre><code>#-*-coding:gbk-*-
+
+from maya import cmds
+import os
+import json
+import pprint
+
+#获取Maya文档路径
+USERAPPDIR = cmds.internalVar(userAppDir=True)
+#文件夹路径
+DIRECTORY = os.path.join(USERAPPDIR, &quot;controllerLibrary&quot;)
+
+
+def createDirectory(directory=DIRECTORY):
+    &quot;&quot;&quot;
+    根据文件路径创建文件夹
+    Args:
+        directory(str): 要创建的文件夹路径
+
+    Returns:
+
+    &quot;&quot;&quot;
+    #首先判断文件夹是否存在
+    if not os.path.exists(directory):
+        #如果不存在那就创建文件夹
+        os.mkdir(directory)
+
+
+#继承字典类
+class ControllerLibrary(dict):
+
+    #保存文件方法
+    #**info关键字参数
+    def save(self,name,screenshot=True,directory=DIRECTORY,**info):
+
+        #首先要确认要保存的路径是否存在
+        createDirectory(directory)
+
+        #保存文件路径
+        path = os.path.join(directory,&quot;{0}.ma&quot;.format(name))
+        #json保存文件
+        infoFile = os.path.join(directory,&quot;{0}.json&quot;.format(name))
+        info[&quot;name&quot;] = name
+        info[&quot;path&quot;] = path
+
+        #判是否需要screenShot
+        if screenshot:
+            self.saveScreenshot(name,directory)
+
+        #进行场景文件的保存,保存格式为mayaAscii
+        cmds.file(rename=path)
+
+        #如果进行了选择，就单独保存选择了的物体场景
+        if cmds.ls(selection=True):
+            cmds.file(force=True,type=&quot;mayaAscii&quot;,exportSelected=True)
+
+        #否则保存全部场景物体
+        else:
+            cmds.file(save=True,type=&quot;mayaAscii&quot;,force=True)
+
+        #打开infoFile文件,保存为json格式,写入文件
+        with open(infoFile,&quot;w&quot;) as f:
+            json.dump(info,f,indent=4)
+
+        self[name] = path
+
+    #获得文件夹下的所有文件
+    def find(self,directory=DIRECTORY):
+        # 进行清空，避免删除.ma文件时没有更新
+        self.clear()
+
+        if not os.path.exists(directory):
+            return None
+
+        files = os.listdir(directory)
+
+        #进行特定筛选，只获取ma文件
+        mayaFiles = [f for f in files if f.endswith(&quot;.ma&quot;)]
+
+        #进行键值对存储
+        for ma in mayaFiles:
+            #分离文件名和扩展名
+            name,ext = os.path.splitext(ma)
+            path = os.path.join(directory,ma)
+
+            #查看是否json文件
+            infoFile = &quot;{0}.json&quot;.format(name)
+            if infoFile in files:
+                infoFile = os.path.join(directory,infoFile)
+                #读取每个场景配置的json文件
+                with open(infoFile,&quot;r&quot;) as f:
+                    #进行读取
+                    info = json.load(f)
+
+            else:
+                print(u&quot;没有发现{0}文件&quot;.format(infoFile))
+                info = {}
+
+            #查看是否screenshot图片
+            screenshot = &quot;{0}.jpg&quot;.format(name)
+            if screenshot in files:
+                info[&quot;screenshot&quot;] = os.path.join(directory,screenshot)
+
+            info[&quot;name&quot;]=name
+            info[&quot;path&quot;]=path
+
+            self[name]=info
+            #print(info)
+
+    #加载
+    def load(self,name):
+        path = self[name][&quot;path&quot;]
+
+        #进行加载
+        cmds.file(path,i=True,usingNamespaces=False)
+
+    #保存屏幕截图
+    def saveScreenshot(self,name,directory=DIRECTORY):
+        #确定图片保存的路径
+        path = os.path.join(directory,&quot;{0}.jpg&quot;.format(name))
+
+        #将摄像机对准物体，以方便进行截图
+        cmds.viewFit()
+        #确定保存图片格式为jpg
+        cmds.setAttr(&quot;defaultRenderGlobals.imageFormat&quot;,8)
+
+        #进行截图,这个相当于渲染命令
+        &quot;&quot;&quot;
+        completeFilename:导出图片的路径    forceOverwrite:是否覆盖现有的playblast     format:输出的格式
+        width,heigt:分辨率     showOrnaments:是否显示轴坐标图      viewer:是否启动播放查看器
+        &quot;&quot;&quot;
+        cmds.playblast(completeFilename=path,forceOverwrite=True,format=&quot;image&quot;,width=200,height=200,
+                       showOrnaments=False,startTime=1,endTime=1,viewer=False)
+
+        return path
+</code></pre><p>主要逻辑构建好，就可以构建UI了，UI构建在libraryUI.py中完成</p>
+<pre><code>#-*-coding:gbk-*-
+
+import controllerLibrary
+from imp import reload
+reload(controllerLibrary)
+from PySide2 import QtWidgets,QtCore,QtGui
+import maya.OpenMayaUI as omui
+import maya.cmds as cmds
+from shiboken2 import wrapInstance
+
+
+#获取maya主窗口
+def maya_main_window():
+    main_window_ptr = omui.MQtUtil.mainWindow()
+    return wrapInstance(long(main_window_ptr),QtWidgets.QWidget)
+
+
+#ui类
+class ControllerLibraryUI(QtWidgets.QDialog):
+
+    #初始化
+    def __init__(self,parent=maya_main_window()):
+        super(ControllerLibraryUI, self).__init__(parent)
+        self.library = controllerLibrary.ControllerLibrary()
+
+        #图标size
+        self.size = 64
+        #格子Sizd
+        self.buffer=12
+
+        #设置窗口标题
+        self.setWindowTitle(u&quot;控制Library窗口&quot;)
+        #关闭问号按钮
+        self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
+
+        self.createWidgets()
+        self.createLayouts()
+        self.createConnects()
+
+        #填充ListWidget
+        self.populate()
+
+    def createWidgets(self):
+        self.save_btn = QtWidgets.QPushButton(&quot;save&quot;)
+        self.saveName_lineEdit = QtWidgets.QLineEdit()
+
+        #设置listWidget
+        self.file_listWidget = QtWidgets.QListWidget()
+        #图标模式
+        self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)
+        #设置图标大小
+        self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))
+        #设置拉伸模式为Adjust
+        self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)
+        #设置GridSize
+        self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))
+
+        self.import_btn = QtWidgets.QPushButton(&quot;Import&quot;)
+        self.refresh_btn = QtWidgets.QPushButton(&quot;Refresh&quot;)
+        self.close_btn = QtWidgets.QPushButton(&quot;Close&quot;)
+
+    def createLayouts(self):
+        main_layout = QtWidgets.QVBoxLayout(self)
+
+        save_layout = QtWidgets.QHBoxLayout()
+        save_layout.addWidget(self.saveName_lineEdit)
+        save_layout.addWidget(self.save_btn)
+        main_layout.addLayout(save_layout)
+
+        main_layout.addWidget(self.file_listWidget)
+
+        btn_layout = QtWidgets.QHBoxLayout()
+        btn_layout.addWidget(self.import_btn)
+        btn_layout.addWidget(self.refresh_btn)
+        btn_layout.addWidget(self.close_btn)
+        main_layout.addLayout(btn_layout)
+
+
+
+    def createConnects(self):
+        self.save_btn.clicked.connect(self.save)
+
+        self.import_btn.clicked.connect(self.load)
+        self.refresh_btn.clicked.connect(self.populate)
+        self.close_btn.clicked.connect(self.close)
+
+    def populate(self):
+
+        #清空file_list，避免重复增加
+        self.file_listWidget.clear()
+        #获取Directory文件夹下经过筛选的文件
+        self.library.find()
+
+        #获取键值对
+        for name,info in self.library.items():
+            #创建ListWidegtItem
+            item = QtWidgets.QListWidgetItem(name)
+            #添加到file_listWidget
+            self.file_listWidget.addItem(item)
+
+            #查看是否有截图
+            screenshot = info.get(&quot;screenshot&quot;)
+            if screenshot:
+                icon = QtGui.QIcon(screenshot)
+                item.setIcon(icon)
+
+    def load(self):
+        #获取当前选中的ListWidgetItem
+        currentItem = self.file_listWidget.currentItem()
+        #如果没有选中，则弹出警告
+        if not currentItem:
+            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;请选择文件！！&quot;)
+            return
+
+        self.library.load(currentItem.text())
+
+    def save(self):
+        #首先获取lineEdit的str
+        name = self.saveName_lineEdit.text()
+
+        #去除name的首尾空格
+        if not name.strip():
+            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;名字不合法！！&quot;)
+            return
+
+        self.library.save(name)
+        #重新更新ListWidget
+        self.populate()
+        #重置LineEdit
+        self.saveName_lineEdit.setText(&quot;&quot;)
+
+
+def showUI():
+    ui = ControllerLibraryUI()
+    ui.show()
+
+    return ui
+</code></pre><h2 id="QListView和QListWidget的区别"><a href="#QListView和QListWidget的区别" class="headerlink" title="QListView和QListWidget的区别"></a>QListView和QListWidget的区别</h2><p>我上次搞图片快速分类工具的时候，对于图片文件的预览我使用了QListView来进行数据的展示。这次我用QListWidget列表展示数据，那么他们到底有什么不一样呢？</p>
+<p><strong>QlistView类用于展示数据，它的子类是QListWIdget。QListView是基于模型（Model）的，需要程序来建立模型，然后再保存数据。QListWidget是一个升级版本的QListView，它已经建立了一个数据储存模型（QListWidgetItem），直接调用addItem（）函数，就可以添加条目（Item）</strong></p>
+<p>图片快速分类中QlistView的使用</p>
+<pre><code>        #创建QFileSystemModel
+        #QFileSystemModel是一个维护文件目录内容信息的模型，它本身不包含任何数据项，而只是表示本地文件系统上的文件和目录。
+        self.file_model = QtWidgets.QFileSystemModel()
+        #设置过滤器
+        self.file_model.setNameFilters(self.FILTERS)
+        #隐藏过滤掉的文件
+        self.file_model.setNameFilterDisables(False)
+        #设置Model
+        self.ui.image_list_view.setModel(self.file_model)
+</code></pre><p>存储导入工具中QListWidget的使用</p>
+<pre><code>        #设置listWidget
+        self.file_listWidget = QtWidgets.QListWidget()
+        #图标模式
+        self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)
+        #设置图标大小
+        self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))
+        #设置拉伸模式为Adjust
+        self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)
+        #设置GridSize                        self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))
+</code></pre>]]></content>
+      <categories>
+        <category>Maya</category>
+      </categories>
+      <tags>
+        <tag>Maya</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Poof效果Niagara实现</title>
     <url>/2020/10/31/Poof%E6%95%88%E6%9E%9CNiagara%E5%AE%9E%E7%8E%B0/</url>
     <content><![CDATA[<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>教程：<a href="https://www.youtube.com/watch?v=aiw1slB4Mdo&amp;t=1677s" target="_blank" rel="noopener">https://www.youtube.com/watch?v=aiw1slB4Mdo&amp;t=1677s</a>    </p>
@@ -1597,6 +1597,48 @@ if __name__ == &#39;__main__&#39;:
 <h3 id="图层链接"><a href="#图层链接" class="headerlink" title="图层链接"></a>图层链接</h3><p>图层链接的诞生就是为了解决这个问题，右键图层—-跨纹理图层链接，即可解决问题</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201200026950.png" alt="image-20201201200026950"></p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201201218569.png" alt="image-20201201201218569"></p>
+]]></content>
+      <categories>
+        <category>Substance painter</category>
+      </categories>
+      <tags>
+        <tag>Substance painter</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SP学习笔记(二)</title>
+    <url>/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E4%BA%8C)/</url>
+    <content><![CDATA[<h2 id="创建基础材质"><a href="#创建基础材质" class="headerlink" title="创建基础材质"></a>创建基础材质</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00005.png" alt="HighresScreenshot00005"></p>
+<a id="more"></a>
+<p>创建基础颜色base，这里我们只输出color，rough，metal信息</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201121157424.png" alt="image-20201201121157424"></p>
+<h3 id="脏迹"><a href="#脏迹" class="headerlink" title="脏迹"></a>脏迹</h3><p>新建一个填充层控制rough，同时生成黑色遮罩，为黑色遮罩dirt生成器</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201121523720.png" alt="image-20201201121523720"></p>
+<p>可以看到生成的Mask遮罩图在UV接缝处有很强烈的不连接感，可以使用三面投射解决</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201121639864.png" alt="image-20201201121639864"></p>
+<p>第一层效果，有一种脏迹的感觉了</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201121801376.png" alt="image-20201201121801376"></p>
+<p>为黑色遮罩添加第二个填充层，选取一张程序化的划痕图，同样为了避免UV接缝选择三面映射，调整一下平衡和对比度</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201122510511.png" alt="image-20201201122510511"></p>
+<p>这里我们可以发现这个新加的填充层覆盖了dirt层，我们只要调整混合模式为Max最亮即可，这样就添加了许多细节</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201133513430.png" alt="image-20201201133513430"></p>
+<h3 id="油漆斑点"><a href="#油漆斑点" class="headerlink" title="油漆斑点"></a>油漆斑点</h3><p>新建一个填充图层，重命名为height高度</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201135204394.png" alt="image-20201201135204394"></p>
+<p>为高度层新建一个黑色遮罩，并且赋予Bnw splots程序化纹理，调整平衡和对比度，这里与教程有点出入的是SP2018是有直方图的可以调整的，但是新版本用平衡和对比度替换掉了直方图</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201135424547.png" alt="教程"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201135447659.png" alt="新版本"></p>
+<p>得到效果，有点油漆凸起的效果</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201135605084.png" alt="image-20201201135605084"></p>
+<h3 id="边缘效果"><a href="#边缘效果" class="headerlink" title="边缘效果"></a>边缘效果</h3><p>同样操作，新建一个边缘效果图层，新建黑色遮罩，由于我们想要做边缘效果，所以我们需要一个边缘的Mask，这个可以用生成器mask editor来达到效果，这里需要将曲率拉满</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201140635232.png" alt="image-20201201140635232"></p>
+<p>可以看到mask editor的基础是靠烘焙贴图来完成，所以烘焙贴图很重要</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201140724364.png" alt="image-20201201140724364"></p>
+<p>达到效果</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201140759615.png" alt="image-20201201140759615"></p>
+<p>可以看到这边缘效果太整齐划一了，可以再添加一层noise效果细化 </p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201141348276.png" alt="image-20201201141348276"></p>
+<h3 id="其他颜色"><a href="#其他颜色" class="headerlink" title="其他颜色"></a>其他颜色</h3><p>为了让整体颜色更加丰富，可以再添加一层颜色细化，混合模式为overlay，亮的更亮，暗的更暗（混合模式太多了，我也不大清楚）</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201141936934.png" alt="image-20201201141936934"></p>
 ]]></content>
       <categories>
         <category>Substance painter</category>
@@ -1872,6 +1914,40 @@ if __name__ == &#39;__main__&#39;:
       </tags>
   </entry>
   <entry>
+    <title>Unity VEG实现烟花效果</title>
+    <url>/2019/11/01/Unity-VEG%E5%AE%9E%E7%8E%B0%E7%83%9F%E8%8A%B1%E6%95%88%E6%9E%9C/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这次利用VEG实现普通烟花效果。</p>
+ <a id="more"></a> 
+<h2 id="主粒子"><a href="#主粒子" class="headerlink" title="主粒子"></a>主粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/1.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/2.png" alt></p>
+<p>设置主粒子的速度，位置，周期等参数。</p>
+<h3 id="Position-Line"><a href="#Position-Line" class="headerlink" title="Position(Line)"></a>Position(Line)</h3><p>用于设置粒子的初始化位置，从Start到End随机生成一个位置点。</p>
+<h2 id="烟花粒子"><a href="#烟花粒子" class="headerlink" title="烟花粒子"></a>烟花粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/3.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/4.png" alt></p>
+<p>这里利用GPU Event当主粒子消亡时生成新的眼花粒子。</p>
+<h3 id="GPU-Event"><a href="#GPU-Event" class="headerlink" title="GPU Event"></a>GPU Event</h3><p> GPU事件由系统在特定条件下触发，并且可以被其他系统捕获以生成新粒子。 可以通过读取Source或使用Inherit Source节点在子系统中访问事件数据。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/5.png" alt></p>
+<h2 id="主粒子的拖尾粒子"><a href="#主粒子的拖尾粒子" class="headerlink" title="主粒子的拖尾粒子"></a>主粒子的拖尾粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/6.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/7.png" alt></p>
+<h2 id="烟花粒子的拖尾"><a href="#烟花粒子的拖尾" class="headerlink" title="烟花粒子的拖尾"></a>烟花粒子的拖尾</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/8.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/9.png" alt></p>
+<p>就这样我们的烟花就完成啦</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/10.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/11.png" alt></p>
+<p>现在看起来还是有点难看的，但问题不大，给它加点后处理就好了，PostProcessVolume</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/12.png" alt></p>
+<p>就这样，好看多了</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/13.png" alt></p>
+<h1 id="未完待续"><a href="#未完待续" class="headerlink" title="未完待续"></a>未完待续</h1><p>可能后面还想加点其他的功能，所以未完待续。</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unity Visual Effect Graph初探</title>
     <url>/2019/10/31/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近为了实现动画课程设计的烟花效果，所以要学习一下Unity的新特效工具Visual Effect Graph，特此记录学习的过程，避免以后会忘记。</p>
@@ -1928,40 +2004,6 @@ if __name__ == &#39;__main__&#39;:
 <h5 id="注意-2"><a href="#注意-2" class="headerlink" title="注意"></a>注意</h5><p>Location为Source的Attribute只能用在Initializes中的Block上</p>
 <p>最后我们就能实现鼠标点击位置生成粒子的效果了。</p>
 <h1 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h1><p>第一次尝试这样做笔记，比较痛苦，但成就感也是满满的。</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity VEG实现烟花效果</title>
-    <url>/2019/11/01/Unity-VEG%E5%AE%9E%E7%8E%B0%E7%83%9F%E8%8A%B1%E6%95%88%E6%9E%9C/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这次利用VEG实现普通烟花效果。</p>
- <a id="more"></a> 
-<h2 id="主粒子"><a href="#主粒子" class="headerlink" title="主粒子"></a>主粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/1.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/2.png" alt></p>
-<p>设置主粒子的速度，位置，周期等参数。</p>
-<h3 id="Position-Line"><a href="#Position-Line" class="headerlink" title="Position(Line)"></a>Position(Line)</h3><p>用于设置粒子的初始化位置，从Start到End随机生成一个位置点。</p>
-<h2 id="烟花粒子"><a href="#烟花粒子" class="headerlink" title="烟花粒子"></a>烟花粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/3.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/4.png" alt></p>
-<p>这里利用GPU Event当主粒子消亡时生成新的眼花粒子。</p>
-<h3 id="GPU-Event"><a href="#GPU-Event" class="headerlink" title="GPU Event"></a>GPU Event</h3><p> GPU事件由系统在特定条件下触发，并且可以被其他系统捕获以生成新粒子。 可以通过读取Source或使用Inherit Source节点在子系统中访问事件数据。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/5.png" alt></p>
-<h2 id="主粒子的拖尾粒子"><a href="#主粒子的拖尾粒子" class="headerlink" title="主粒子的拖尾粒子"></a>主粒子的拖尾粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/6.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/7.png" alt></p>
-<h2 id="烟花粒子的拖尾"><a href="#烟花粒子的拖尾" class="headerlink" title="烟花粒子的拖尾"></a>烟花粒子的拖尾</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/8.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/9.png" alt></p>
-<p>就这样我们的烟花就完成啦</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/10.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/11.png" alt></p>
-<p>现在看起来还是有点难看的，但问题不大，给它加点后处理就好了，PostProcessVolume</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/12.png" alt></p>
-<p>就这样，好看多了</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/13.png" alt></p>
-<h1 id="未完待续"><a href="#未完待续" class="headerlink" title="未完待续"></a>未完待续</h1><p>可能后面还想加点其他的功能，所以未完待续。</p>
 ]]></content>
       <categories>
         <category>Unity</category>
@@ -2664,93 +2706,6 @@ Shader &quot;Custom/MeshShader&quot;
       </tags>
   </entry>
   <entry>
-    <title>秋招总结</title>
-    <url>/2020/10/12/%E7%A7%8B%E6%8B%9B%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>本科双非，有一段腾讯的暑期实习经历，岗位是TA技术美术，因为实习的时候被深圳的物价和房价给吓到了，再加上家在广州，所以基本目标都在广州的游戏公司，也投了北京上海的游戏公司，原本想拿来练练手的，可能是双非学历再加上简历内容确实不太与游戏行业相关，所以基本石沉大海哈哈哈，根本不给机会</p>
- <a id="more"></a> 
-<h2 id="投递公司"><a href="#投递公司" class="headerlink" title="投递公司"></a>投递公司</h2><div class="table-container">
-<table>
-<thead>
-<tr>
-<th>公司</th>
-<th>进度</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>网易互娱</td>
-<td>意向书</td>
-</tr>
-<tr>
-<td>诗悦网络</td>
-<td>意向书</td>
-</tr>
-<tr>
-<td>多益</td>
-<td>意向书</td>
-</tr>
-<tr>
-<td>西山居</td>
-<td>通过了面试但还有训练营？？</td>
-</tr>
-<tr>
-<td>4399</td>
-<td>笔试完等面试，投得比较晚</td>
-</tr>
-<tr>
-<td>完美世界</td>
-<td>简历筛选</td>
-</tr>
-<tr>
-<td>巨人网络</td>
-<td>简历筛选</td>
-</tr>
-<tr>
-<td>字节跳动</td>
-<td>笔试考算法直接开溜</td>
-</tr>
-<tr>
-<td>百奥</td>
-<td>笔试考算法直接开溜</td>
-</tr>
-<tr>
-<td>西山居剑心互娱</td>
-<td>笔试之后没消息</td>
-</tr>
-<tr>
-<td>心动网络</td>
-<td>笔试挂</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>TA这个岗位需求太少了，所以可投公司不多，也算尽自己的努力去得到一个最好的结果了，我其实也没想过一定要去大厂工作，只要是广州就好了。这里吐槽一下，由于TA这个岗位才刚出来，每家公司的招人标准都不一样，腾讯网易需要做测试题，字节百奥需要考算法，心动网络笔试考C++图形学基础，很混乱，导致需要准备很多东西，浪费时间。</p>
-<p><strong>吐槽一下字节游戏</strong>，昨天HR还加我微信叫我投简历，第二天就将我简历给挂掉了，就离谱，还叫我转去三维美术。</p>
-<h2 id="笔试"><a href="#笔试" class="headerlink" title="笔试"></a>笔试</h2><p>​    我参加的第一场笔试好像就是心动网络的笔试，那时候我以为TA的笔试大家都一样做做测试题，所以就没有做什么特别准备。我笔试做了30分钟我就做不下去了，考了C++，图形学，1.抗锯齿问题 2.GPU性能问题等等，比较久了有点忘记题目。反正我考完立刻心态崩了，没想到TA笔试还能这样玩，所以我立刻查漏补缺，对我后面影响挺大的。</p>
-<h2 id="面试"><a href="#面试" class="headerlink" title="面试"></a>面试</h2><p>由于时间过了太久了，我记性也不是很好，只记住了一些印象深刻的问题</p>
-<h3 id="网易"><a href="#网易" class="headerlink" title="网易"></a>网易</h3><p>​    面试阶段，网易就问了我测试题的细节问题，图形学也没怎么问，可能是因为我春招面试过了的原因吧，就是HR问了我春招为啥去了腾讯没来网易，哈哈哈有点尴尬</p>
-<h3 id="诗悦-西山居"><a href="#诗悦-西山居" class="headerlink" title="诗悦 西山居"></a>诗悦 西山居</h3><p>​    这个就比较常规正常点了，诗悦一开头就问了我算法题，我直接放弃思考，然后就问我图形学方面的问题，大概是什么是DrawCall，抗锯齿，PBR相关内容，卡通渲染的要点（主要是我项目写了这个），批处理，基本上是UnityShader入门精要上面的内容，刷一遍就好，幸好图形学加分了，不然我直接GG。</p>
-<p>​    西山居问的就比较难了，基本上是根据你简历的内容一直往下问，看到我简历写了PBR，就问我PBR的实现，答完之后问我知道IBL是什么吗？然后知道SDF距离场是什么？一套组合拳直接把我打懵。</p>
-<h3 id="多益"><a href="#多益" class="headerlink" title="多益"></a>多益</h3><p>​    面试官直接跟我聊天，问我哪里人，能不能接受加班，HR小姐姐问我有没有女朋友，我说没有，面试官还给我补了一刀：你看他那么宅肯定没有女朋友的啦……</p>
-<h2 id="学习历程"><a href="#学习历程" class="headerlink" title="学习历程"></a>学习历程</h2><p><strong>入门书籍</strong>：UnityShader入门精要，3D数学基础，龙书DX11（太厚了，我没看下去，引擎程序员可以看）</p>
-<p>C++ Primer（感觉TA不是很看重C++内容，只要基础就行，可以面向面经学习）</p>
-<p><strong>视频学习</strong>：GAMES101-现代计算机图形学入门，闫令琪大佬的现代图形学课程（真的非常好，帮我图形学知识重新梳理了一遍）</p>
-<p>UE4教程B站杨一鸣大佬视频都挺好的，看着撸一遍，Unity可以看看Siki学院的教程</p>
-<p><strong>关于数据结构和算法</strong>，不同公司不同标准，米哈游和字节的TA会考算法，但腾讯网易不会考算法，考测试题，我根本没刷算法题，所以考算法的公司直接开溜不考了，这里还是看要目标公司再决定算法要不要刷，毕竟需要的时间也是要很多的。</p>
-<p><strong>TA很需要审美</strong>，毕竟这也跟引擎程序员的最大不同，要做出好看的东西（虽然我做的东西不好看哈哈，春招找实习的时候还被面试官diss），所以我最近买个数位板在学板绘提高审美</p>
-<p>最后根据自己兴趣做几个游戏的demo，也可以写个光栅化渲染器（这个一般是引擎程序员干的）</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>​    这次秋招我感觉到实习经历非常重要，如果有一个好的大厂经历，秋招真的会好过很多。这里非常感谢我的师兄，如果没有他的分享我铁定今年春招的时候混吃等死，哪里会去找什么暑期实习，那秋招的时候双非学历可能简历都过不了。</p>
-<p>​    有了春招的铺垫和历练，秋招就比较容易地过去了（虽然还是很焦虑），也拿到自己想要的offer，希望自己能继续学下去，不再混吃等死吧</p>
-<p>​    最后，秋招终于结束辣，可以无忧无虑地看S赛了，LPL加油！</p>
-]]></content>
-      <categories>
-        <category>杂记</category>
-      </categories>
-      <tags>
-        <tag>杂记</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Win32入门笔记(一)</title>
     <url>/2020/12/15/Win32%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0(%E4%B8%80)/</url>
     <content><![CDATA[<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201215100931578.png" alt="image-20201215100931578" style="zoom:50%;"></p>
@@ -2981,6 +2936,93 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
       </tags>
   </entry>
   <entry>
+    <title>秋招总结</title>
+    <url>/2020/10/12/%E7%A7%8B%E6%8B%9B%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>本科双非，有一段腾讯的暑期实习经历，岗位是TA技术美术，因为实习的时候被深圳的物价和房价给吓到了，再加上家在广州，所以基本目标都在广州的游戏公司，也投了北京上海的游戏公司，原本想拿来练练手的，可能是双非学历再加上简历内容确实不太与游戏行业相关，所以基本石沉大海哈哈哈，根本不给机会</p>
+ <a id="more"></a> 
+<h2 id="投递公司"><a href="#投递公司" class="headerlink" title="投递公司"></a>投递公司</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>公司</th>
+<th>进度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>网易互娱</td>
+<td>意向书</td>
+</tr>
+<tr>
+<td>诗悦网络</td>
+<td>意向书</td>
+</tr>
+<tr>
+<td>多益</td>
+<td>意向书</td>
+</tr>
+<tr>
+<td>西山居</td>
+<td>通过了面试但还有训练营？？</td>
+</tr>
+<tr>
+<td>4399</td>
+<td>笔试完等面试，投得比较晚</td>
+</tr>
+<tr>
+<td>完美世界</td>
+<td>简历筛选</td>
+</tr>
+<tr>
+<td>巨人网络</td>
+<td>简历筛选</td>
+</tr>
+<tr>
+<td>字节跳动</td>
+<td>笔试考算法直接开溜</td>
+</tr>
+<tr>
+<td>百奥</td>
+<td>笔试考算法直接开溜</td>
+</tr>
+<tr>
+<td>西山居剑心互娱</td>
+<td>笔试之后没消息</td>
+</tr>
+<tr>
+<td>心动网络</td>
+<td>笔试挂</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>TA这个岗位需求太少了，所以可投公司不多，也算尽自己的努力去得到一个最好的结果了，我其实也没想过一定要去大厂工作，只要是广州就好了。这里吐槽一下，由于TA这个岗位才刚出来，每家公司的招人标准都不一样，腾讯网易需要做测试题，字节百奥需要考算法，心动网络笔试考C++图形学基础，很混乱，导致需要准备很多东西，浪费时间。</p>
+<p><strong>吐槽一下字节游戏</strong>，昨天HR还加我微信叫我投简历，第二天就将我简历给挂掉了，就离谱，还叫我转去三维美术。</p>
+<h2 id="笔试"><a href="#笔试" class="headerlink" title="笔试"></a>笔试</h2><p>​    我参加的第一场笔试好像就是心动网络的笔试，那时候我以为TA的笔试大家都一样做做测试题，所以就没有做什么特别准备。我笔试做了30分钟我就做不下去了，考了C++，图形学，1.抗锯齿问题 2.GPU性能问题等等，比较久了有点忘记题目。反正我考完立刻心态崩了，没想到TA笔试还能这样玩，所以我立刻查漏补缺，对我后面影响挺大的。</p>
+<h2 id="面试"><a href="#面试" class="headerlink" title="面试"></a>面试</h2><p>由于时间过了太久了，我记性也不是很好，只记住了一些印象深刻的问题</p>
+<h3 id="网易"><a href="#网易" class="headerlink" title="网易"></a>网易</h3><p>​    面试阶段，网易就问了我测试题的细节问题，图形学也没怎么问，可能是因为我春招面试过了的原因吧，就是HR问了我春招为啥去了腾讯没来网易，哈哈哈有点尴尬</p>
+<h3 id="诗悦-西山居"><a href="#诗悦-西山居" class="headerlink" title="诗悦 西山居"></a>诗悦 西山居</h3><p>​    这个就比较常规正常点了，诗悦一开头就问了我算法题，我直接放弃思考，然后就问我图形学方面的问题，大概是什么是DrawCall，抗锯齿，PBR相关内容，卡通渲染的要点（主要是我项目写了这个），批处理，基本上是UnityShader入门精要上面的内容，刷一遍就好，幸好图形学加分了，不然我直接GG。</p>
+<p>​    西山居问的就比较难了，基本上是根据你简历的内容一直往下问，看到我简历写了PBR，就问我PBR的实现，答完之后问我知道IBL是什么吗？然后知道SDF距离场是什么？一套组合拳直接把我打懵。</p>
+<h3 id="多益"><a href="#多益" class="headerlink" title="多益"></a>多益</h3><p>​    面试官直接跟我聊天，问我哪里人，能不能接受加班，HR小姐姐问我有没有女朋友，我说没有，面试官还给我补了一刀：你看他那么宅肯定没有女朋友的啦……</p>
+<h2 id="学习历程"><a href="#学习历程" class="headerlink" title="学习历程"></a>学习历程</h2><p><strong>入门书籍</strong>：UnityShader入门精要，3D数学基础，龙书DX11（太厚了，我没看下去，引擎程序员可以看）</p>
+<p>C++ Primer（感觉TA不是很看重C++内容，只要基础就行，可以面向面经学习）</p>
+<p><strong>视频学习</strong>：GAMES101-现代计算机图形学入门，闫令琪大佬的现代图形学课程（真的非常好，帮我图形学知识重新梳理了一遍）</p>
+<p>UE4教程B站杨一鸣大佬视频都挺好的，看着撸一遍，Unity可以看看Siki学院的教程</p>
+<p><strong>关于数据结构和算法</strong>，不同公司不同标准，米哈游和字节的TA会考算法，但腾讯网易不会考算法，考测试题，我根本没刷算法题，所以考算法的公司直接开溜不考了，这里还是看要目标公司再决定算法要不要刷，毕竟需要的时间也是要很多的。</p>
+<p><strong>TA很需要审美</strong>，毕竟这也跟引擎程序员的最大不同，要做出好看的东西（虽然我做的东西不好看哈哈，春招找实习的时候还被面试官diss），所以我最近买个数位板在学板绘提高审美</p>
+<p>最后根据自己兴趣做几个游戏的demo，也可以写个光栅化渲染器（这个一般是引擎程序员干的）</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>​    这次秋招我感觉到实习经历非常重要，如果有一个好的大厂经历，秋招真的会好过很多。这里非常感谢我的师兄，如果没有他的分享我铁定今年春招的时候混吃等死，哪里会去找什么暑期实习，那秋招的时候双非学历可能简历都过不了。</p>
+<p>​    有了春招的铺垫和历练，秋招就比较容易地过去了（虽然还是很焦虑），也拿到自己想要的offer，希望自己能继续学下去，不再混吃等死吧</p>
+<p>​    最后，秋招终于结束辣，可以无忧无虑地看S赛了，LPL加油！</p>
+]]></content>
+      <categories>
+        <category>杂记</category>
+      </categories>
+      <tags>
+        <tag>杂记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>龙卷风Niagara效果</title>
     <url>/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/</url>
     <content><![CDATA[<p>继续Niagara的学习，教程地址：<a href="https://www.youtube.com/watch?v=P9Bk1Ibd0YY" target="_blank" rel="noopener">https://www.youtube.com/watch?v=P9Bk1Ibd0YY</a></p>
@@ -3012,48 +3054,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
       </categories>
       <tags>
         <tag>UE4</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SP学习笔记(二)</title>
-    <url>/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E4%BA%8C)/</url>
-    <content><![CDATA[<h2 id="创建基础材质"><a href="#创建基础材质" class="headerlink" title="创建基础材质"></a>创建基础材质</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00005.png" alt="HighresScreenshot00005"></p>
-<a id="more"></a>
-<p>创建基础颜色base，这里我们只输出color，rough，metal信息</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201121157424.png" alt="image-20201201121157424"></p>
-<h3 id="脏迹"><a href="#脏迹" class="headerlink" title="脏迹"></a>脏迹</h3><p>新建一个填充层控制rough，同时生成黑色遮罩，为黑色遮罩dirt生成器</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201121523720.png" alt="image-20201201121523720"></p>
-<p>可以看到生成的Mask遮罩图在UV接缝处有很强烈的不连接感，可以使用三面投射解决</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201121639864.png" alt="image-20201201121639864"></p>
-<p>第一层效果，有一种脏迹的感觉了</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201121801376.png" alt="image-20201201121801376"></p>
-<p>为黑色遮罩添加第二个填充层，选取一张程序化的划痕图，同样为了避免UV接缝选择三面映射，调整一下平衡和对比度</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201122510511.png" alt="image-20201201122510511"></p>
-<p>这里我们可以发现这个新加的填充层覆盖了dirt层，我们只要调整混合模式为Max最亮即可，这样就添加了许多细节</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201133513430.png" alt="image-20201201133513430"></p>
-<h3 id="油漆斑点"><a href="#油漆斑点" class="headerlink" title="油漆斑点"></a>油漆斑点</h3><p>新建一个填充图层，重命名为height高度</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201135204394.png" alt="image-20201201135204394"></p>
-<p>为高度层新建一个黑色遮罩，并且赋予Bnw splots程序化纹理，调整平衡和对比度，这里与教程有点出入的是SP2018是有直方图的可以调整的，但是新版本用平衡和对比度替换掉了直方图</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201135424547.png" alt="教程"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201135447659.png" alt="新版本"></p>
-<p>得到效果，有点油漆凸起的效果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201135605084.png" alt="image-20201201135605084"></p>
-<h3 id="边缘效果"><a href="#边缘效果" class="headerlink" title="边缘效果"></a>边缘效果</h3><p>同样操作，新建一个边缘效果图层，新建黑色遮罩，由于我们想要做边缘效果，所以我们需要一个边缘的Mask，这个可以用生成器mask editor来达到效果，这里需要将曲率拉满</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201140635232.png" alt="image-20201201140635232"></p>
-<p>可以看到mask editor的基础是靠烘焙贴图来完成，所以烘焙贴图很重要</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201140724364.png" alt="image-20201201140724364"></p>
-<p>达到效果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201140759615.png" alt="image-20201201140759615"></p>
-<p>可以看到这边缘效果太整齐划一了，可以再添加一层noise效果细化 </p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201141348276.png" alt="image-20201201141348276"></p>
-<h3 id="其他颜色"><a href="#其他颜色" class="headerlink" title="其他颜色"></a>其他颜色</h3><p>为了让整体颜色更加丰富，可以再添加一层颜色细化，混合模式为overlay，亮的更亮，暗的更暗（混合模式太多了，我也不大清楚）</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201141936934.png" alt="image-20201201141936934"></p>
-]]></content>
-      <categories>
-        <category>Substance painter</category>
-      </categories>
-      <tags>
-        <tag>Substance painter</tag>
       </tags>
   </entry>
 </search>
