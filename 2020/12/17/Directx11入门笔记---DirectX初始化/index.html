@@ -95,17 +95,15 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;">
-
+  <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
 <a id="more"></a>
-
 <p>DirectXMath之XMVECTOR ：<a href="https://blog.csdn.net/BonChoix/article/details/8280596" target="_blank" rel="noopener">https://blog.csdn.net/BonChoix/article/details/8280596</a></p>
 <p>DirectXMath之XMMATRIX  ：<a href="https://blog.csdn.net/BonChoix/article/details/8280617" target="_blank" rel="noopener">https://blog.csdn.net/BonChoix/article/details/8280617</a></p>
-<h2 id="Directx—Vs2019环境配置"><a href="#Directx—Vs2019环境配置" class="headerlink" title="Directx—Vs2019环境配置"></a>Directx—Vs2019环境配置</h2><p>首先打开Vs2019—工具—扩展工具和功能勾选一下选项</p>
+<h2 id="Directx—-Vs2019环境配置"><a href="#Directx—-Vs2019环境配置" class="headerlink" title="Directx—-Vs2019环境配置"></a>Directx—-Vs2019环境配置</h2><p>首先打开Vs2019—-工具—-扩展工具和功能勾选一下选项</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210456000.png" alt="image-20201217210456000"></p>
 <p>下载安装完毕之后，新建项目可以看到Directx11项目</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210549337.png" alt="image-20201217210549337"></p>
-<p>根据龙书教程我们可以不适用VS2019自带的Directx框架，新建一个空项目，然后右键项目—属性</p>
+<p>根据龙书教程我们可以不适用VS2019自带的Directx框架，新建一个空项目，然后右键项目—-属性</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210732179.png" alt="image-20201217210732179"></p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210657134.png" alt="image-20201217210657134"></p>
 <h2 id="DirectX11初始化"><a href="#DirectX11初始化" class="headerlink" title="DirectX11初始化"></a>DirectX11初始化</h2><p>DirectX初始化步骤总共分为：</p>
@@ -131,10 +129,11 @@
   __out  ID3D11Device **ppDevice,
   __out  D3D_FEATURE_LEVEL *pFeatureLevel,
   __out  ID3D11DeviceContext **ppImmediateContext
-);</code></pre><p>​    1．<strong>pAdapter</strong>：指定要为哪个物理显卡创建设备对象。当该参数设为空值时，表示使用主显卡。</p>
+);
+</code></pre><p>​    1．<strong>pAdapter</strong>：指定要为哪个物理显卡创建设备对象。当该参数设为空值时，表示使用主显卡。</p>
 <p>​    2．<strong>DriverType</strong>：一般来讲，该参数总是指定为 <strong>D3D_DRIVER_TYPE_HARDWARE</strong> , 表示使用 3D 硬件来加快渲染速度。</p>
 <p>​    3．<strong>Software</strong>：用于支持软件光栅化设备（software rasterizer）。我们总是将该参数设为空值，因为我们使用硬件进行渲染。</p>
-<ol start="4">
+<ol>
 <li>可选参数，一般为NULL，可以设为<strong>D3D11_CREATE_DEVICE_DEBUG</strong>、<strong>D3D11_CREATE_DEVICE_SINGLETHREADED</strong>，或两者一起，前者让要用于调试时收集信息，后者在确定程序只在单线程下运行时设置为它，可以提高性能；</li>
 <li><strong>pFeatureLevels</strong>：为我们提供给程序的特征等级的一个数组，下一个参数为数组中元素个数</li>
 <li><strong>SDKVersion</strong>：始终设为 <strong>D3D11_SDK_VERSION</strong>。</li>
@@ -169,9 +168,11 @@
         &amp;DirectxDevice,        //获取返回的设备，特征等级，上下文
         &amp;curLevel,
         &amp;DirectxDeviceContext
-    );</code></pre><h3 id="检测多重采样等级"><a href="#检测多重采样等级" class="headerlink" title="检测多重采样等级"></a>检测多重采样等级</h3><pre><code>//检查4X多重采样质量等级
+    );
+</code></pre><h3 id="检测多重采样等级"><a href="#检测多重采样等级" class="headerlink" title="检测多重采样等级"></a>检测多重采样等级</h3><pre><code>//检查4X多重采样质量等级
     UINT m4xMsaaQualiy;
-    DirectxDevice-&gt;CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 4, &amp;m4xMsaaQualiy);</code></pre><h3 id="描述交换链"><a href="#描述交换链" class="headerlink" title="描述交换链"></a>描述交换链</h3><p>创建交换链前，我们需要填充DXGI_SWAP_CHAIN_DESC结构来描述交换链特性</p>
+    DirectxDevice-&gt;CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 4, &amp;m4xMsaaQualiy);
+</code></pre><h3 id="描述交换链"><a href="#描述交换链" class="headerlink" title="描述交换链"></a>描述交换链</h3><p>创建交换链前，我们需要填充DXGI_SWAP_CHAIN_DESC结构来描述交换链特性</p>
 <pre><code>typedef struct DXGI_SWAP_CHAIN_DESC {
   DXGI_MODE_DESC   BufferDesc;
   DXGI_SAMPLE_DESC SampleDesc;
@@ -181,7 +182,8 @@
   BOOL             Windowed;
   DXGI_SWAP_EFFECT SwapEffect;
   UINT             Flags;
-} DXGI_SWAP_CHAIN_DESC;</code></pre><ol>
+} DXGI_SWAP_CHAIN_DESC;
+</code></pre><ol>
 <li><strong>BufferDesc</strong>：该结构体描述了我们所要创建的后台缓冲区的属性。我们主要关注的属性有：宽度、高度和像素格式</li>
 <li><strong>SampleDesc</strong>：多重采样数量和质量级别</li>
 <li><strong>BufferUsage</strong>：设为 <strong>DXGI_USAGE_RENDER_TARGET_OUTPUT</strong>，因为我们要将场景渲染到后台缓冲区</li>
@@ -199,7 +201,8 @@
   DXGI_FORMAT              Format;
   DXGI_MODE_SCANLINE_ORDER ScanlineOrdering;
   DXGI_MODE_SCALING        Scaling;
-} DXGI_MODE_DESC, *LPDXGI_MODE_DESC;</code></pre><ol>
+} DXGI_MODE_DESC, *LPDXGI_MODE_DESC;
+</code></pre><ol>
 <li><strong>Width</strong>：后台缓冲区宽度</li>
 <li><strong>Height</strong>：后台缓冲区高度</li>
 <li><strong>RefreshRate</strong>：显示刷新率</li>
@@ -222,13 +225,15 @@
     chainDesc.SampleDesc.Count = 4;        //4x多重采样
     chainDesc.SampleDesc.Quality = m4xMsaaQualiy - 1;        //4x多重采样质量等级
     chainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;        //让显卡选择最高校显示模式
-    chainDesc.Windowed = true;        //窗口模式</code></pre><p><strong>注意</strong>：如果你想在运行时改变多重采样的设置，那么必须销毁然后重新创建交换链。 </p>
+    chainDesc.Windowed = true;        //窗口模式
+</code></pre><p><strong>注意</strong>：如果你想在运行时改变多重采样的设置，那么必须销毁然后重新创建交换链。 </p>
 <p><strong>注意</strong>：因为大多数显示器不支持超过 24 位以上的颜色，再多的颜色也是浪费，所以我们将后台缓冲区的像素格式设置为 <strong>DXGI_FORMAT_R8G8B8A8_UNORM</strong>（红、绿、蓝、 alpha 各 8 位）。额外的 8 位 alpha 并不会输出在显示器上，但在后台缓冲区中可以用于特定的用途。</p>
 <h3 id="创建交换链"><a href="#创建交换链" class="headerlink" title="创建交换链"></a>创建交换链</h3><p>通过<strong>IDXGIFactory::CreateSwapChain</strong> 方法创建交换链（<strong>IDXGISwapChain</strong>）</p>
 <pre><code>HRESULT IDXGIFactory::CreateSwapChain( 
 IUnknown *pDevice ,         // 指向 ID3D11Device 的指针 
 DXGI_SWAP_CHAIN_DESC *pDesc,         // 指向一个交换链描述的指针 
-IDXGISwapChain **ppSwapChain);         // 返回创建后的交换链</code></pre><p>首先我们要通过COM查询来获得IDXGIFactory实例，然后再创建交换链，最后释放COM接口</p>
+IDXGISwapChain **ppSwapChain);         // 返回创建后的交换链
+</code></pre><p>首先我们要通过COM查询来获得IDXGIFactory实例，然后再创建交换链，最后释放COM接口</p>
 <pre><code>    //创建交换链
     IDXGISwapChain* dxgiSwapChain(NULL);
     //首先要获取接口IDXGIFactory实例
@@ -243,24 +248,28 @@ IDXGISwapChain **ppSwapChain);         // 返回创建后的交换链</code></pr
     //释放COM接口
     dxgiDevice-&gt;Release();
     dxgiAdapter-&gt;Release();
-    dxgiFactory-&gt;Release();</code></pre><h3 id="创建RenderTargetView"><a href="#创建RenderTargetView" class="headerlink" title="创建RenderTargetView"></a>创建RenderTargetView</h3><p>由于资源无法直接绑定到一个管线阶段，所以我们必须为资源创建资源视图，然后再把资源视图绑定到不同的管线阶段，尤其时把后台缓冲区绑定到管线输出合并阶段，我们必须要为后台缓冲区创建RenderTargetView</p>
+    dxgiFactory-&gt;Release();
+</code></pre><h3 id="创建RenderTargetView"><a href="#创建RenderTargetView" class="headerlink" title="创建RenderTargetView"></a>创建RenderTargetView</h3><p>由于资源无法直接绑定到一个管线阶段，所以我们必须为资源创建资源视图，然后再把资源视图绑定到不同的管线阶段，尤其时把后台缓冲区绑定到管线输出合并阶段，我们必须要为后台缓冲区创建RenderTargetView</p>
 <pre><code>    //创建资源
     ID3D11Texture2D* backBuffer;
     //获取后台缓冲区地址
     dxgiSwapChain-&gt;GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast&lt;void**&gt;(&amp;backBuffer));
     //创建RenderTargetView
     ID3D11RenderTargetView* renderTargetView;
-    DirectxDevice-&gt;CreateRenderTargetView(backBuffer, 0, &amp;renderTargetView);</code></pre><p>IDXGISwapChain::GetBuffer函数</p>
+    DirectxDevice-&gt;CreateRenderTargetView(backBuffer, 0, &amp;renderTargetView);
+</code></pre><p>IDXGISwapChain::GetBuffer函数</p>
 <pre><code>HRESULT GetBuffer(
   UINT   Buffer,    //获取Buffer的索引号，因为后台缓冲区数量可能会&gt;1,所以必须说明索引号
   REFIID riid,        //缓冲区的接口类型，通常是ID3D11Texture2D
   void   **ppSurface        //指向后台缓冲区的指针
-);</code></pre><p>CreateRenderTargetView函数</p>
+);
+</code></pre><p>CreateRenderTargetView函数</p>
 <pre><code>HRESULT CreateRenderTargetView(
        ID3D11Resource *pResource,                //视图对应资源
        const D3D11_RENDER_TARGET_VIEW_DESC *pDesc,        //视图描述
        ID3D11RenderTargetView **ppRTView            //要创建的视图（指针的地址）
-);</code></pre><h3 id="创建深度-模板缓冲区及其视图"><a href="#创建深度-模板缓冲区及其视图" class="headerlink" title="创建深度/模板缓冲区及其视图"></a>创建深度/模板缓冲区及其视图</h3><p>深度缓冲区只是一个存储深度信息的2D纹理，创建纹理前，我们要填充<strong>D3D11_TEXTURE2D_DESC</strong> 结 构 体 来 描 述 所 要 创 建 的 纹 理 ，然后再调用 <strong>ID3D11Device::CreateTexture2D</strong> 方法。</p>
+);
+</code></pre><h3 id="创建深度-模板缓冲区及其视图"><a href="#创建深度-模板缓冲区及其视图" class="headerlink" title="创建深度/模板缓冲区及其视图"></a>创建深度/模板缓冲区及其视图</h3><p>深度缓冲区只是一个存储深度信息的2D纹理，创建纹理前，我们要填充<strong>D3D11_TEXTURE2D_DESC</strong> 结 构 体 来 描 述 所 要 创 建 的 纹 理 ，然后再调用 <strong>ID3D11Device::CreateTexture2D</strong> 方法。</p>
 <pre><code>typedef struct D3D11_TEXTURE2D_DESC {
   UINT             Width;
   UINT             Height;
@@ -272,7 +281,8 @@ IDXGISwapChain **ppSwapChain);         // 返回创建后的交换链</code></pr
   UINT             BindFlags;        //绑定类型，为D3D11_BIND_DEPTH_STENCIL
   UINT             CPUAccessFlags;    //CPU不可访问，设为0
   UINT             MiscFlags;        //设为0
-} D3D11_TEXTURE2D_DESC;</code></pre><pre><code>    //描述深度模板纹理
+} D3D11_TEXTURE2D_DESC;
+</code></pre><pre><code>    //描述深度模板纹理
     D3D11_TEXTURE2D_DESC DepthStencilDesc;
     DepthStencilDesc.Width = 640;
     DepthStencilDesc.Height = 480;
@@ -295,7 +305,8 @@ IDXGISwapChain **ppSwapChain);         // 返回创建后的交换链</code></pr
 
 
     //将视图绑定到管线的输出合并阶段
-    DirectxDeviceContext-&gt;OMSetRenderTargets(1, &amp;renderTargetView, depthStencilView);</code></pre><h3 id="设置视口Viewport"><a href="#设置视口Viewport" class="headerlink" title="设置视口Viewport"></a>设置视口Viewport</h3><p>同样需要先设置D3D11_VIEWPORT属性</p>
+    DirectxDeviceContext-&gt;OMSetRenderTargets(1, &amp;renderTargetView, depthStencilView);
+</code></pre><h3 id="设置视口Viewport"><a href="#设置视口Viewport" class="headerlink" title="设置视口Viewport"></a>设置视口Viewport</h3><p>同样需要先设置D3D11_VIEWPORT属性</p>
 <pre><code>typedef struct D3D11_VIEWPORT {
   FLOAT TopLeftX;        //视口左上角在屏幕上x坐标，一般视口占满屏幕的，所以为0
   FLOAT TopLeftY;        //y坐标，同上
@@ -303,7 +314,8 @@ IDXGISwapChain **ppSwapChain);         // 返回创建后的交换链</code></pr
   FLOAT Height;            //高度，同上
   FLOAT MinDepth;        //最小深度值：0.0f
   FLOAT MaxDepth;        //最大深度值：1.0f
-} D3D11_VIEWPORT;</code></pre><pre><code>    //最后设置Viewport阶段
+} D3D11_VIEWPORT;
+</code></pre><pre><code>    //最后设置Viewport阶段
     D3D11_VIEWPORT viewPort;
     viewPort.TopLeftX = 0.0f;
     viewPort.TopLeftY = 0.0f;
@@ -311,12 +323,14 @@ IDXGISwapChain **ppSwapChain);         // 返回创建后的交换链</code></pr
     viewPort.Height = static_cast&lt;FLOAT&gt;(480);
     viewPort.MinDepth = 0.0f;
     viewPort.MaxDepth = 1.0f;
-    DirectxDeviceContext-&gt;RSSetViewports(1, &amp;viewPort);</code></pre><h3 id="绘制场景"><a href="#绘制场景" class="headerlink" title="绘制场景"></a>绘制场景</h3><p>进入主循环渲染函数绘制场景</p>
+    DirectxDeviceContext-&gt;RSSetViewports(1, &amp;viewPort);
+</code></pre><h3 id="绘制场景"><a href="#绘制场景" class="headerlink" title="绘制场景"></a>绘制场景</h3><p>进入主循环渲染函数绘制场景</p>
 <pre><code>        //进入主循环绘制场景
         XMVECTORF32 color = { 0.0f,1.0f,0.0f,1.0f };
         DirectxDeviceContext-&gt;ClearRenderTargetView(renderTargetView, reinterpret_cast&lt;float*&gt;(&amp;color));
         DirectxDeviceContext-&gt;ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-        dxgiSwapChain-&gt;Present(0, 0);</code></pre><p>得到结果</p>
+        dxgiSwapChain-&gt;Present(0, 0);
+</code></pre><p>得到结果</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217205550695.png" alt="image-20201217205550695"></p>
  
       <!-- reward -->

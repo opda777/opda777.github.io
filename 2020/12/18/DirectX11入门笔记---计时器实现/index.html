@@ -95,15 +95,14 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;">
-
+  <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
 <a id="more"></a>
-
 <h2 id="计时器"><a href="#计时器" class="headerlink" title="计时器"></a>计时器</h2><p>计时器支持暂停，开始，重置，每帧调用功能，程序中每一帧调用一次计数，并随时返回距离上一次计数之间的差值。这个差值就是控制游戏、动画更新的最重要的数据。</p>
 <p> 这个定时器用到了Windows中高精度的计时函数：<strong>QueryPerformanceCounter</strong>（用于计算调用的时间差）</p>
 <p><strong>QueryPerformanceFrequency</strong>（返回计时器的计算频率，每秒的计算次数，用于转换秒的转换因子）</p>
 <pre><code>BOOL QueryPerformanceCounter(  LARGE_INTEGER* lpPerformanceCount );
-BOOL QueryPerformanceFrequency(  LARGE_INTEGER* lpFrequency );</code></pre><h3 id="计时器类"><a href="#计时器类" class="headerlink" title="计时器类"></a>计时器类</h3><pre><code>#pragma once
+BOOL QueryPerformanceFrequency(  LARGE_INTEGER* lpFrequency );
+</code></pre><h3 id="计时器类"><a href="#计时器类" class="headerlink" title="计时器类"></a>计时器类</h3><pre><code>#pragma once
 
 // 计时器
 class Timer
@@ -132,7 +131,8 @@ private:
 
     bool IsStop;        //是否暂停
 
-};</code></pre><pre><code>#include &quot;Timer.h&quot;
+};
+</code></pre><pre><code>#include &quot;Timer.h&quot;
 #include &lt;Windows.h&gt;
 
 // 进行初始化

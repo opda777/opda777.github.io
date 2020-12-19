@@ -95,10 +95,8 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201215100931578.png" alt="image-20201215100931578" style="zoom:50%;">
-
+  <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201215100931578.png" alt="image-20201215100931578" style="zoom:50%;"></p>
 <a id="more"></a>
-
 <h2 id="创建窗口"><a href="#创建窗口" class="headerlink" title="创建窗口"></a>创建窗口</h2><p>首先win32窗口的创建主要分为两个步骤，注册一个窗口类<strong>（注意窗口类并不是C++类，只是一个Window的数据结构）</strong>，实现一个窗口实例。</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201214144740309.png" alt="image-20201214144740309"></p>
 <p>WinMain entry point入口函数</p>
@@ -111,7 +109,8 @@
     PSTR pCmdLine, INT nCmdShow)
 {
     return 0;
-}</code></pre><p>在注册窗口类之前，我们需要填充WNDCLASSEX结构</p>
+}
+</code></pre><p>在注册窗口类之前，我们需要填充WNDCLASSEX结构</p>
 <p>cbsize：wc数据接口的大小</p>
 <p>style：窗口风格，CS_OWNDC意思为每个窗口都可以独立渲染，多用于同时绘制多个窗口</p>
 <p>lpfnWndProc：指向WINPROC函数的指针，这个函数处理所有有关这个窗口的信息，这个函数非常重要，因为窗口信息决定了窗口的行为，同时决定了窗口的样式，毕竟里面有Draw功能绘制窗口</p>
@@ -145,14 +144,16 @@
     wc.lpszMenuName = nullptr;
     wc.lpszClassName = CLASS_NAME;
 
-    RegisterClassEx(&amp;wc);</code></pre><p>接下来我们需要创建窗口实例</p>
+    RegisterClassEx(&amp;wc);
+</code></pre><p>接下来我们需要创建窗口实例</p>
 <pre><code>    //创建窗口实例
     HWND hwnd = CreateWindowEx(
         0, CLASS_NAME, L&quot;Hello World&quot;,
         WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
         200,200,640,480,
         nullptr,nullptr,hInstance,nullptr
-        );</code></pre><pre><code>HWND CreateWindowExA(
+        );
+</code></pre><pre><code>HWND CreateWindowExA(
   DWORD     dwExStyle,    窗口扩展样式
   LPCSTR    lpClassName,    实例窗口类的名称，与wc的lpszClassName相对应
   LPCSTR    lpWindowName,    窗口名称
@@ -165,10 +166,12 @@
   HMENU     hMenu,    窗口菜单
   HINSTANCE hInstance,    实例
   LPVOID    lpParam    可以用来存储传递数据
-);</code></pre><p>最后我们需要将窗口显示出来</p>
+);
+</code></pre><p>最后我们需要将窗口显示出来</p>
 <pre><code>    ShowWindow(hwnd,SW_SHOW);
     while (true);
-    return 0;</code></pre><p>得到效果</p>
+    return 0;
+</code></pre><p>得到效果</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201214162127020.png" alt="image-20201214162127020"></p>
 <h2 id="窗口消息"><a href="#窗口消息" class="headerlink" title="窗口消息"></a>窗口消息</h2><p>事件驱动编程，窗口消息本质上来说就是事件Event</p>
 <p>窗口会处理比如鼠标移动，鼠标点击消息事件，把消息按顺序放进队列里，我们利用GetMessage获取队列的消息，利用TranslateMsg进行消息的转换<strong>（比如将键盘点击转换为字符）</strong>，DispatchMessage将消息返回到WndProc进行消息处理</p>
@@ -180,7 +183,8 @@
   HWND  hWnd,    处理消息的窗口指针
   UINT  wMsgFilterMin,    过滤选项，用于过滤得到想要的消息
   UINT  wMsgFilterMax
-);</code></pre><p>消息结构体</p>
+);
+</code></pre><p>消息结构体</p>
 <pre><code>typedef struct tagMSG {
   HWND   hwnd;    窗口指针
   UINT   message;    消息类型
@@ -189,14 +193,16 @@
   DWORD  time;    消息发布的时间
   POINT  pt;    鼠标的位置
   DWORD  lPrivate;
-} MSG, *PMSG, *NPMSG, *LPMSG;</code></pre><p>只要GetMessage返回数值 &gt; 0则表明信息接收没有问题，继续循环，当返回0时表示窗口关闭退出循环</p>
+} MSG, *PMSG, *NPMSG, *LPMSG;
+</code></pre><p>只要GetMessage返回数值 &gt; 0则表明信息接收没有问题，继续循环，当返回0时表示窗口关闭退出循环</p>
 <pre><code>//消息循环
     MSG message;
     while (GetMessage(&amp;message,nullptr,0,0) &gt; 0)
     {
         TranslateMessage(&amp;message);
         DispatchMessage(&amp;message);
-    }</code></pre><p>这时候会出现一个问题，当你关掉窗口之后，窗口只是被最小化还会在后台运行，所以我们要自定义winProc解决问题，同时需要将窗口结构体的lpfnWndProc设置为我们自定义的windowProc</p>
+    }
+</code></pre><p>这时候会出现一个问题，当你关掉窗口之后，窗口只是被最小化还会在后台运行，所以我们要自定义winProc解决问题，同时需要将窗口结构体的lpfnWndProc设置为我们自定义的windowProc</p>
 <p>wParam和lParam包含与消息相关的数据，主要取决与消息的类型</p>
 <p>比如WM_QUIT message的wParam是PostQuitMessage给出的数字69，lParam则没有是用到的</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201214220730551.png" alt="image-20201214220730551"></p>
@@ -230,7 +236,8 @@ wc.lpfnWndProc = WindowProc;
     else
     {
         return message.wParam;    //返回69
-    }</code></pre><p>得到可以拖动，正常关闭结束进程的窗口</p>
+    }
+</code></pre><p>得到可以拖动，正常关闭结束进程的窗口</p>
 <p>全部代码</p>
 <pre><code>#include &quot;Windows.h&quot;
 
@@ -306,7 +313,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     {
         return message.wParam;
     }
-}</code></pre> 
+}
+</code></pre> 
       <!-- reward -->
       
     </div>

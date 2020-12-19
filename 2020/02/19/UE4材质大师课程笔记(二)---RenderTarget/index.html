@@ -97,17 +97,15 @@
        
   <h1 id="RenderTarget"><a href="#RenderTarget" class="headerlink" title="RenderTarget"></a>RenderTarget</h1><p>UE4的RenderTarget感觉和Unity的差不多，都是获得一个摄像机的渲染结果，然后存在RenderTarget里面进行读取使用。</p>
 <a id="more"></a>
-
 <p>在UE4中要使用RenderTarget，首先要添加SceneCapture2D组件或者SceneCapture Cube组件，前者获取2D，后者获取Cube立方体贴图。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTarget%E7%BB%84%E4%BB%B6.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTarget%E6%96%B0%E5%BB%BARenderTarget.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTarget%E8%B5%8B%E5%80%BCRenderTarget.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTarget组件.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTarget新建RenderTarget.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTarget赋值RenderTarget.png" alt></p>
 <h2 id="RenderTarget的使用"><a href="#RenderTarget的使用" class="headerlink" title="RenderTarget的使用"></a>RenderTarget的使用</h2><h3 id="渲染材质"><a href="#渲染材质" class="headerlink" title="渲染材质"></a>渲染材质</h3><p>在UE4中过程化生成噪点纹理是比较昂贵的，所以通常的做法是将材质绘制到RenderTarget中。</p>
-<img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTargetNoise.png">
-
-<p>可以看出以上这个需要529条指令<img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTargetNoise%E6%8C%87%E4%BB%A4.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTargetNoise.png"></p>
+<p>可以看出以上这个需要529条指令<img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTargetNoise指令.png" alt></p>
 <p>将材质绘制到RenderTarget</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTarget%E5%B0%86%E6%9D%90%E8%B4%A8%E6%B8%B2%E6%9F%93%E5%88%B0RenderTarget.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTarget将材质渲染到RenderTarget.png" alt></p>
 <p>得到左边的RenderTarget噪点图了，然后右键创建静态纹理则可以得到可以用的Texture纹理了。</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTargetimage-20200109210329543.png" alt></p>
 <p>指令就变为了34，效率得到了提升。</p>
@@ -128,7 +126,7 @@
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTargetimage-20200110204531617.png" alt></p>
 <p>最后处理伤害函数，传递参数给MAT_ForceSplat材质，例如点击的uv坐标，力度，大小，最后要用Draw Material to Render Target函数将材质绘制到RT里面，这样HeighfieldPainter材质才会根据RT图进行Z轴的偏移。</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTargetimage-20200110204555551.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTarget%E5%B0%86%E6%9D%90%E8%B4%A8%E6%B8%B2%E6%9F%93%E5%88%B0RenderTarget.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/RenderTarget将材质渲染到RenderTarget.png" alt></p>
 <p>这里注意，这种方法只适用于平面，计算点击位置的uv坐标也比较简单，首先获取点击位置的世界坐标，然后获取静态网格的worldTransform,然后通过Invert Transform获得从世界坐标到静态网格本地坐标的变换矩阵，将点击位置从世界空间转换为静态网格的本地空间，当然我们也要将得到的本地坐标转为uv坐标，就要除于网格的长宽，映射到【0，1】，这样就得到了正确的uv坐标。</p>
  
       <!-- reward -->

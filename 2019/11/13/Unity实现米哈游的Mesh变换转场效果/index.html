@@ -97,7 +97,6 @@
        
   <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前看过米哈游大佬制作的桃源恋歌MMD，被其中的Mesh变换转场效果所折服了，所以自己想模仿着实现这个效果，幸好kerjiro技术美术大神开源了这方面的视觉特效项目，感觉自己如果想成为TA还有好长的路要走。。。</p>
  <a id="more"></a> 
-
 <h2 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h2><p>首先让我们来看一下最终效果</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-MeshTransform/Effect.gif" alt="Effect"></p>
 <h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2><p>其实这个效果是通过几何着色器来实现的，主要思路就是通过几何着色器对三角面片的顶点进行添加，构成一个Cube。</p>
@@ -105,8 +104,10 @@
 <h2 id="几何着色器"><a href="#几何着色器" class="headerlink" title="几何着色器"></a>几何着色器</h2><p>相信大家接触的最多的应该是顶点着色器和像素着色器，那么什么是几何着色器呢？</p>
 <h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>在顶点和片段着色器之间有一个可选的着色器，叫做几何着色器(Geometry Shader)。几何着色器以一个或多个表示为一个单独基本图形（primitive）即图元的顶点作为输入，比如可以是一个点或者三角形。几何着色器在将这些顶点发送到下一个着色阶段之前，可以将这些顶点转变为它认为合适的内容。<strong>几何着色器有意思的地方在于它可以把（一个或多个）顶点转变为完全不同的基本图形（primitive），从而生成比原来多得多的顶点。</strong> </p>
 <h3 id="使用几何着色器进行图元转换"><a href="#使用几何着色器进行图元转换" class="headerlink" title="使用几何着色器进行图元转换"></a>使用几何着色器进行图元转换</h3><p>声明着色器</p>
-<pre><code>#pragma geometry geom</code></pre><p>设置输出顶点数量，其中N为几何着色器为单个调用输出的顶点最大数量，几何着色器每次输出的顶点数量是可变的，但是不能超过定义的最大值， 出于性能考虑，最大顶点数应尽可能小; 当GS输出在1到20个标量之间时，可以实现GS的性能峰值，如果GS输出在27-40个标量之间，则性能下降50％。每次调用的标量输出数是最大顶点输出数和输出顶点类型结构中的标量数的乘积。 </p>
-<pre><code>[maxvertexcount(N)]</code></pre><p>声明输入和输出的Struct</p>
+<pre><code>#pragma geometry geom
+</code></pre><p>设置输出顶点数量，其中N为几何着色器为单个调用输出的顶点最大数量，几何着色器每次输出的顶点数量是可变的，但是不能超过定义的最大值， 出于性能考虑，最大顶点数应尽可能小; 当GS输出在1到20个标量之间时，可以实现GS的性能峰值，如果GS输出在27-40个标量之间，则性能下降50％。每次调用的标量输出数是最大顶点输出数和输出顶点类型结构中的标量数的乘积。 </p>
+<pre><code>[maxvertexcount(N)]
+</code></pre><p>声明输入和输出的Struct</p>
 <pre><code>            //传递给几何着色器的数据
             struct v2g
             {
@@ -123,22 +124,26 @@
                 float3 normal:TEXCOORD0;
                 //float2 uv : TEXCOORD1;
                 float4 color:COLOR;
-            };</code></pre><p>设置几何着色器输入参数和输出参数，</p>
+            };
+</code></pre><p>设置几何着色器输入参数和输出参数，</p>
 <p>其中“triangle”为输入的图元类型， 输入参数一定为顶点数组 。</p>
-<pre><code class="ruby">输入图元类型 | 所需顶点数  
+<pre><code class="lang-ruby">输入图元类型 | 所需顶点数  
 -|-
 point | 输入1个点的1个顶点
 line | 输入1条直线的2个顶点 
 lineadj | 输入1条具有邻接(lists或strips)的线段的4个顶点 
 triangle | 输入1个三角形的3个顶点
-triangleadj | 输入1个具有邻接(lists或strips)的三角形的6个顶点</code></pre>
+triangleadj | 输入1个具有邻接(lists或strips)的三角形的6个顶点
+</code></pre>
 <p>TriangleStream为流类型(stream type)对象，还有 LineStream 和 PointStream ,存储着由几何着色器输出的几何体顶点列表。内置Append用于向输出流添加顶点序列， 若想扩展输入的图元，也可以用内置Append向输出流添加多出来的顶点。 </p>
 <p>当指定uint primID:SV_PrimitiveID时，输入汇编阶段会为每个图元自动生成一个图元ID。当调用draw方法绘制n个图元时，ID号为0到n-1，这里用到的原因是为了随机Cube化。</p>
 <pre><code>void geom(triangle v2g input[3], uint pid : SV_PrimitiveID, inout TriangleStream&lt;g2f&gt; outStream)
 {
     //shader body
-}</code></pre><p>将输出顶点传送至输出stream上</p>
-<pre><code>OutputStream.Append(o);</code></pre><h2 id="开始动手"><a href="#开始动手" class="headerlink" title="开始动手"></a>开始动手</h2><h3 id="CPU传递数据给Shader"><a href="#CPU传递数据给Shader" class="headerlink" title="CPU传递数据给Shader"></a>CPU传递数据给Shader</h3><p>首先我们需要新建一个脚本用于传递数据给Shader，以下就是K神的传递脚本，我已经写好注释。挂在一个空物体上面即可。</p>
+}
+</code></pre><p>将输出顶点传送至输出stream上</p>
+<pre><code>OutputStream.Append(o);
+</code></pre><h2 id="开始动手"><a href="#开始动手" class="headerlink" title="开始动手"></a>开始动手</h2><h3 id="CPU传递数据给Shader"><a href="#CPU传递数据给Shader" class="headerlink" title="CPU传递数据给Shader"></a>CPU传递数据给Shader</h3><p>首先我们需要新建一个脚本用于传递数据给Shader，以下就是K神的传递脚本，我已经写好注释。挂在一个空物体上面即可。</p>
 <pre><code>using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -703,19 +708,19 @@ Shader &quot;Custom/MeshShader&quot;
    
   <nav class="article-nav">
     
-      <a href="/2019/11/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/" class="article-nav-link">
+      <a href="/2020/01/07/2019%E5%B9%B4---%E5%B0%8F%E8%AE%B0/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            UE4学习笔记(2)---蓝图接口-标签
+            2019年---小记
           
         </div>
       </a>
     
     
-      <a href="/2019/11/06/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(1)%E2%80%94%E2%80%94%E7%AE%80%E5%8D%95%E6%A1%86%E6%9E%B6/" class="article-nav-link">
+      <a href="/2019/11/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">UE4学习笔记(1)——简单框架</div>
+        <div class="article-nav-title">UE4学习笔记(2)---蓝图接口-标签</div>
       </a>
     
   </nav>

@@ -107,19 +107,20 @@
 
   <p>Maya教程笔记，过程中会记录自己所遇到的问题和新知识</p>
 <a id="more"></a>
-
 <h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>控制器的简易添加，缩放控制器，控制器的颜色选择</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/GIF%202020-8-24%2022-52-16.gif" alt="GIF 2020-8-24 22-52-16"></p>
 <h2 id="QLabel"><a href="#QLabel" class="headerlink" title="QLabel"></a>QLabel</h2><p>QLabel提供了一个文本或者图像的显示，没有提供交互功能，在建议控制器中我利用QLabel进行了文字的显示和背景颜色显示</p>
 <pre><code>self.controlScale_label = QtWidgets.QLabel(u&quot;控制器Scale&quot;,alignment=QtCore.Qt.AlignCenter)
 #设置格式
-self.controlScale_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot;)</code></pre><h2 id="Constraints-约束"><a href="#Constraints-约束" class="headerlink" title="Constraints(约束)"></a>Constraints(约束)</h2><p>point constraints（点约束）：约束位移</p>
+self.controlScale_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot;)
+</code></pre><h2 id="Constraints-约束"><a href="#Constraints-约束" class="headerlink" title="Constraints(约束)"></a>Constraints(约束)</h2><p>point constraints（点约束）：约束位移</p>
 <p>orient constraints（反向约束）：约束旋转</p>
 <p>parent constraints（父约束）：约束位移和旋转</p>
 <h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><pre><code>1.首先要获取选中的物体，然后判断是否为joint骨骼类型，如果是则获取选中物体的所有子物体
 2.根据joint数量生成一定的控制器，调整控制器的旋转和位置与joint一致
 3.进行parent约束限制，这样生成的Circle就可以控制joints
-4.利用Pyside2进行GUI的设置，完成交互</code></pre><h2 id="OverrideColor设置问题"><a href="#OverrideColor设置问题" class="headerlink" title="OverrideColor设置问题"></a>OverrideColor设置问题</h2><p>首先OverrideColor指的是Shape下的设置</p>
+4.利用Pyside2进行GUI的设置，完成交互
+</code></pre><h2 id="OverrideColor设置问题"><a href="#OverrideColor设置问题" class="headerlink" title="OverrideColor设置问题"></a>OverrideColor设置问题</h2><p>首先OverrideColor指的是Shape下的设置</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200824230019419.png" alt="image-20200824230019419"></p>
 <p>这里我需要将颜色设置为RGB而非索引，所以需要一下代码,这里应该可以直接设置overrideColorRGB属性的，但不知道哪里出了问题，所以我就曲线救国</p>
 <pre><code>            #获取选中物体的shape
@@ -131,7 +132,8 @@ self.controlScale_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot
             cmds.setAttr(shape+&quot;.overrideColorR &quot;,self.color.redF())
             cmds.setAttr(shape + &quot;.overrideColorG &quot;, self.color.greenF())
             cmds.setAttr(shape + &quot;.overrideColorB &quot;, self.color.blueF())
-            #print(cmds.getAttr(shape+&quot;.overrideColor&quot;))</code></pre><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200824230220071.png" alt="image-20200824230220071"></p>
+            #print(cmds.getAttr(shape+&quot;.overrideColor&quot;))
+</code></pre><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200824230220071.png" alt="image-20200824230220071"></p>
 <h2 id="Circle-Scale问题"><a href="#Circle-Scale问题" class="headerlink" title="Circle Scale问题"></a>Circle Scale问题</h2><p>这里不是直接缩放Circle，而是缩放Circle的controlVertics（控制顶点），这样就可以直接连续缩放</p>
 <pre><code>    def smallScale(self):
         #获得选中的物体
@@ -140,7 +142,8 @@ self.controlScale_label.setStyleSheet(&quot;background-color:rgb(0,0,0,255)&quot
         scaleFactor = self.scale_DoubleSpinBox.value()
         for tempControl in selectionControl:
             # Scale控制顶点
-            cmds.scale(1-scaleFactor,1-scaleFactor,1-scaleFactor,tempControl+&quot;.cv[0:]&quot;)</code></pre><h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><pre><code># -*- coding: GBK -*-
+            cmds.scale(1-scaleFactor,1-scaleFactor,1-scaleFactor,tempControl+&quot;.cv[0:]&quot;)
+</code></pre><h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><pre><code># -*- coding: GBK -*-
 from PySide2 import QtWidgets,QtGui,QtCore
 from shiboken2 import wrapInstance
 from maya import OpenMayaUI as omui
@@ -360,7 +363,8 @@ if __name__ == &#39;__main__&#39;:
         pass
 
     rigTools_dialog = RigTools_Dialog()
-    rigTools_dialog.show()</code></pre> 
+    rigTools_dialog.show()
+</code></pre> 
       <!-- reward -->
       
     </div>

@@ -97,7 +97,6 @@
        
   <h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/%E6%9C%80%E7%BB%88%E6%95%88%E6%9E%9C.gif" alt="最终效果"></p>
 <a id="more"></a>
-
 <p>学习文章地址：<a href="http://walkingfat.com/simple-subsurface-scatterting-for-mobile-%ef%bc%88%e4%b8%80%ef%bc%89%e9%80%9a%e9%80%8f%e6%9d%90%e8%b4%a8%e7%9a%84%e6%ac%a1%e8%a1%a8%e9%9d%a2%e6%95%a3%e5%b0%84/" target="_blank" rel="noopener">http://walkingfat.com/simple-subsurface-scatterting-for-mobile-%ef%bc%88%e4%b8%80%ef%bc%89%e9%80%9a%e9%80%8f%e6%9d%90%e8%b4%a8%e7%9a%84%e6%ac%a1%e8%a1%a8%e9%9d%a2%e6%95%a3%e5%b0%84/</a></p>
 <p>这个博主真的太强了！！！就是存在的问题是你的调参能力要非常强，不然就算代码完全一摸一样可能都达不到博主的效果…..</p>
 <h2 id="制作思路"><a href="#制作思路" class="headerlink" title="制作思路"></a>制作思路</h2><p>将平行光源的方向反转，相当于背对光源的那一面的光照由反转的虚拟光源提供，达到了一种次表面散射的效果。同时利用表面法线对反向光源进行一定偏移代表不同散射强度。</p>
@@ -105,7 +104,7 @@
 <p>然后添加漫反射，高光，边缘光，调成参数达到一个比较好的效果。</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217211954161.png" alt="image-20201217211954161"></p>
 <p>因为模型不同的厚薄程度会影响次表面散射的效果，所以我把模型导入substancePainter中烘焙出thickess贴图来代表模型的厚度。左边为没有厚度图效果，右边厚度图效果。</p>
-<p>​                                                                    <img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217211721182.png" alt="image-20201217211721182">)<img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217211818301.png" alt="image-20201217211818301"></p>
+<p>​                                                                    <img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217211721182.png" alt="image-20201217211721182"><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217211818301.png" alt="image-20201217211818301"></p>
 <p>最后，我添加了Bloom和AO的后处理效果。</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217211752569.png" alt="image-20201217211752569"></p>
 <h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><pre><code>Shader &quot;Unlit/SSS_Shader&quot;
@@ -230,7 +229,8 @@
         }
     }
     Fallback &quot;Specular&quot;
-}</code></pre> 
+}
+</code></pre> 
       <!-- reward -->
       
     </div>

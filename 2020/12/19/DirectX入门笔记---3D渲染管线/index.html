@@ -71,7 +71,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">3k</span>
+            <span class="post-count">2.9k</span>
         </span>
     </span>
 
@@ -95,19 +95,18 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;">
-
+  <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
 <a id="more"></a>
-
 <h2 id="3D渲染管线"><a href="#3D渲染管线" class="headerlink" title="3D渲染管线"></a>3D渲染管线</h2><p>渲染管线指：如何将3D场景根据摄像机视角生成2D画面</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/2372757-ea7219caf0e318fe.png?imageMogr2/auto-orient/strip%7CimageView2/2/format/webp" alt="img"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201219220842650.png" alt="image-20201219220842650"></p>
 <h3 id="输入装配阶段"><a href="#输入装配阶段" class="headerlink" title="输入装配阶段"></a>输入装配阶段</h3><p>从内存中读取几何数据（顶点和索引）并将这些数据组合为几何图元（三角形，直线等）</p>
 <h4 id="顶点"><a href="#顶点" class="headerlink" title="顶点"></a>顶点</h4><p>DirectX中的顶点由空间位置和各种附加属性组合而成，我们可以根据自己的需求建立属于我们的顶点格式。</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201218215356463.png" alt="image-20201218215356463"></p>
 <h4 id="图元拓扑"><a href="#图元拓扑" class="headerlink" title="图元拓扑"></a>图元拓扑</h4><p>顶点是以<strong>顶点缓冲区</strong>的数据结构绑定到图形管线中的，也就是说<strong>顶点缓冲区</strong>只是存储了一个顶点列表，并没有说以什么方式来组织顶点，顶点中连成直线还是三角形？这时候就需要<strong>图元拓扑</strong>来告知Directx顶点以什么方式组成几何图元。</p>
 <pre><code>void ID3D11Device::IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY Topology);
 //比如说设置为直线列表Line list
-DirectxDevice-&gt;IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_LINELIST);</code></pre><p>点列表，每个顶点都被绘制成独立的顶点</p>
+DirectxDevice-&gt;IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+</code></pre><p>点列表，每个顶点都被绘制成独立的顶点</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201218215846709.png" alt="image-20201218215846709"></p>
 <p>线带，相邻的顶点会连成一条直线</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201218215931439.png" alt="image-20201218215931439"></p>
@@ -130,7 +129,8 @@ v0, v4, v5, // Triangle3
 v0, v5, v6, // Triangle4 
 v0, v6, v7, // Triangle5 
 v0, v7, v8, // Triangle6 
-v0, v8, v1 // Triangle 7 };</code></pre><p>不希望对顶点进行复制的原因：</p>
+v0, v8, v1 // Triangle 7 };
+</code></pre><p>不希望对顶点进行复制的原因：</p>
 <ol>
 <li>增加内存需求量。（为什么要多次存储相同的顶点数据？）</li>
 <li>增加图形硬件的处理负担。（为什么要多次处理相同的顶点数据？）</li>
@@ -140,7 +140,8 @@ v0, v8, v1 // Triangle 7 };</code></pre><p>不希望对顶点进行复制的原�
 <pre><code>Vertex v[4] = {v0, v1, v2, v3};
 UINT indexList[6] = {
 0, 1, 2, // Triangle0 
-0, 2, 3}; // Triangle 1</code></pre><p>我们将“复制问题”转嫁给了索引列表，但是这种复制是可以让人接受的。因为： </p>
+0, 2, 3}; // Triangle 1
+</code></pre><p>我们将“复制问题”转嫁给了索引列表，但是这种复制是可以让人接受的。因为： </p>
 <ol>
 <li><p>索引是简单的整数，不像顶点结构体那样占用很多内存（顶点结构体包含的分量越多，占用的内存就越多）。 </p>
 </li>
@@ -166,7 +167,8 @@ UINT indexList[6] = {
 <pre><code>XMVECTOR pos = XMVectorSet(5,3,-10,1.0f); 
 XMVECTOR target = XMVectorZero(); 
 XMVECTOR up = XMVectorSet(0.0f,1.0f,0.0f,0.0f); 
-XMMATRIXV = XMMatrixLookAtLH(pos,target,up);</code></pre><p>2.平移整个观察空间，让摄像机原点与世界坐标原点，坐标轴与世界空间坐标轴重合。</p>
+XMMATRIXV = XMMatrixLookAtLH(pos,target,up);
+</code></pre><p>2.平移整个观察空间，让摄像机原点与世界坐标原点，坐标轴与世界空间坐标轴重合。</p>
 <h4 id="裁剪空间"><a href="#裁剪空间" class="headerlink" title="裁剪空间"></a>裁剪空间</h4><p>描述摄像机所能看到的空间范围，通过一个平截头体来描述</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201219133825336.png" alt="image-20201219133825336"></p>
 <h5 id="定义平截头体"><a href="#定义平截头体" class="headerlink" title="定义平截头体"></a>定义平截头体</h5><p>近平面n，远平面f，垂直FOV a，横纵比r。</p>
@@ -183,8 +185,69 @@ XMMATRIXV = XMMatrixLookAtLH(pos,target,up);</code></pre><p>2.平移整个观察
 <h5 id="推导过程"><a href="#推导过程" class="headerlink" title="推导过程"></a>推导过程</h5><p>参考文章：<a href="https://www.cnblogs.com/bluebean/p/5276111.html" target="_blank" rel="noopener">https://www.cnblogs.com/bluebean/p/5276111.html</a></p>
 <p>只不过这篇文章是Opengl，Z轴在[-1，1]内，所以我重新推导Directx，有错请多多包涵</p>
 <p>已知：近平面d，远平面f，垂直FOV a，横纵比r，宽度w，高度h</p>
-<p>根据侧面三角形可得<br>$$<br>tan(\frac{a}{2}) = \frac{\frac{H}{2}}{d}\<br>d=\frac{h}{2<em>tan(\frac{a}{2})}<br>$$<br>根据相似三角形可得<br>$$<br>\frac{x_1}{x} = \frac{d}{z}=&gt;x_1=\frac{xd}{z}=\frac{xh}{2</em>z<em>tan(\frac{a}{2})} \<br>\frac{y_1}{y} = \frac{d}{z}=&gt;y_1=\frac{yd}{z}=\frac{yh}{2</em>z<em>tan(\frac{a}{2})}<br>$$<br>这是$x_1,y_1$的范围在$[-\frac{w}{2},\frac{w}{2}]$和$[-\frac{h}{2},\frac{h}{2}]$之间，我们要把范围缩放到[-1,1]内，所以要除以$\frac{w}{2},\frac{h}{2}$即可<br>$$<br>其中横纵比r=\frac{w}{h} \<br>x_2=\frac{x_1}{\frac{w}{2}}=\frac{xh}{z</em>w<em>tan(\frac{a}{2})}=\frac{x}{z</em>r<em>tan(\frac{a}{2})} \<br>y_2=\frac{y_1}{\frac{h}{2}}=\frac{y}{z</em>tan(\frac{a}{2})}<br>$$<br>假设$z_2$为[0,1]，所以我们最后的坐标为$(\frac{x}{z<em>r</em>tan(\frac{a}{2})},\frac{y}{z*tan(\frac{a}{2})},z_2)$</p>
-<p>接下来是构建矩阵<br>$$<br>\begin{bmatrix}<br>   x &amp; y &amp; z &amp; 1 \<br>  \end{bmatrix} *<br>  \begin{bmatrix}<br>  m00 &amp; m01 &amp; m02 &amp; m03 \<br>  m10 &amp; m11 &amp; m12 &amp; m13 \<br>  m20 &amp; m21 &amp; m22 &amp; m23 \<br>  m30 &amp; m31 &amp; m32 &amp; m33 \<br>  \end{bmatrix}=<br>  \begin{bmatrix}<br>   \frac{x}{z<em>r</em>tan(\frac{a}{2})} &amp; \frac{y}{z<em>tan(\frac{a}{2})} &amp; z_2 &amp; 1 \<br>  \end{bmatrix}<br>$$<br>可以看到无法求解下列方程，那是因为z当分母的原因<br>$$<br>x</em>m00+y<em>m10+z</em>m20+m30=\frac{x}{z<em>r</em>tan(\frac{a}{2})}<br>$$<br>我们只要将最右边向量每一项都乘以z即可<br>$$<br>\begin{bmatrix}<br>   x &amp; y &amp; z &amp; 1 \<br>  \end{bmatrix} *<br>  \begin{bmatrix}<br>  m00 &amp; m01 &amp; m02 &amp; m03 \<br>  m10 &amp; m11 &amp; m12 &amp; m13 \<br>  m20 &amp; m21 &amp; m22 &amp; m23 \<br>  m30 &amp; m31 &amp; m32 &amp; m33 \<br>  \end{bmatrix}=<br>  \begin{bmatrix}<br>   \frac{x}{r<em>tan(\frac{a}{2})} &amp; \frac{y}{tan(\frac{a}{2})} &amp; z</em>z_2 &amp; z \<br>  \end{bmatrix}<br>$$<br>求得矩阵为<br>$$<br>\begin{bmatrix}<br>   \frac{x}{r<em>tan(\frac{a}{2})} &amp; 0 &amp; 0 &amp; 0 \<br>   0 &amp; \frac{y}{tan(\frac{a}{2})} &amp; 0 &amp; 0 \<br>   0 &amp; 0 &amp; m22 &amp; 1 \<br>   0 &amp; 0 &amp; m32 &amp; 0 \<br>  \end{bmatrix}<br>$$<br>我们可以建立方程求解m22，m32<br>$$<br>m22</em>z+m32=z<em>z_2\<br>=&gt;m22+\frac{m32}{z}=z_2\<br>当z=d时,z_2=0,当z=f,z_2=1\<br>\begin{cases}<br>m22+\frac{m32}{d} = 0 \<br>m22+\frac{m32}{f} = 1 \<br>\end{cases}<br>解得：m22=\frac{f}{f-d}\ \ \ m32=-\frac{fd}{f-d}<br>$$<br>所以最后的矩阵为<br>$$<br>\begin{bmatrix}<br>   \frac{x}{r</em>tan(\frac{a}{2})} &amp; 0 &amp; 0 &amp; 0 \<br>   0 &amp; \frac{y}{tan(\frac{a}{2})} &amp; 0 &amp; 0 \<br>   0 &amp; 0 &amp; \frac{f}{f-d} &amp; 1 \<br>   0 &amp; 0 &amp; -\frac{fd}{f-d} &amp; 0 \<br>  \end{bmatrix}<br>$$<br>在与投影矩阵相乘之后，进行透视除法之前，几何体所处的空间为裁剪空间。透视除法(即每个分量都除以第四个分量w)之后，几何体处于NDC内。</p>
+<p>根据侧面三角形可得</p>
+<script type="math/tex; mode=display">
+tan(\frac{a}{2}) = \frac{\frac{H}{2}}{d}\\
+d=\frac{h}{2*tan(\frac{a}{2})}</script><p>根据相似三角形可得</p>
+<script type="math/tex; mode=display">
+\frac{x_1}{x} = \frac{d}{z}=>x_1=\frac{xd}{z}=\frac{xh}{2*z*tan(\frac{a}{2})} \\
+\frac{y_1}{y} = \frac{d}{z}=>y_1=\frac{yd}{z}=\frac{yh}{2*z*tan(\frac{a}{2})}</script><p>这是$x_1,y_1$的范围在$[-\frac{w}{2},\frac{w}{2}]$和$[-\frac{h}{2},\frac{h}{2}]$之间，我们要把范围缩放到[-1,1]内，所以要除以$\frac{w}{2},\frac{h}{2}$即可</p>
+<script type="math/tex; mode=display">
+其中横纵比r=\frac{w}{h} \\
+x_2=\frac{x_1}{\frac{w}{2}}=\frac{xh}{z*w*tan(\frac{a}{2})}=\frac{x}{z*r*tan(\frac{a}{2})} \\
+y_2=\frac{y_1}{\frac{h}{2}}=\frac{y}{z*tan(\frac{a}{2})}</script><p>假设$z_2$为[0,1]，所以我们最后的坐标为$(\frac{x}{z<em>r</em>tan(\frac{a}{2})},\frac{y}{z*tan(\frac{a}{2})},z_2)$</p>
+<p>接下来是构建矩阵</p>
+<script type="math/tex; mode=display">
+\begin{bmatrix}            
+   x & y & z & 1 \\            
+  \end{bmatrix} * 
+  \begin{bmatrix}
+  m00 & m01 & m02 & m03 \\
+  m10 & m11 & m12 & m13 \\
+  m20 & m21 & m22 & m23 \\
+  m30 & m31 & m32 & m33 \\
+  \end{bmatrix}=
+  \begin{bmatrix}            
+   \frac{x}{z*r*tan(\frac{a}{2})} & \frac{y}{z*tan(\frac{a}{2})} & z_2 & 1 \\            
+  \end{bmatrix}</script><p>可以看到无法求解下列方程，那是因为z当分母的原因</p>
+<script type="math/tex; mode=display">
+x*m00+y*m10+z*m20+m30=\frac{x}{z*r*tan(\frac{a}{2})}</script><p>我们只要将最右边向量每一项都乘以z即可</p>
+<script type="math/tex; mode=display">
+\begin{bmatrix}            
+   x & y & z & 1 \\            
+  \end{bmatrix} * 
+  \begin{bmatrix}
+  m00 & m01 & m02 & m03 \\
+  m10 & m11 & m12 & m13 \\
+  m20 & m21 & m22 & m23 \\
+  m30 & m31 & m32 & m33 \\
+  \end{bmatrix}=
+  \begin{bmatrix}            
+   \frac{x}{r*tan(\frac{a}{2})} & \frac{y}{tan(\frac{a}{2})} & z*z_2 & z \\            
+  \end{bmatrix}</script><p>求得矩阵为</p>
+<script type="math/tex; mode=display">
+\begin{bmatrix}            
+   \frac{x}{r*tan(\frac{a}{2})} & 0 & 0 & 0 \\    
+   0 & \frac{y}{tan(\frac{a}{2})} & 0 & 0 \\    
+   0 & 0 & m22 & 1 \\    
+   0 & 0 & m32 & 0 \\    
+  \end{bmatrix}</script><p>我们可以建立方程求解m22，m32</p>
+<script type="math/tex; mode=display">
+m22*z+m32=z*z_2\\
+=>m22+\frac{m32}{z}=z_2\\
+当z=d时,z_2=0,当z=f,z_2=1\\
+\begin{cases}
+m22+\frac{m32}{d} = 0 \\
+m22+\frac{m32}{f} = 1 \\
+\end{cases}
+解得：m22=\frac{f}{f-d}\ \ \ m32=-\frac{fd}{f-d}</script><p>所以最后的矩阵为</p>
+<script type="math/tex; mode=display">
+\begin{bmatrix}            
+   \frac{x}{r*tan(\frac{a}{2})} & 0 & 0 & 0 \\    
+   0 & \frac{y}{tan(\frac{a}{2})} & 0 & 0 \\    
+   0 & 0 & \frac{f}{f-d} & 1 \\    
+   0 & 0 & -\frac{fd}{f-d} & 0 \\    
+  \end{bmatrix}</script><p>在与投影矩阵相乘之后，进行透视除法之前，几何体所处的空间为裁剪空间。透视除法(即每个分量都除以第四个分量w)之后，几何体处于NDC内。</p>
 <h5 id="Directx函数得到投影矩阵"><a href="#Directx函数得到投影矩阵" class="headerlink" title="Directx函数得到投影矩阵"></a>Directx函数得到投影矩阵</h5><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201219213147479.png" alt="image-20201219213147479"></p>
 <h3 id="曲面细分着色器-可选"><a href="#曲面细分着色器-可选" class="headerlink" title="曲面细分着色器(可选)"></a>曲面细分着色器(可选)</h3><p>曲面细分（Tessellation）是指通过添加三角形的方式对一个网格的三角形进行细分，这些新添加的三角形可以偏移到一个新的位置，让网格的细节更加丰富。</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201219213305777.png" alt="image-20201219213305777"></p>
@@ -203,7 +266,7 @@ XMMATRIXV = XMMatrixLookAtLH(pos,target,up);</code></pre><p>2.平移整个观察
 <h3 id="光栅化阶段"><a href="#光栅化阶段" class="headerlink" title="光栅化阶段"></a>光栅化阶段</h3><p>光栅化（rasterization）阶段的主要任务是为投影后的 3D 三角形计算像素颜色。</p>
 <h4 id="背面消隐"><a href="#背面消隐" class="headerlink" title="背面消隐"></a>背面消隐</h4><p>一个三角形有两个面。我们使用如下约定来区分这两个面。根据约定好的顶点绕序删除三角形背面，减少GPU负担。</p>
 <h4 id="顶点属性插值"><a href="#顶点属性插值" class="headerlink" title="顶点属性插值"></a>顶点属性插值</h4><p>我们通过指定三角形的 3 个顶点来定义一个三角形。除位置外，顶点还可以包含其他属性，比如颜色、法线向量和纹理坐标。在视口变换之后，这些属性必须为三角形表面上的每个像素进行插值。这里需要用到<strong>透视矫正插值</strong>才能插值正确。</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/2372757-5ece301d4b518dc4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/800/format/webp" alt="img"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/2372757-5ece301d4b518dc4.png?imageMogr2/auto-orient/strip|imageView2/2/w/800/format/webp" alt="img"></p>
 <h3 id="像素着色器"><a href="#像素着色器" class="headerlink" title="像素着色器"></a>像素着色器</h3><p>像素着色器（Pixel shader）是由我们编写的在 GPU 上执行的程序。像素着色器会处理 每个像素片段（pixel fragment），它的输入是插值后的顶点属性，由此计算出一个颜色。像素着色器可以非常简单地输出一个颜色，也可以很复杂，例如实现逐像素光照、反射和阴影等效果。</p>
 <h3 id="输出合并阶段"><a href="#输出合并阶段" class="headerlink" title="输出合并阶段"></a>输出合并阶段</h3><p>经过像素着色器处理后的片元会被传输到输出合并阶段，未能通过深度测试和模板测试的片段将会被丢弃，最后通过测试的片元会与后台缓冲区进行混合。</p>
  
