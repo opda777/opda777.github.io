@@ -267,7 +267,7 @@ m22+\frac{m32}{f} = 1 \\
 <h3 id="光栅化阶段"><a href="#光栅化阶段" class="headerlink" title="光栅化阶段"></a>光栅化阶段</h3><p>光栅化（rasterization）阶段的主要任务是为投影后的 3D 三角形计算像素颜色。</p>
 <h4 id="背面消隐"><a href="#背面消隐" class="headerlink" title="背面消隐"></a>背面消隐</h4><p>一个三角形有两个面。我们使用如下约定来区分这两个面。根据约定好的顶点绕序删除三角形背面，减少GPU负担。</p>
 <h4 id="顶点属性插值"><a href="#顶点属性插值" class="headerlink" title="顶点属性插值"></a>顶点属性插值</h4><p>我们通过指定三角形的 3 个顶点来定义一个三角形。除位置外，顶点还可以包含其他属性，比如颜色、法线向量和纹理坐标。在视口变换之后，这些属性必须为三角形表面上的每个像素进行插值。这里需要用到<strong>透视矫正插值</strong>才能插值正确。</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/2372757-5ece301d4b518dc4.png?imageMogr2/auto-orient/strip|imageView2/2/w/800/format/webp" alt="img"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201219222735513.png" alt="image-20201219222735513"></p>
 <h3 id="像素着色器"><a href="#像素着色器" class="headerlink" title="像素着色器"></a>像素着色器</h3><p>像素着色器（Pixel shader）是由我们编写的在 GPU 上执行的程序。像素着色器会处理 每个像素片段（pixel fragment），它的输入是插值后的顶点属性，由此计算出一个颜色。像素着色器可以非常简单地输出一个颜色，也可以很复杂，例如实现逐像素光照、反射和阴影等效果。</p>
 <h3 id="输出合并阶段"><a href="#输出合并阶段" class="headerlink" title="输出合并阶段"></a>输出合并阶段</h3><p>经过像素着色器处理后的片元会被传输到输出合并阶段，未能通过深度测试和模板测试的片段将会被丢弃，最后通过测试的片元会与后台缓冲区进行混合。</p>
  
