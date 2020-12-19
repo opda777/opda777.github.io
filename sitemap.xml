@@ -242,7 +242,7 @@
 
   
   <url>
-    <loc>http://yoursite.com/tags/DirectX11/</loc>
+    <loc>http://yoursite.com/tags/Hexo/</loc>
     <lastmod>2020-12-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -256,7 +256,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/Hexo/</loc>
+    <loc>http://yoursite.com/tags/DirectX11/</loc>
     <lastmod>2020-12-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -314,7 +314,7 @@
 
   
   <url>
-    <loc>http://yoursite.com/categories/DirectX11/</loc>
+    <loc>http://yoursite.com/categories/Hexo/</loc>
     <lastmod>2020-12-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -328,7 +328,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/categories/Hexo/</loc>
+    <loc>http://yoursite.com/categories/DirectX11/</loc>
     <lastmod>2020-12-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
