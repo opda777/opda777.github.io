@@ -102,7 +102,7 @@
 <p>直接下载解压到某个你喜欢的位置，官方推荐以下位置</p>
 <pre><code>C:\src\vcpkg
 </code></pre><p>解压完毕之后就可以点击bootstrap-vcpkg.bat，就完成安装了，最后我们还要设置环境变量才能在cmd中快速使用</p>
-<p><img src="/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20201226191539107.png" alt="image-20201226191539107"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226191539107.png" alt="image-20201226191539107"></p>
 <p>利用命令进行第三方库的查询与安装</p>
 <pre><code>vcpkg search assimp//查询功能
 vcpkg install assimp//安装功能
@@ -111,19 +111,19 @@ vcpkg install assimp//安装功能
 </code></pre><p>注意：当你继承到VS2019之后想要卸载vcpkg，要使用命令确保卸载前清理好集成</p>
 <pre><code>vcpkg integrate remove
 </code></pre><h3 id="出现的坑"><a href="#出现的坑" class="headerlink" title="出现的坑"></a>出现的坑</h3><p>我第一次安装的出现报错</p>
-<p><img src="/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20201226191829240.png" alt="image-20201226191829240"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226191829240.png" alt="image-20201226191829240"></p>
 <p>解决方法：给你的VS安装英语语言包</p>
-<p><img src="/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20201226192041656.png" alt="image-20201226192041656"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226192041656.png" alt="image-20201226192041656"></p>
 <h2 id="NuGet—-安装DirectXTex"><a href="#NuGet—-安装DirectXTex" class="headerlink" title="NuGet—-安装DirectXTex"></a>NuGet—-安装DirectXTex</h2><p>由于我们使用的DirectX SDK已经被集成进Windows SDK，问题是Windows SDK移除了对d3dx.h头文件，所以造成纹理贴图的导入函数并不能使用，幸运的是问题不大，官方给出了替代方法</p>
-<p><img src="/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20201226195442714.png" alt="image-20201226195442714"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226195442714.png" alt="image-20201226195442714"></p>
 <p>官方把D3DX11CreateShaderResourceViewFromFile抽取到了DirectXTex库，所以我们现在的任务就是导入DirectXTex库。</p>
 <h3 id="NuGet"><a href="#NuGet" class="headerlink" title="NuGet"></a>NuGet</h3><p>NuGet 其实也是一个第三方库的管理工具，相当于Python 的pip（这个我也没搞懂Nuget和vcpkg的不同之处）</p>
-<p><img src="/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20201226200325346.png" alt="image-20201226200325346"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226200325346.png" alt="image-20201226200325346"></p>
 <p>打开之后，搜索DirectXTex安装即可</p>
-<p><img src="/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20201226200430333.png" alt="image-20201226200430333"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226200430333.png" alt="image-20201226200430333"></p>
 <h3 id="出现的坑-1"><a href="#出现的坑-1" class="headerlink" title="出现的坑"></a>出现的坑</h3><p>问题例子：<a href="https://blog.csdn.net/kunlunjunzi/article/details/77970949" target="_blank" rel="noopener">https://blog.csdn.net/kunlunjunzi/article/details/77970949</a></p>
 <p>只需要与DirectXTex的运行库设置一致即可</p>
-<p><img src="/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20201226201121962.png" alt="image-20201226201121962"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226201121962.png" alt="image-20201226201121962"></p>
  
       <!-- reward -->
       
