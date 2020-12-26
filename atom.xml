@@ -6,7 +6,7 @@
   <link href="http://yoursite.com/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-12-22T13:39:26.470Z</updated>
+  <updated>2020-12-26T12:30:03.354Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,25 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>DirectX11入门笔记---第三方库的安装</title>
+    <link href="http://yoursite.com/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/"/>
+    <id>http://yoursite.com/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/</id>
+    <published>2020-12-26T05:00:00.000Z</published>
+    <updated>2020-12-26T12:30:03.354Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png&quot; alt=&quot;image-20201217210042177&quot; style=&quot;zoom: 50%;&quot;&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="DirectX11" scheme="http://yoursite.com/categories/DirectX11/"/>
+    
+    
+    <category term="DirectX11" scheme="http://yoursite.com/tags/DirectX11/"/>
+    
+  </entry>
   
   <entry>
     <title>DirectX11入门笔记---绘制立方体</title>
@@ -380,25 +399,6 @@
     
     
     <category term="UE4" scheme="http://yoursite.com/tags/UE4/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>秋招总结</title>
-    <link href="http://yoursite.com/2020/10/12/%E7%A7%8B%E6%8B%9B%E6%80%BB%E7%BB%93/"/>
-    <id>http://yoursite.com/2020/10/12/%E7%A7%8B%E6%8B%9B%E6%80%BB%E7%BB%93/</id>
-    <published>2020-10-11T16:00:00.000Z</published>
-    <updated>2020-10-31T08:12:25.758Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h2&gt;&lt;p&gt;本科双非，有一段腾讯的暑期实习经历，岗位是TA技术美术，因为实习的时候被深圳的物价和房价给吓到了，再加上家在广州，所以基本目标都在广州的游戏公司，也投了北京上海的游戏公司，原本想拿来练练手的，可能是双非学历再加上简历内容确实不太与游戏行业相关，所以基本石沉大海哈哈哈，根本不给机会&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="杂记" scheme="http://yoursite.com/categories/%E6%9D%82%E8%AE%B0/"/>
-    
-    
-    <category term="杂记" scheme="http://yoursite.com/tags/%E6%9D%82%E8%AE%B0/"/>
     
   </entry>
   
