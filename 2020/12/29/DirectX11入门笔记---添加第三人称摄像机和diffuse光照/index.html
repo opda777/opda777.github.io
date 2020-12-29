@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    DirectX11入门笔记---第三方库的安装 |  
+    DirectX11入门笔记---添加第三人称摄像机和diffuse光照 |  
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -41,7 +41,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-DirectX11入门笔记---第三方库的安装"
+  id="post-DirectX11入门笔记---添加第三人称摄像机和diffuse光照"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -52,15 +52,15 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  DirectX11入门笔记---第三方库的安装
+  DirectX11入门笔记---添加第三人称摄像机和diffuse光照
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/" class="article-date">
-  <time datetime="2020-12-26T05:00:00.000Z" itemprop="datePublished">2020-12-26</time>
+      <a href="/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E6%B7%BB%E5%8A%A0%E7%AC%AC%E4%B8%89%E4%BA%BA%E7%A7%B0%E6%91%84%E5%83%8F%E6%9C%BA%E5%92%8Cdiffuse%E5%85%89%E7%85%A7/" class="article-date">
+  <time datetime="2020-12-29T05:00:00.000Z" itemprop="datePublished">2020-12-29</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/DirectX11/">DirectX11</a>
@@ -71,7 +71,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">377</span>
+            <span class="post-count">1.5k</span>
         </span>
     </span>
 
@@ -80,7 +80,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1 分钟</span>
+            <span class="post-count">7 分钟</span>
         </span>
     </span>
 </div>
@@ -97,34 +97,310 @@
        
   <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
 <a id="more"></a>
-<h2 id="VCPkg—-安装Assimp"><a href="#VCPkg—-安装Assimp" class="headerlink" title="VCPkg—-安装Assimp"></a>VCPkg—-安装Assimp</h2><p>VCPkg相当于Python pip，是用于安装第三方库非常方便的一个工具</p>
-<p>github :<a href="https://github.com/Microsoft/vcpkg" target="_blank" rel="noopener">https://github.com/Microsoft/vcpkg</a></p>
-<p>直接下载解压到某个你喜欢的位置，官方推荐以下位置</p>
-<pre><code>C:\src\vcpkg
-</code></pre><p>解压完毕之后就可以点击bootstrap-vcpkg.bat，就完成安装了，最后我们还要设置环境变量才能在cmd中快速使用</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226191539107.png" alt="image-20201226191539107"></p>
-<p>利用命令进行第三方库的查询与安装</p>
-<pre><code>vcpkg search assimp//查询功能
-vcpkg install assimp//安装功能
-</code></pre><p>集成到Vs2019中，这样就可以直接#include了</p>
-<pre><code>vcpkg integrate install
-</code></pre><p>注意：当你继承到VS2019之后想要卸载vcpkg，要使用命令确保卸载前清理好集成</p>
-<pre><code>vcpkg integrate remove
-</code></pre><h3 id="出现的坑"><a href="#出现的坑" class="headerlink" title="出现的坑"></a>出现的坑</h3><p>我第一次安装的出现报错</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226191829240.png" alt="image-20201226191829240"></p>
-<p>解决方法：给你的VS安装英语语言包</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226192041656.png" alt="image-20201226192041656"></p>
-<h2 id="NuGet—-安装DirectXTex"><a href="#NuGet—-安装DirectXTex" class="headerlink" title="NuGet—-安装DirectXTex"></a>NuGet—-安装DirectXTex</h2><p>由于我们使用的DirectX SDK已经被集成进Windows SDK，问题是Windows SDK移除了对d3dx.h头文件，所以造成纹理贴图的导入函数并不能使用，幸运的是问题不大，官方给出了替代方法</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226195442714.png" alt="image-20201226195442714"></p>
-<p>官方把D3DX11CreateShaderResourceViewFromFile抽取到了DirectXTex库，所以我们现在的任务就是导入DirectXTex库。</p>
-<h3 id="NuGet"><a href="#NuGet" class="headerlink" title="NuGet"></a>NuGet</h3><p>NuGet 其实也是一个第三方库的管理工具，相当于Python 的pip（这个我也没搞懂Nuget和vcpkg的不同之处）</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226200325346.png" alt="image-20201226200325346"></p>
-<p>打开之后，搜索DirectXTex安装即可</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226200430333.png" alt="image-20201226200430333"></p>
-<h3 id="出现的坑-1"><a href="#出现的坑-1" class="headerlink" title="出现的坑"></a>出现的坑</h3><p>问题例子：<a href="https://blog.csdn.net/kunlunjunzi/article/details/77970949" target="_blank" rel="noopener">https://blog.csdn.net/kunlunjunzi/article/details/77970949</a></p>
-<p>只需要与DirectXTex的运行库设置一致即可</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226201121962.png" alt="image-20201226201121962"></p>
- 
+<h2 id="第三人称摄像机"><a href="#第三人称摄像机" class="headerlink" title="第三人称摄像机"></a>第三人称摄像机</h2><p>之前我们已经把baseObject抽象出来了，但是ViewMatrix和proJMatrix还是在Opda::InitResource中创建初始化的，对我们后续的操作非常不方便，所以我们要抽象出thirdCamera类。</p>
+<pre><code>class ThirdCamera
+{
+
+public:
+    ThirdCamera();
+
+    //围绕target旋转的方法
+    void RotateAroundTarget(float RotateX,float RotateY);
+    //获取摄像机向前的方向
+    XMVECTOR GetForwardDir();
+    //缩放FOV
+    void ScrollFOV(float delta);
+
+
+    //获取观察矩阵
+    XMMATRIX GetViewMatrix();
+    //获取投影矩阵
+    XMMATRIX GetProjMatrix();
+
+public:
+
+    //近裁剪面距离
+    float distanceNear;
+    //远裁剪面距离
+    float distanceFar;
+    //FOV
+    float cameraFOV;
+    //FOV限制
+    float FOV_Min, FOV_Max;
+
+    ////摄像机位置
+    XMFLOAT3 position;
+    //旋转
+    XMFLOAT3 rotation;
+    //摄像机对准的方向
+    XMFLOAT3 target;
+    XMFLOAT3 up;
+
+
+};
+</code></pre><h3 id="主要功能的实现"><a href="#主要功能的实现" class="headerlink" title="主要功能的实现"></a>主要功能的实现</h3><p>摄像机的主要功能:</p>
+<ol>
+<li>获取ViewMatrix和ProjMatrix</li>
+<li>缩放FOV</li>
+<li>围绕Target进行旋转</li>
+</ol>
+<pre><code>ThirdCamera::ThirdCamera()
+{
+
+    //视锥体设置
+    distanceNear = 1.0f;
+    distanceFar = 1000.0f;
+
+    //默认90FOV
+    cameraFOV = 0.25f ;
+    //最大180
+    FOV_Min = (30.0f / 360.0f);
+    //最小10
+    FOV_Max = (150.0f / 360.0f);
+
+    //初始化
+    position = XMFLOAT3(0.0f, 0.0f, -5.0f);
+    rotation = XMFLOAT3(0.0f, 0.0f, 0.0f);
+    target = XMFLOAT3(0.0f, 0.0f, 0.0f);
+    up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+
+}
+
+void ThirdCamera::RotateAroundTarget(float RotateX, float RotateY)
+{
+    //首先围绕TargetY轴转动
+    rotation.x = RotateX;
+    rotation.y = -RotateY;
+
+    //获取旋转之后的向前方向,位移一段距离
+    XMVECTOR forwardDir = GetForwardDir();
+    XMVECTOR tempPos = XMVectorMultiplyAdd(XMVectorReplicate(7.0f), XMVector3Normalize(forwardDir), XMLoadFloat3(&amp;target));
+
+    //计算完毕之后需要存储为XMFLOAT3类型
+    XMStoreFloat3(&amp;position, tempPos);
+
+
+}
+
+XMVECTOR ThirdCamera::GetForwardDir()
+{
+    XMMATRIX rotMatrix = XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&amp;rotation));
+    //获取Z轴
+    return rotMatrix.r[2];
+}
+
+void ThirdCamera::ScrollFOV(float delta)
+{
+    cameraFOV -= delta;
+    //限制大小
+    if (cameraFOV &gt; FOV_Max)
+    {
+        cameraFOV = FOV_Max;
+    }
+    else if (cameraFOV &lt; FOV_Min)
+    {
+        cameraFOV = FOV_Min;
+    }
+
+}
+
+XMMATRIX ThirdCamera::GetViewMatrix()
+{
+    XMVECTOR eyePos = XMVectorSet(position.x, position.y, position.z, 0.0f);
+    XMVECTOR targetPos = XMVectorSet(target.x, target.y, target.z, 0.0f);
+    XMVECTOR upDir = XMVectorSet(up.x, up.y, up.z, 0.0f);
+    XMMATRIX viewMatrix = XMMatrixTranspose(XMMatrixLookAtLH(eyePos, targetPos, upDir));
+    return viewMatrix;
+}
+
+XMMATRIX ThirdCamera::GetProjMatrix()
+{
+    XMMATRIX proJMatrix = XMMatrixTranspose(XMMatrixPerspectiveFovLH(cameraFOV * XM_PI, 640.0f / 480.0f, distanceNear, distanceFar));
+    return proJMatrix;
+}
+</code></pre><h3 id="MessageProc中对鼠标滚轮的处理"><a href="#MessageProc中对鼠标滚轮的处理" class="headerlink" title="MessageProc中对鼠标滚轮的处理"></a>MessageProc中对鼠标滚轮的处理</h3><p>缩放FOV涉及到鼠标滚轮的信息处理，在OpdaGraphics::RealMessageProc中添加对鼠标滚轮信息的处理</p>
+<pre><code>case WM_MOUSEWHEEL:
+        //处理鼠标滚轮事件
+        MouseScrollWheel((short)HIWORD(wParam));
+        break;
+</code></pre><p>这里我们只需要接受(short)HIWORD(wParam)，其他的用不到</p>
+<pre><code> afx_msg   BOOL   OnMouseWheel(  
+ UINT   nFlags,  //是否按下了虚拟键
+ short   zDelta,  //鼠标滚轮转动的距离，返回120的倍数
+ CPoint   pt   );   //鼠标光标的位置
+</code></pre><p>这里由于我们重新设置了FOV，所以要重新更新ViewMatrix的常量缓冲区</p>
+<pre><code>void OpdaGraphics::MouseScrollWheel(short WheelDelte)
+{
+    thirdCamera-&gt;ScrollFOV((WheelDelte / 120.0f) * 0.01f);
+
+    //创建Proj变换矩阵
+    cbProj cbP;
+    cbP.ProjMatrix = thirdCamera-&gt;GetProjMatrix();
+    //更新缓冲区
+    D3D11_MAPPED_SUBRESOURCE mappedData;
+    DirectxDeviceContext-&gt;Map(constantBuffer[2].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &amp;mappedData);
+    //安全内存复制，将cbstruct复制到pData
+    memcpy_s(mappedData.pData, sizeof(cbProj), &amp;cbP, sizeof(cbProj));
+    //关闭常量缓冲区的访问权限
+    DirectxDeviceContext-&gt;Unmap(constantBuffer[2].Get(), 0);
+}
+</code></pre><p>记住对摄像机的属性进行了设置要重新更新相对应的常量缓冲区</p>
+<pre><code>thirdCamera-&gt;RotateAroundTarget(RotateX, RotateY);
+
+    //创建view变换矩阵
+    cbView cbV;
+    cbV.ViewMatrix = thirdCamera-&gt;GetViewMatrix();
+    //更新常量缓冲区
+    D3D11_MAPPED_SUBRESOURCE mappedData;
+    //用于存储map函数获取到缓冲区的内存
+    DirectxDeviceContext-&gt;Map(constantBuffer[1].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &amp;mappedData);
+    //安全内存复制，将cbstruct复制到pData
+    memcpy_s(mappedData.pData, sizeof(cbView), &amp;cbV, sizeof(cbView));
+    //关闭常量缓冲区的访问权限
+    DirectxDeviceContext-&gt;Unmap(constantBuffer[1].Get(), 0);
+</code></pre><h3 id="添加鼠标旋转功能"><a href="#添加鼠标旋转功能" class="headerlink" title="添加鼠标旋转功能"></a>添加鼠标旋转功能</h3><p>同样需要在OpdaGraphics::RealMessageProc中处理一下信息</p>
+<pre><code>    case WM_LBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+        //处理鼠标点击事件
+        MouseDown(wParam, (int)LOWORD(lParam), (int)HIWORD(lParam));
+        break;
+    case WM_LBUTTONUP:
+    case WM_MBUTTONUP:
+    case WM_RBUTTONUP:
+        //处理鼠标松开事件
+        MouseUp(wParam, (int)LOWORD(lParam), (int)HIWORD(lParam));
+        break;
+    case WM_MOUSEMOVE:
+        MouseMove(wParam, (int)LOWORD(lParam), (int)HIWORD(lParam));
+        break;
+</code></pre><p>记录鼠标左键按下的LastPos位置，在MouseMove计算鼠标位置的delta距离，这样就能得到大概旋转的值，最后更新LastPos的位置</p>
+<pre><code>void OpdaGraphics::MouseDown(WPARAM btnState, int x, int y)
+{
+    mouseLastPosX = x;
+    mouseLastPosY = y;
+    //捕捉鼠标
+    SetCapture(hwnd);
+}
+
+void OpdaGraphics::MouseUp(WPARAM btnState, int x, int y)
+{
+    ReleaseCapture();
+}
+
+void OpdaGraphics::MouseMove(WPARAM btnState, int x, int y)
+{
+    if (btnState == MK_LBUTTON)
+    {
+        float dx = 0.01f * static_cast&lt;float&gt; (x - mouseLastPosX);
+        float dy = 0.01f * static_cast&lt;float&gt; (y - mouseLastPosY);
+
+        RotateX -= dy;
+        RotateY -= dx;
+        mouseLastPosX = x;
+        mouseLastPosY = y;
+
+    }
+}
+</code></pre><p>最后在UpdateScene中调用摄像机的RotateAroundTarget即可。</p>
+<h2 id="添加diffuse光照"><a href="#添加diffuse光照" class="headerlink" title="添加diffuse光照"></a>添加diffuse光照</h2><p>我们创建最基本的平行光diffuse光照，首先要定义好材质和灯光的数据结构</p>
+<pre><code>struct Material
+{
+    XMFLOAT4 diffuse;        //漫反射颜色
+    XMFLOAT4 specular;        //高光颜色
+    XMFLOAT4 ambient;        //环境光
+};
+
+//平行光
+struct Light
+{
+    XMFLOAT4 lightColor;        //光的颜色
+    XMFLOAT3 lightDirection;    //光的方向
+    float temp;        //对齐用的
+};
+</code></pre><h3 id="HLSL内存对齐"><a href="#HLSL内存对齐" class="headerlink" title="HLSL内存对齐"></a>HLSL内存对齐</h3><p>注意到平行光的结构体有一个Temp的数据，这个涉及到HLSL的内存对齐，不对齐会报错，程序无法运行</p>
+<p>相关文章：<a href="https://blog.csdn.net/BonChoix/article/details/8445218" target="_blank" rel="noopener">https://blog.csdn.net/BonChoix/article/details/8445218</a></p>
+<h3 id="创建材质灯光的各自缓冲区"><a href="#创建材质灯光的各自缓冲区" class="headerlink" title="创建材质灯光的各自缓冲区"></a>创建材质灯光的各自缓冲区</h3><p>同样先在OpdaGraphics::InitResource()中进行初始化创建，后续再进行优化</p>
+<pre><code>    //创建材质
+    Material normalMat;
+    Light DirectionLight;
+    DirectionLight.lightColor = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+    DirectionLight.lightDirection = XMFLOAT3(1.0f, -5.0f, 1.0f);
+    DirectionLight.temp = 0;
+    normalMat.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+    normalMat.diffuse = XMFLOAT4(0.7f, 1.0f, 1.0f, 1.0f);
+    normalMat.specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+</code></pre><p>接下来的任务就是绑定到渲染管线，注意这里我是把材质灯光的常量缓冲区绑定到了像素着色器，因为我们的光照计算是在像素着色器中进行。</p>
+<pre><code>    //将常量缓冲区绑定到像素着色器
+    DirectxDeviceContext-&gt;PSSetConstantBuffers(3, 1, constantBuffer[3].GetAddressOf());
+    DirectxDeviceContext-&gt;PSSetConstantBuffers(4, 1, constantBuffer[4].GetAddressOf());
+</code></pre><h3 id="HLSL光照计算"><a href="#HLSL光照计算" class="headerlink" title="HLSL光照计算"></a>HLSL光照计算</h3><p>普通的漫反射计算，跟UnityShader入门精要差不多，由于我们现在的物体是没有动</p>
+<pre><code>//常量缓冲区
+cbuffer cbWorld : register(b0)
+{
+    matrix WorldMatrix;
+}
+
+cbuffer cbView : register(b1)
+{
+    matrix ViewMatrix;
+}
+
+cbuffer cbProj : register(b2)
+{
+    matrix ProjMatrix;
+}
+
+cbuffer material : register(b3)
+{
+    float4 diffuse; //漫反射颜色
+    float4 specular; //高光颜色
+    float4 ambient; //环境光
+}
+
+cbuffer light : register(b4)
+{
+    float4 lightColor; //光的颜色
+    float3 lightDirection; //光的方向
+    float temp;
+}
+
+struct VertexIn
+{
+    float4 pos : POSITION;
+    float3 normal : NORMAL;
+    float4 color : COLOR;
+};
+
+struct VertexOut
+{
+    float4 pos : SV_POSITION;
+    float3 worldNormal : COLOR0;
+    float4 color : COLOR1;
+};
+
+//顶点着色器
+VertexOut VS(VertexIn vIn)
+{
+    VertexOut vOut;
+    //变换到裁剪空间，MVP矩阵
+    vOut.pos = mul(mul(mul(vIn.pos, WorldMatrix), ViewMatrix),ProjMatrix);
+    vOut.worldNormal = normalize(mul(vIn.normal, (float3x3) WorldMatrix));
+    vOut.color = vIn.color;
+    return vOut;
+}
+
+//像素着色器
+float4 PS(VertexOut pIn):SV_Target
+{
+    //计算漫反射
+    float3 lightDir = -normalize(lightDirection);
+    float3 diffuseColor = lightColor.rgb * diffuse.rgb * (dot(pIn.worldNormal,lightDir)*0.5+0.5);
+
+    float3 finalColor = saturate(diffuseColor + ambient.rgb);
+    return float4(finalColor, 1.0f);
+}
+</code></pre> 
       <!-- reward -->
       
     </div>
@@ -188,7 +464,7 @@ vcpkg install assimp//安装功能
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E6%B7%BB%E5%8A%A0%E7%AC%AC%E4%B8%89%E4%BA%BA%E7%A7%B0%E6%91%84%E5%83%8F%E6%9C%BA%E5%92%8Cdiffuse%E5%85%89%E7%85%A7/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -201,19 +477,19 @@ vcpkg install assimp//安装功能
    
   <nav class="article-nav">
     
-      <a href="/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E6%B7%BB%E5%8A%A0%E7%AC%AC%E4%B8%89%E4%BA%BA%E7%A7%B0%E6%91%84%E5%83%8F%E6%9C%BA%E5%92%8Cdiffuse%E5%85%89%E7%85%A7/" class="article-nav-link">
+      <a href="/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E5%88%9B%E5%BB%BA%E5%9F%BA%E6%9C%AC%E5%87%A0%E4%BD%95%E4%BD%93/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            DirectX11入门笔记---添加第三人称摄像机和diffuse光照
+            DirectX11入门笔记---创建几何体以及添加BaseObject类
           
         </div>
       </a>
     
     
-      <a href="/2020/12/22/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%BB%98%E5%88%B6%E7%AB%8B%E6%96%B9%E4%BD%93/" class="article-nav-link">
+      <a href="/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">DirectX11入门笔记---绘制立方体</div>
+        <div class="article-nav-title">DirectX11入门笔记---第三方库的安装</div>
       </a>
     
   </nav>
@@ -577,11 +853,6 @@ vcpkg install assimp//安装功能
 <!-- Katex -->
 
 
-    
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"></script>
-        
     
 
 

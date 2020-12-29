@@ -6,7 +6,7 @@
   <link href="http://yoursite.com/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-12-26T12:46:48.488Z</updated>
+  <updated>2020-12-29T13:55:27.555Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,44 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>DirectX11入门笔记---创建几何体以及添加BaseObject类</title>
+    <link href="http://yoursite.com/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E5%88%9B%E5%BB%BA%E5%9F%BA%E6%9C%AC%E5%87%A0%E4%BD%95%E4%BD%93/"/>
+    <id>http://yoursite.com/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E5%88%9B%E5%BB%BA%E5%9F%BA%E6%9C%AC%E5%87%A0%E4%BD%95%E4%BD%93/</id>
+    <published>2020-12-29T05:00:00.000Z</published>
+    <updated>2020-12-29T13:55:27.555Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png&quot; alt=&quot;image-20201217210042177&quot; style=&quot;zoom: 50%;&quot;&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="DirectX11" scheme="http://yoursite.com/categories/DirectX11/"/>
+    
+    
+    <category term="DirectX11" scheme="http://yoursite.com/tags/DirectX11/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>DirectX11入门笔记---添加第三人称摄像机和diffuse光照</title>
+    <link href="http://yoursite.com/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E6%B7%BB%E5%8A%A0%E7%AC%AC%E4%B8%89%E4%BA%BA%E7%A7%B0%E6%91%84%E5%83%8F%E6%9C%BA%E5%92%8Cdiffuse%E5%85%89%E7%85%A7/"/>
+    <id>http://yoursite.com/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E6%B7%BB%E5%8A%A0%E7%AC%AC%E4%B8%89%E4%BA%BA%E7%A7%B0%E6%91%84%E5%83%8F%E6%9C%BA%E5%92%8Cdiffuse%E5%85%89%E7%85%A7/</id>
+    <published>2020-12-29T05:00:00.000Z</published>
+    <updated>2020-12-29T13:15:24.375Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png&quot; alt=&quot;image-20201217210042177&quot; style=&quot;zoom: 50%;&quot;&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="DirectX11" scheme="http://yoursite.com/categories/DirectX11/"/>
+    
+    
+    <category term="DirectX11" scheme="http://yoursite.com/tags/DirectX11/"/>
+    
+  </entry>
   
   <entry>
     <title>DirectX11入门笔记---第三方库的安装</title>
@@ -358,47 +396,6 @@
     
     
     <category term="Houdini" scheme="http://yoursite.com/tags/Houdini/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>龙卷风Niagara效果</title>
-    <link href="http://yoursite.com/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/"/>
-    <id>http://yoursite.com/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/</id>
-    <published>2020-11-01T16:00:00.000Z</published>
-    <updated>2020-11-01T18:50:28.596Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;继续Niagara的学习，教程地址：&lt;a href=&quot;https://www.youtube.com/watch?v=P9Bk1Ibd0YY&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://www.youtube.com/watch?v=P9Bk1Ibd0YY&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&quot;效果展示&quot;&gt;&lt;a href=&quot;#效果展示&quot; class=&quot;headerlink&quot; title=&quot;效果展示&quot;&gt;&lt;/a&gt;效果展示&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/%E5%86%B0%E7%81%AB%E9%A3%8E%E6%9A%B4.gif&quot; alt=&quot;冰火风暴&quot;&gt;&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="UE4" scheme="http://yoursite.com/categories/UE4/"/>
-    
-    
-    <category term="UE4" scheme="http://yoursite.com/tags/UE4/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Poof效果Niagara实现</title>
-    <link href="http://yoursite.com/2020/10/31/Poof%E6%95%88%E6%9E%9CNiagara%E5%AE%9E%E7%8E%B0/"/>
-    <id>http://yoursite.com/2020/10/31/Poof%E6%95%88%E6%9E%9CNiagara%E5%AE%9E%E7%8E%B0/</id>
-    <published>2020-10-30T16:00:00.000Z</published>
-    <updated>2020-10-31T08:24:18.152Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;效果展示&quot;&gt;&lt;a href=&quot;#效果展示&quot; class=&quot;headerlink&quot; title=&quot;效果展示&quot;&gt;&lt;/a&gt;效果展示&lt;/h2&gt;&lt;p&gt;教程：&lt;a href=&quot;https://www.youtube.com/watch?v=aiw1slB4Mdo&amp;amp;t=1677s&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://www.youtube.com/watch?v=aiw1slB4Mdo&amp;amp;t=1677s&lt;/a&gt;    &lt;/p&gt;
-&lt;p&gt;这位老哥的Niagara教程非常的棒，思路很清晰。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/Poof%E6%95%88%E6%9E%9C.gif&quot; alt=&quot;Poof效果&quot;&gt;&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="UE4" scheme="http://yoursite.com/categories/UE4/"/>
-    
-    
-    <category term="UE4" scheme="http://yoursite.com/tags/UE4/"/>
     
   </entry>
   
