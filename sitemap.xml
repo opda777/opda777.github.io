@@ -277,13 +277,6 @@
 
   
   <url>
-    <loc>http://yoursite.com/tags/DirectX11/</loc>
-    <lastmod>2020-12-29</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://yoursite.com/tags/%E6%9D%82%E8%AE%B0cover/</loc>
     <lastmod>2020-12-29</lastmod>
     <changefreq>daily</changefreq>
@@ -291,7 +284,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/Houdini/</loc>
+    <loc>http://yoursite.com/tags/DirectX11/</loc>
     <lastmod>2020-12-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -305,6 +298,13 @@
   </url>
   
   <url>
+    <loc>http://yoursite.com/tags/Houdini/</loc>
+    <lastmod>2020-12-29</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/tags/Maya/</loc>
     <lastmod>2020-12-29</lastmod>
     <changefreq>daily</changefreq>
@@ -312,14 +312,14 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/Substance-painter/</loc>
+    <loc>http://yoursite.com/tags/UE4/</loc>
     <lastmod>2020-12-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/UE4/</loc>
+    <loc>http://yoursite.com/tags/Substance-painter/</loc>
     <lastmod>2020-12-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -349,13 +349,6 @@
 
   
   <url>
-    <loc>http://yoursite.com/categories/DirectX11/</loc>
-    <lastmod>2020-12-29</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://yoursite.com/categories/%E6%9D%82%E8%AE%B0/</loc>
     <lastmod>2020-12-29</lastmod>
     <changefreq>daily</changefreq>
@@ -363,7 +356,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/categories/Houdini/</loc>
+    <loc>http://yoursite.com/categories/DirectX11/</loc>
     <lastmod>2020-12-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -377,6 +370,13 @@
   </url>
   
   <url>
+    <loc>http://yoursite.com/categories/Houdini/</loc>
+    <lastmod>2020-12-29</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/categories/Maya/</loc>
     <lastmod>2020-12-29</lastmod>
     <changefreq>daily</changefreq>
@@ -384,14 +384,14 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/categories/Substance-painter/</loc>
+    <loc>http://yoursite.com/categories/UE4/</loc>
     <lastmod>2020-12-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://yoursite.com/categories/UE4/</loc>
+    <loc>http://yoursite.com/categories/Substance-painter/</loc>
     <lastmod>2020-12-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
