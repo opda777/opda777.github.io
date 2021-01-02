@@ -284,14 +284,14 @@
 
   
   <url>
-    <loc>http://yoursite.com/tags/DirectX11/</loc>
+    <loc>http://yoursite.com/tags/%E6%9D%82%E8%AE%B0cover/</loc>
     <lastmod>2021-01-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/%E6%9D%82%E8%AE%B0cover/</loc>
+    <loc>http://yoursite.com/tags/DirectX11/</loc>
     <lastmod>2021-01-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -312,14 +312,14 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/Substance-painter/</loc>
+    <loc>http://yoursite.com/tags/Maya/</loc>
     <lastmod>2021-01-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/Maya/</loc>
+    <loc>http://yoursite.com/tags/Substance-painter/</loc>
     <lastmod>2021-01-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -356,14 +356,14 @@
 
   
   <url>
-    <loc>http://yoursite.com/categories/DirectX11/</loc>
+    <loc>http://yoursite.com/categories/%E6%9D%82%E8%AE%B0/</loc>
     <lastmod>2021-01-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://yoursite.com/categories/%E6%9D%82%E8%AE%B0/</loc>
+    <loc>http://yoursite.com/categories/DirectX11/</loc>
     <lastmod>2021-01-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -384,14 +384,14 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/categories/Substance-painter/</loc>
+    <loc>http://yoursite.com/categories/Maya/</loc>
     <lastmod>2021-01-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>http://yoursite.com/categories/Maya/</loc>
+    <loc>http://yoursite.com/categories/Substance-painter/</loc>
     <lastmod>2021-01-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
