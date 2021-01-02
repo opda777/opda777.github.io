@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    UE4---RayMarching笔记 |  
+    UE4---RayMarch史莱姆 |  
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -41,7 +41,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-UE4---RayMarching笔记"
+  id="post-UE4---史莱姆制作笔记"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -52,15 +52,15 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  UE4---RayMarching笔记
+  UE4---RayMarch史莱姆
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2021/01/02/UE4---RayMarching%E7%AC%94%E8%AE%B0/" class="article-date">
-  <time datetime="2021-01-02T05:00:00.000Z" itemprop="datePublished">2021-01-02</time>
+      <a href="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/" class="article-date">
+  <time datetime="2021-01-02T18:30:00.000Z" itemprop="datePublished">2021-01-03</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/UE4/">UE4</a>
@@ -71,7 +71,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">1.6k</span>
+            <span class="post-count">1.4k</span>
         </span>
     </span>
 
@@ -80,7 +80,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">7 分钟</span>
+            <span class="post-count">5 分钟</span>
         </span>
     </span>
 </div>
@@ -95,258 +95,210 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102144520239.png" alt="image-20210102144520239"></p>
+  <p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103023008823.png" alt="image-20210103023008823"></p>
 <a id="more"></a>
-<h2 id="UE4Shader环境设置"><a href="#UE4Shader环境设置" class="headerlink" title="UE4Shader环境设置"></a>UE4Shader环境设置</h2><p>usf和ush是UE4的shader文件格式，相当于C++的.cpp和.h。那么这些文件该存在哪里我们才能在customNode节点里面引入使用呢？我这里先随便先弄#include一个usf</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20201230175543818.png" alt="image-20201230175543818"></p>
-<p>可以看到由于我们存放到指定Map的位置，这些Shader文件是无法被正确#include的，所以接下来我们的操作就是要新建一个插件用于存储Shader，并且在插件导入的时候让UE4正确识别Shader文件的路径</p>
-<h3 id="新建插件"><a href="#新建插件" class="headerlink" title="新建插件"></a>新建插件</h3><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20201230175958026.png" alt="image-20201230175958026"></p>
-<p>cpp文件修改如下</p>
-<pre><code>
-#include &quot;OpdaShaderPlugin.h&quot;
-#include &lt;Interfaces\IPluginManager.h&gt;
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>1.利用RayMarch先绘制个球</p>
+<p>2.处理材质与其他模型交界过硬问题</p>
+<p>3.构建法线</p>
+<p>4.平滑合并</p>
+<h3 id="绘制球"><a href="#绘制球" class="headerlink" title="绘制球"></a>绘制球</h3><p>同样是首先传入CameraDir和WorldPos，MAX_Step，构建距离场，渲染距离场，屏幕射线与物体进行求交</p>
+<pre><code>float4 finalCol = 0.0f;
+float3 pos = WorldPos;
 
-#define LOCTEXT_NAMESPACE &quot;FOpdaShaderPluginModule&quot;
-
-void FOpdaShaderPluginModule::StartupModule()
+for (int i = 0; i&lt;MAX_Step; i++)
 {
-    //获取插件下的Shader文件夹
-    FString ShaderDirectory = FPaths::Combine(IPluginManager::Get().FindPlugin(&quot;OpdaShaderPlugin&quot;)-&gt;GetBaseDir()
-        , TEXT(&quot;Shaders&quot;));
-    UE_LOG(LogLoad, Warning, TEXT(&quot;%s&quot;),*ShaderDirectory);
-    //将这个文件夹添加到Shader的虚拟路径上
-    AddShaderSourceDirectoryMapping(&quot;/Opda&quot;, ShaderDirectory);
-    // This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
+    //球体距离场
+    float distance = length(pos) - 50.0f;
+
+    //判断距离是否足够接近
+    if (distance&lt;0.01f)
+    {
+        finalCol = 1.0f;
+        break;
+    }
+
+    //累加距离
+    pos += CameraDir * distance;
 }
 
-void FOpdaShaderPluginModule::ShutdownModule()
-{
-    ResetAllShaderSourceDirectoryMappings();
-    // This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
-    // we call this function before unloading the module.
-
-}
-
-#undef LOCTEXT_NAMESPACE
-
-IMPLEMENT_MODULE(FOpdaShaderPluginModule, OpdaShaderPlugin)
-</code></pre><p>在插件的Build.cs添加依赖模块</p>
-<pre><code>// Copyright Epic Games, Inc. All Rights Reserved.
-
-using UnrealBuildTool;
-
-public class OpdaShaderPlugin : ModuleRules
-{
-    public OpdaShaderPlugin(ReadOnlyTargetRules Target) : base(Target)
+return finalCol;
+</code></pre><p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102155523945.png" alt="image-20210102155523945"></p>
+<p>现在还有一个问题就是，我们RayMarch绘制得到的球体不会跟随物体的移动而移动</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\Desktop\测试图片\GIF 2021-1-2 15-57-15.gif" alt="GIF 2021-1-2 15-57-15"></p>
+<p>解决方法：我们添加一个ObjectPostion的偏移即可，ObjectPostion其实就是场景物体的中心轴位置</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102155925606.png" alt="image-20210102155925606"></p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102155939867.png" alt="image-20210102155939867"></p>
+<p>只要把ObjectPostion节点传入usf进行处理即可</p>
+<pre><code>float distance = length(pos - ObjectPos) - 50.0f;
+</code></pre><p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102160234169.png" alt="image-20210102160234169"></p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\Desktop\测试图片\GIF 2021-1-2 16-01-22.gif" alt="GIF 2021-1-2 16-01-22"></p>
+<h3 id="处理材质与其他模型交界过硬问题"><a href="#处理材质与其他模型交界过硬问题" class="headerlink" title="处理材质与其他模型交界过硬问题"></a>处理材质与其他模型交界过硬问题</h3><p>可以看到交界非常的硬，我们解决这个问题一般使用SceneDepth解决</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102162741467.png" alt="image-20210102162741467"></p>
+<p>在for循环中添加以下代码</p>
+<pre><code>    //处理与其他模型交界过硬问题
+    if (SceneDepth &lt; length(pos - CameraPos))
     {
-        PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-
-        PublicIncludePaths.AddRange(
-            new string[] {
-                // ... add public include paths required here ...
-            }
-            );
-
-
-        PrivateIncludePaths.AddRange(
-            new string[] {
-                // ... add other private include paths required here ...
-            }
-            );
-
-
-        PublicDependencyModuleNames.AddRange(
-            new string[]
-            {
-                &quot;Core&quot;,
-                &quot;RenderCore&quot;,
-                &quot;RHI&quot;,
-                // ... add other public dependencies that you statically link with here ...
-            }
-            );
-
-
-        PrivateDependencyModuleNames.AddRange(
-            new string[]
-            {
-                &quot;CoreUObject&quot;,
-                &quot;Engine&quot;,
-                &quot;Slate&quot;,
-                &quot;SlateCore&quot;,
-                &quot;Projects&quot;,
-                // ... add private dependencies that you statically link with here ...    
-            }
-            );
-
-
-        DynamicallyLoadedModuleNames.AddRange(
-            new string[]
-            {
-                // ... add any modules that your module loads dynamically here ...
-            }
-            );
+        break;
     }
-}
-</code></pre><p>记得要在插件文件夹下新建Shaders文件夹，否则编译会报错</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20201230193701738.png" alt="image-20201230193701738"></p>
-<p>创建一个最简单的usf文件</p>
-<pre><code>return Col;
-</code></pre><p>非常完美</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20201230201139323.png" alt="image-20201230201139323"></p>
-<h2 id="RayMarch"><a href="#RayMarch" class="headerlink" title="RayMarch"></a>RayMarch</h2><p>RayMarch主要分为3个步骤，<strong>构建距离场</strong>，<strong>渲染距离场</strong>，<strong>SDF渲染</strong>。RayMarch主要通过摄像机发出屏幕射线根据与物体的距离进行渲染，适合制作云等需要大量顶点构建的物体。</p>
-<h3 id="构建距离场"><a href="#构建距离场" class="headerlink" title="构建距离场"></a>构建距离场</h3><p>构建一个简单的球体距离场，return回一个正值则表面pos在球体外面，返回一个负值则证明在球体的里面</p>
-<pre><code>    //构建球体距离场
-    float sphere(float3 pos, float3 sphereCenter, float sphereRadius)
-    {
-        return distance(pos, sphereCenter) - sphereRadius;
-    }
-</code></pre><p>其次场景中可能有多个不同物体的距离场，所以我们需要SceneSDF来统一管理距离场</p>
-<pre><code>    //将多个距离场合并，操作
-    float sceneSDF(float3 pos)
-    {
-        float sphere_1 = sphere(pos, float3(0.0f, 0.0f, 0.0f), 100.0f);
-        float sphere_2 = sphere(pos, float3(100.0f, 0.0f, 0.0f), 50.0f);
-        return min(sphere_1,sphere_2);
-
-    }
-</code></pre><h3 id="距离场渲染"><a href="#距离场渲染" class="headerlink" title="距离场渲染"></a>距离场渲染</h3><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102141752621.png" alt="image-20210102141752621"></p>
-<p>首先我们需要摄像机位置，射线方向，最大步长数，最大距离，通过屏幕射线与物体求交得到场景的距离场</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/v2-5b11047910c82cbd4ea73eeb08500c5c_b.webp" alt="img"></p>
-<pre><code>//屏幕射线与物体表面求交
-    float2 RayMarch(float3 cameraPos, float3 direction, float MAX_Step, float MAX_Distance)
-    {
-        float d0 = 0.0f; //SDF值
-        int hit = 0; //用于判断是否撞击成功
-
-        for (int i = 0; i &lt; MAX_Step; i++)
-        {
-            float3 pos = cameraPos + direction * d0; //更新当前发出射线之后的位置
-            float distance = sceneSDF(pos); //检测当前pos与场景的距离值
-
-            d0 += distance; //累计SDF
-
-        //当距离值足够小的时候，就可以认为射线撞击到了物体
-            if (distance &lt; 0.1f)
-            {
-                hit = 1;
-                break;
-            }
-        //当距离值足够大但依然没有物体存在，那就可以打断循环
-            else if (distance &gt; MAX_Distance)
-            {
-                hit = 0;
-                break;
-            }
-
-        }
-
-    //返回SDF
-        return float2(d0,hit);
-    }
-</code></pre><p>返回的d0就代表着摄像机各个像素到物体的距离，我们可以利用d0来进行很多操作了。</p>
-<h3 id="SDF渲染"><a href="#SDF渲染" class="headerlink" title="SDF渲染"></a>SDF渲染</h3><p>物体的位置我们可以通过一下方法求得，通过摄像机pos + 屏幕射线*d0则可以得到物体的pos</p>
-<pre><code>float2 d = FS.RayMarch(CameraPos,Direction,MAX_Step,MAX_Distance);
-float3 pos = CameraPos + Direction * d.x;
-</code></pre><p>接下来我们可以通过计算相邻xyz点的SDF差值来的到近似的法线方向</p>
-<pre><code>    //计算法线
-    float3 GetNormal(float3 pos)
-    {
-        //通过计算xyz三个方向的差值，归一化得到近似的法线方向
-        float D_value = 0.001f;
-        return normalize(float3(
-        sceneSDF(float3(pos.x + D_value, pos.y, pos.z)) - sceneSDF(float3(pos.x - D_value, pos.y, pos.z)),
-        sceneSDF(float3(pos.x, pos.y + D_value, pos.z)) - sceneSDF(float3(pos.x, pos.y - D_value, pos.z)),
-        sceneSDF(float3(pos.x, pos.y, pos.z + D_value)) - sceneSDF(float3(pos.x, pos.y, pos.z - D_value))
-        ));
-
-    }
-</code></pre><p>得到法线之后，我们就可以进行漫反射+高光，但是我们可以将法线方向交给UE4材质，就可以享受UE4的光照效果了</p>
-<h3 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h3><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102143521881.png" alt="image-20210102143521881"></p>
-<h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><p>首先新建一个ush和usf文件，ush用于存放方法，<strong>注意如果需要定义多个方法，我们需要将方法都放进一个struct里面才能使用，否则会报错</strong></p>
-<pre><code>#pragma once    
-struct FunctionStruct
+</code></pre><p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102162817759.png" alt="image-20210102162817759"></p>
+<p>物体在屏幕中间时显示正常，当物体移动到屏幕边缘时，球体会出现严重的变形</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\Desktop\测试图片\GIF 2021-1-2 20-14-37.gif" alt="GIF 2021-1-2 20-14-37"></p>
+<p>出现问题的原因：当我们摄像机往左移动时候，场景深度并没有改变都是一样的，但是我们的length(pos - CameraPos)由于我们摄像机的移动是变大了，所以造成畸变变小。</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102201739300.png" alt="image-20210102201739300"></p>
+<p>相对于摄像机平面同一条直线上的场景深度是一样，这可以我们可以看渲染管线的变换可以知道，当然我这里选择用材质来证明，可以看到同一直线上的颜色一致的。</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102202259011.png" alt="image-20210102202259011"></p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102202322138.png" alt="image-20210102202322138"></p>
+<p>解决方法：用一个trick对SceneDepth进行弥补，其实就是用CameraVector和CameraDirectionVector进行弥补</p>
+<p>CameraVector像素指向Camera的方向</p>
+<p><img src="https://i2.wp.com/kedamaworks.com/wp-content/uploads/2015/06/CameraVectorImage.png?fit=1117%2C724" alt="img"></p>
+<p>CameraDirectionVector摄像机面对的方向</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102204629558.png" alt="image-20210102204629558"></p>
+<p>通过点积即可完成对边缘SceneDepth的弥补操作</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102204843678.png" alt="image-20210102204843678"></p>
+<p>最后结果，可以看出畸变情况好了很多</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\Desktop\测试图片\GIF 2021-1-2 20-49-16.gif" alt="GIF 2021-1-2 20-49-16"></p>
+<h3 id="构建法线"><a href="#构建法线" class="headerlink" title="构建法线"></a>构建法线</h3><p>思路和上一篇文章一样，代码如下，<strong>注意定义多个函数需要把函数放入结构体内</strong>    </p>
+<pre><code>struct FunctionStruct
 {
     //构建球体距离场
-    float sphere(float3 pos, float3 sphereCenter, float sphereRadius)
+    float sphere(float3 pos)
     {
-        return distance(pos, sphereCenter) - sphereRadius;
-    }
-
-
-    //将多个距离场合并，操作
-    float sceneSDF(float3 pos)
-    {
-        float sphere_1 = sphere(pos, float3(0.0f, 0.0f, 0.0f), 100.0f);
-        float sphere_2 = sphere(pos, float3(100.0f, 0.0f, 0.0f), 50.0f);
-        return min(sphere_1,sphere_2);
+        return length(pos) - 50.0f;
 
     }
 
-//屏幕射线与物体表面求交
-    float2 RayMarch(float3 cameraPos, float3 direction, float MAX_Step, float MAX_Distance)
+    //计算法线方向
+    float3 CalNormal(float3 pos)
     {
-        float d0 = 0.0f; //SDF值
-        int hit = 0; //用于判断是否撞击成功
-
-        for (int i = 0; i &lt; MAX_Step; i++)
-        {
-            float3 pos = cameraPos + direction * d0; //更新当前发出射线之后的位置
-            float distance = sceneSDF(pos); //检测当前pos与场景的距离值
-
-            d0 += distance; //累计SDF
-
-        //当距离值足够小的时候，就可以认为射线撞击到了物体
-            if (distance &lt; 0.1f)
-            {
-                hit = 1;
-                break;
-            }
-        //当距离值足够大但依然没有物体存在，那就可以打断循环
-            else if (distance &gt; MAX_Distance)
-            {
-                hit = 0;
-                break;
-            }
-
-        }
-
-    //返回SDF
-        return float2(d0,hit);
-    }
-
-    //计算法线
-    float3 GetNormal(float3 pos)
-    {
-        //通过计算xyz三个方向的差值，归一化得到近似的法线方向
-        float D_value = 0.001f;
+        float D_value = 0.01f;
         return normalize(float3(
-        sceneSDF(float3(pos.x + D_value, pos.y, pos.z)) - sceneSDF(float3(pos.x - D_value, pos.y, pos.z)),
-        sceneSDF(float3(pos.x, pos.y + D_value, pos.z)) - sceneSDF(float3(pos.x, pos.y - D_value, pos.z)),
-        sceneSDF(float3(pos.x, pos.y, pos.z + D_value)) - sceneSDF(float3(pos.x, pos.y, pos.z - D_value))
+        sphere(float3(pos.x + D_value, pos.y, pos.z)) - sphere(float3(pos.x - D_value, pos.y, pos.z)),
+        sphere(float3(pos.x, pos.y + D_value, pos.z)) - sphere(float3(pos.x, pos.y - D_value, pos.z)),
+        sphere(float3(pos.x, pos.y, pos.z + D_value)) - sphere(float3(pos.x, pos.y, pos.z - D_value))
         ));
-
-    }
-
-    //计算光照
-    float3 CalLight(float3 pos ,float3 normal)
-    {
-        float3 lightPos = float3(1.0f, 1.0f, 0.0f);
-        float3 diffuse = dot(normal, normalize(lightPos)) / 2 + 0.5;
-        return diffuse;
 
     }
 };
-</code></pre><pre><code>#include &quot;MyFirstShader.ush&quot;
 
 FunctionStruct FS;
+float hit = 0.0f;
+float3 pos = WorldPos;
+float3 normal = 0.0f;
 
-float2 d = FS.RayMarch(CameraPos,Direction,MAX_Step,MAX_Distance);
-float3 pos = CameraPos + Direction * d.x;
-float3 normal = FS.GetNormal(pos);
-return float4(normal,d.y);
-</code></pre><p>材质中记得要把切线空间法线取消勾选，否则会出现奇怪效果</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102143853340.png" alt="image-20210102143853340"></p>
-<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><p>知乎大佬：<a href="https://zhuanlan.zhihu.com/p/95547912" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/95547912</a></p>
+for (int i = 0; i&lt;MAX_Step; i++)
+{
+
+    //处理与其他模型交界过硬问题
+    if (SceneDepth &lt; length(pos - CameraPos))
+    {
+        break;
+    }
+
+    //球体距离场
+    float distance = FS.sphere(pos - ObjectPos);
+
+    //判断距离是否足够接近
+    if (distance&lt;0.01f)
+    {
+        hit = 1.0f;
+        normal = FS.CalNormal(pos - ObjectPos);
+        break;
+    }
+
+
+    //累加距离
+    pos += CameraDir * distance;
+}
+
+return float4(normal,hit);
+</code></pre><p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102211839166.png" alt="image-20210102211839166"></p>
+<p>获取法线之后要传入UE4材质就可以享受UE4的光照效果，需要着色模型为默认光照，光照模式为体积方向，取消勾选切线空间法线</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102212252727.png" alt="image-20210102212252727"></p>
+<h3 id="平滑合并"><a href="#平滑合并" class="headerlink" title="平滑合并"></a>平滑合并</h3><p>平滑函数</p>
+<pre><code>float smin( float a, float b, float k){
+    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0);
+    return lerp( b, a, h) - k*h*(1.0-h);
+}
+</code></pre><p>这里就有一个问题，平滑函数需要a,b两个距离场参数，但是我们只有到球体的距离场，那怎么获取b参数呢？</p>
+<p>原视频作者给出了两种方案。</p>
+<h4 id="方案1（不太明白）"><a href="#方案1（不太明白）" class="headerlink" title="方案1（不太明白）"></a>方案1（不太明白）</h4><p>利用SceneDepth - length(pos - CameraPos)得到b参数，然后进行平滑合并</p>
+<pre><code>    float a = FS.sphere(pos - ObjectPos);
+    float b = SceneDepth - length(pos - CameraPos);
+    float distance = FS.smin(a,b,Smooth);
+</code></pre><p>如果我们将合并到的distance直接累加到pos，虽然球体与其他模型边缘会平滑，但是整体的效果会是错误的，用于存放球体的模型都会被渲染出来</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103014640415.png" alt="image-20210103014640415"></p>
+<p>因为得到的distance只有接近边缘时才会正确，所以我们不以distance进行累加，而是让pos每次循环沿屏幕射线前进1(感觉非常耗性能)</p>
+<pre><code>for (int i = 0; i&lt;MAX_Step; i++)
+{
+
+    //处理与其他模型交界过硬问题
+    if (SceneDepth &lt; length(pos - CameraPos))
+    {
+        break;
+    }
+
+    //球体距离场
+    float a = FS.sphere(pos - ObjectPos);
+    float b = SceneDepth - length(pos - CameraPos);
+    float distance = FS.smin(a,b,Smooth);
+
+    //判断距离是否足够接近
+    if (distance&lt;0.01f)
+    {
+        hit = 1.0f;
+        normal = FS.CalNormal(pos - ObjectPos);
+        break;
+    }
+
+
+    //累加距离
+    pos += CameraDir * 1;
+}
+</code></pre><p>这样就得到一个非常漂亮的史莱姆了</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103015700192.png" alt="image-20210103015700192"></p>
+<p>创建材质实例更容易进行调节</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103015759196.png" alt="image-20210103015759196"></p>
+<h4 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h4><p>UE4是支持生成网格距离场的，项目设置—-distance</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103015956546.png" alt="image-20210103015956546"></p>
+<p>可以看到为正方体和存放球体的模型以及平面都生成了距离场，但是分辨率不高</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103020419152.png" alt="image-20210103020419152"></p>
+<p>这里我们没必要为存放球体模型生成距离场，取消勾选距离场光照</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103020518820.png" alt="image-20210103020518820"></p>
+<p>在世界场景设置中设置距离场精细度</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103020723548.png" alt="image-20210103020723548"></p>
+<p>通过DistanceToNeareastSurface节点获取最近平面距离</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103020906402.png" alt="image-20210103020906402"></p>
+<p>如果我们需要在自己的usf中使用该节点，可以查看HLSL代码查看函数名称，如果带有global则全局可用</p>
+<pre><code>for (int i = 0; i&lt;MAX_Step; i++)
+{
+
+    //处理与其他模型交界过硬问题
+    if (SceneDepth &lt; length(pos - CameraPos))
+    {
+        break;
+    }
+
+    //球体距离场
+    float a = FS.sphere(pos - ObjectPos);
+    //float b = SceneDepth - length(pos - CameraPos);
+    float b = GetDistanceToNearestSurfaceGlobal(pos);
+    float distance = FS.smin(a,b,Smooth);
+
+    //判断距离是否足够接近
+    if (distance&lt;Stop)
+    {
+        hit = 1.0f;
+        normal = FS.CalNormal(pos - ObjectPos);
+        break;
+    }
+
+
+    //累加距离
+    pos += CameraDir * 1;
+}
+</code></pre><p>得到漂亮的小球</p>
+<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103022635893.png" alt="image-20210103022635893"></p>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>感觉RayMarching太耗性能了，而且近看有因为精细度造成的锯齿问题，还有有很好的数学能力才会绘制出好看的场景</p>
  
       <!-- reward -->
       
@@ -411,7 +363,7 @@ return float4(normal,d.y);
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2021/01/02/UE4---RayMarching%E7%AC%94%E8%AE%B0/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -424,19 +376,10 @@ return float4(normal,d.y);
    
   <nav class="article-nav">
     
-      <a href="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            UE4---RayMarch史莱姆
-          
-        </div>
-      </a>
     
-    
-      <a href="/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E5%88%9B%E5%BB%BA%E5%9F%BA%E6%9C%AC%E5%87%A0%E4%BD%95%E4%BD%93/" class="article-nav-link">
+      <a href="/2021/01/02/UE4---RayMarching%E7%AC%94%E8%AE%B0/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">DirectX11入门笔记---创建几何体以及添加BaseObject类</div>
+        <div class="article-nav-title">UE4---RayMarching笔记</div>
       </a>
     
   </nav>
