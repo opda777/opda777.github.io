@@ -95,7 +95,7 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103023008823.png" alt="image-20210103023008823"></p>
+  <p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103023008823.png" alt="image-20210103023008823"></p>
 <a id="more"></a>
 <h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>1.利用RayMarch先绘制个球</p>
 <p>2.处理材质与其他模型交界过硬问题</p>
@@ -122,41 +122,41 @@ for (int i = 0; i&lt;MAX_Step; i++)
 }
 
 return finalCol;
-</code></pre><p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102155523945.png" alt="image-20210102155523945"></p>
+</code></pre><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102155523945.png" alt="image-20210102155523945"></p>
 <p>现在还有一个问题就是，我们RayMarch绘制得到的球体不会跟随物体的移动而移动</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\Desktop\测试图片\GIF 2021-1-2 15-57-15.gif" alt="GIF 2021-1-2 15-57-15"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-2%2015-57-15.gif" alt="GIF 2021-1-2 15-57-15"></p>
 <p>解决方法：我们添加一个ObjectPostion的偏移即可，ObjectPostion其实就是场景物体的中心轴位置</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102155925606.png" alt="image-20210102155925606"></p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102155939867.png" alt="image-20210102155939867"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102155925606.png" alt="image-20210102155925606"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102155939867.png" alt="image-20210102155939867"></p>
 <p>只要把ObjectPostion节点传入usf进行处理即可</p>
 <pre><code>float distance = length(pos - ObjectPos) - 50.0f;
-</code></pre><p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102160234169.png" alt="image-20210102160234169"></p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\Desktop\测试图片\GIF 2021-1-2 16-01-22.gif" alt="GIF 2021-1-2 16-01-22"></p>
+</code></pre><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102160234169.png" alt="image-20210102160234169"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-2%2016-01-22.gif" alt="GIF 2021-1-2 16-01-22"></p>
 <h3 id="处理材质与其他模型交界过硬问题"><a href="#处理材质与其他模型交界过硬问题" class="headerlink" title="处理材质与其他模型交界过硬问题"></a>处理材质与其他模型交界过硬问题</h3><p>可以看到交界非常的硬，我们解决这个问题一般使用SceneDepth解决</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102162741467.png" alt="image-20210102162741467"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102162741467.png" alt="image-20210102162741467"></p>
 <p>在for循环中添加以下代码</p>
 <pre><code>    //处理与其他模型交界过硬问题
     if (SceneDepth &lt; length(pos - CameraPos))
     {
         break;
     }
-</code></pre><p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102162817759.png" alt="image-20210102162817759"></p>
+</code></pre><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102162817759.png" alt="image-20210102162817759"></p>
 <p>物体在屏幕中间时显示正常，当物体移动到屏幕边缘时，球体会出现严重的变形</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\Desktop\测试图片\GIF 2021-1-2 20-14-37.gif" alt="GIF 2021-1-2 20-14-37"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-2%2020-14-37.gif" alt="GIF 2021-1-2 20-14-37"></p>
 <p>出现问题的原因：当我们摄像机往左移动时候，场景深度并没有改变都是一样的，但是我们的length(pos - CameraPos)由于我们摄像机的移动是变大了，所以造成畸变变小。</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102201739300.png" alt="image-20210102201739300"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102201739300.png" alt="image-20210102201739300"></p>
 <p>相对于摄像机平面同一条直线上的场景深度是一样，这可以我们可以看渲染管线的变换可以知道，当然我这里选择用材质来证明，可以看到同一直线上的颜色一致的。</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102202259011.png" alt="image-20210102202259011"></p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102202322138.png" alt="image-20210102202322138"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102202259011.png" alt="image-20210102202259011"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102202322138.png" alt="image-20210102202322138"></p>
 <p>解决方法：用一个trick对SceneDepth进行弥补，其实就是用CameraVector和CameraDirectionVector进行弥补</p>
 <p>CameraVector像素指向Camera的方向</p>
-<p><img src="https://i2.wp.com/kedamaworks.com/wp-content/uploads/2015/06/CameraVectorImage.png?fit=1117%2C724" alt="img"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/CameraVectorImage.png" alt="img"></p>
 <p>CameraDirectionVector摄像机面对的方向</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102204629558.png" alt="image-20210102204629558"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102204629558.png" alt="image-20210102204629558"></p>
 <p>通过点积即可完成对边缘SceneDepth的弥补操作</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102204843678.png" alt="image-20210102204843678"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102204843678.png" alt="image-20210102204843678"></p>
 <p>最后结果，可以看出畸变情况好了很多</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\Desktop\测试图片\GIF 2021-1-2 20-49-16.gif" alt="GIF 2021-1-2 20-49-16"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-2%2020-49-16.gif" alt="GIF 2021-1-2 20-49-16"></p>
 <h3 id="构建法线"><a href="#构建法线" class="headerlink" title="构建法线"></a>构建法线</h3><p>思路和上一篇文章一样，代码如下，<strong>注意定义多个函数需要把函数放入结构体内</strong>    </p>
 <pre><code>struct FunctionStruct
 {
@@ -211,9 +211,9 @@ for (int i = 0; i&lt;MAX_Step; i++)
 }
 
 return float4(normal,hit);
-</code></pre><p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102211839166.png" alt="image-20210102211839166"></p>
+</code></pre><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102211839166.png" alt="image-20210102211839166"></p>
 <p>获取法线之后要传入UE4材质就可以享受UE4的光照效果，需要着色模型为默认光照，光照模式为体积方向，取消勾选切线空间法线</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210102212252727.png" alt="image-20210102212252727"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102212252727.png" alt="image-20210102212252727"></p>
 <h3 id="平滑合并"><a href="#平滑合并" class="headerlink" title="平滑合并"></a>平滑合并</h3><p>平滑函数</p>
 <pre><code>float smin( float a, float b, float k){
     float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0);
@@ -226,7 +226,7 @@ return float4(normal,hit);
     float b = SceneDepth - length(pos - CameraPos);
     float distance = FS.smin(a,b,Smooth);
 </code></pre><p>如果我们将合并到的distance直接累加到pos，虽然球体与其他模型边缘会平滑，但是整体的效果会是错误的，用于存放球体的模型都会被渲染出来</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103014640415.png" alt="image-20210103014640415"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103014640415.png" alt="image-20210103014640415"></p>
 <p>因为得到的distance只有接近边缘时才会正确，所以我们不以distance进行累加，而是让pos每次循环沿屏幕射线前进1(感觉非常耗性能)</p>
 <pre><code>for (int i = 0; i&lt;MAX_Step; i++)
 {
@@ -255,19 +255,19 @@ return float4(normal,hit);
     pos += CameraDir * 1;
 }
 </code></pre><p>这样就得到一个非常漂亮的史莱姆了</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103015700192.png" alt="image-20210103015700192"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103015700192.png" alt="image-20210103015700192"></p>
 <p>创建材质实例更容易进行调节</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103015759196.png" alt="image-20210103015759196"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103015759196.png" alt="image-20210103015759196"></p>
 <h4 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h4><p>UE4是支持生成网格距离场的，项目设置—-distance</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103015956546.png" alt="image-20210103015956546"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103015956546.png" alt="image-20210103015956546"></p>
 <p>可以看到为正方体和存放球体的模型以及平面都生成了距离场，但是分辨率不高</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103020419152.png" alt="image-20210103020419152"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103020419152.png" alt="image-20210103020419152"></p>
 <p>这里我们没必要为存放球体模型生成距离场，取消勾选距离场光照</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103020518820.png" alt="image-20210103020518820"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103020518820.png" alt="image-20210103020518820"></p>
 <p>在世界场景设置中设置距离场精细度</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103020723548.png" alt="image-20210103020723548"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103020723548.png" alt="image-20210103020723548"></p>
 <p>通过DistanceToNeareastSurface节点获取最近平面距离</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103020906402.png" alt="image-20210103020906402"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103020906402.png" alt="image-20210103020906402"></p>
 <p>如果我们需要在自己的usf中使用该节点，可以查看HLSL代码查看函数名称，如果带有global则全局可用</p>
 <pre><code>for (int i = 0; i&lt;MAX_Step; i++)
 {
@@ -297,7 +297,7 @@ return float4(normal,hit);
     pos += CameraDir * 1;
 }
 </code></pre><p>得到漂亮的小球</p>
-<p><img src="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/Users\86135\AppData\Roaming\Typora\typora-user-images\image-20210103022635893.png" alt="image-20210103022635893"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103022635893.png" alt="image-20210103022635893"></p>
 <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>感觉RayMarching太耗性能了，而且近看有因为精细度造成的锯齿问题，还有有很好的数学能力才会绘制出好看的场景</p>
  
       <!-- reward -->
