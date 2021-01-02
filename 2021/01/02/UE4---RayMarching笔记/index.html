@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    UE4学习笔记(2)---蓝图接口-标签 |  
+    UE4---RayMarching笔记 |  
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -41,7 +41,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-UE4学习笔记(2)---蓝图接口-标签"
+  id="post-UE4---RayMarching笔记"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -52,15 +52,15 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  UE4学习笔记(2)---蓝图接口-标签
+  UE4---RayMarching笔记
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2019/11/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/" class="article-date">
-  <time datetime="2019-11-12T16:00:00.000Z" itemprop="datePublished">2019-11-13</time>
+      <a href="/2021/01/02/UE4---RayMarching%E7%AC%94%E8%AE%B0/" class="article-date">
+  <time datetime="2021-01-02T05:00:00.000Z" itemprop="datePublished">2021-01-02</time>
 </a> 
   <div class="article-category">
     <a class="article-category-link" href="/categories/UE4/">UE4</a>
@@ -71,7 +71,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">289</span>
+            <span class="post-count">1.6k</span>
         </span>
     </span>
 
@@ -80,7 +80,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1 分钟</span>
+            <span class="post-count">7 分钟</span>
         </span>
     </span>
 </div>
@@ -95,21 +95,258 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <h1 id="蓝图接口"><a href="#蓝图接口" class="headerlink" title="蓝图接口"></a>蓝图接口</h1><p> <strong>蓝图接口（Blueprint Interface）</strong> 是一个或多个函数的集合 - 只有名称，没有实现。可以添加到其他蓝图中。任何添加了该接口的蓝图都保证拥有这些函数。接口的函数 可以在添加它的每个蓝图中提供功能。在本质上，这类似于一般编程中的接口概念， 它允许多个不同类型的对象通过一个公共接口 共享和被访问。简单地说，蓝图接口允许不同的蓝图相互共享和发送数据。 </p>
+  <p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102144520239.png" alt="image-20210102144520239"></p>
 <a id="more"></a>
-<h2 id="创建蓝图接口"><a href="#创建蓝图接口" class="headerlink" title="创建蓝图接口"></a>创建蓝图接口</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/1.png" alt></p>
-<p>新建函数和函数的输入输出值</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/2.png" alt></p>
-<p>要使用蓝图接口，就必须继承该接口，并且实现。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/3.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/4.png" alt></p>
-<p>实现接口之后，其他蓝图类就可以调用此方法，实现了蓝图之间的通信。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/5.png" alt></p>
-<h2 id="标签"><a href="#标签" class="headerlink" title="标签"></a>标签</h2><p>在调用蓝图接口方法前，先使用标签来判断是敌人还是友军，其实我感觉UE4的标签和Unity的标签还是挺相似的</p>
-<h3 id="标签的设置方法"><a href="#标签的设置方法" class="headerlink" title="标签的设置方法"></a>标签的设置方法</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/6.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/7.png" alt></p>
-<h2 id="调用蓝图接口方法"><a href="#调用蓝图接口方法" class="headerlink" title="调用蓝图接口方法"></a>调用蓝图接口方法</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/UE4-Note%282%29/8.png" alt></p>
-<p>就这样完成了蓝图接口的调用</p>
+<h2 id="UE4Shader环境设置"><a href="#UE4Shader环境设置" class="headerlink" title="UE4Shader环境设置"></a>UE4Shader环境设置</h2><p>usf和ush是UE4的shader文件格式，相当于C++的.cpp和.h。那么这些文件该存在哪里我们才能在customNode节点里面引入使用呢？我这里先随便先弄#include一个usf</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20201230175543818.png" alt="image-20201230175543818"></p>
+<p>可以看到由于我们存放到指定Map的位置，这些Shader文件是无法被正确#include的，所以接下来我们的操作就是要新建一个插件用于存储Shader，并且在插件导入的时候让UE4正确识别Shader文件的路径</p>
+<h3 id="新建插件"><a href="#新建插件" class="headerlink" title="新建插件"></a>新建插件</h3><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20201230175958026.png" alt="image-20201230175958026"></p>
+<p>cpp文件修改如下</p>
+<pre><code>
+#include &quot;OpdaShaderPlugin.h&quot;
+#include &lt;Interfaces\IPluginManager.h&gt;
+
+#define LOCTEXT_NAMESPACE &quot;FOpdaShaderPluginModule&quot;
+
+void FOpdaShaderPluginModule::StartupModule()
+{
+    //获取插件下的Shader文件夹
+    FString ShaderDirectory = FPaths::Combine(IPluginManager::Get().FindPlugin(&quot;OpdaShaderPlugin&quot;)-&gt;GetBaseDir()
+        , TEXT(&quot;Shaders&quot;));
+    UE_LOG(LogLoad, Warning, TEXT(&quot;%s&quot;),*ShaderDirectory);
+    //将这个文件夹添加到Shader的虚拟路径上
+    AddShaderSourceDirectoryMapping(&quot;/Opda&quot;, ShaderDirectory);
+    // This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
+}
+
+void FOpdaShaderPluginModule::ShutdownModule()
+{
+    ResetAllShaderSourceDirectoryMappings();
+    // This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
+    // we call this function before unloading the module.
+
+}
+
+#undef LOCTEXT_NAMESPACE
+
+IMPLEMENT_MODULE(FOpdaShaderPluginModule, OpdaShaderPlugin)
+</code></pre><p>在插件的Build.cs添加依赖模块</p>
+<pre><code>// Copyright Epic Games, Inc. All Rights Reserved.
+
+using UnrealBuildTool;
+
+public class OpdaShaderPlugin : ModuleRules
+{
+    public OpdaShaderPlugin(ReadOnlyTargetRules Target) : base(Target)
+    {
+        PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+
+        PublicIncludePaths.AddRange(
+            new string[] {
+                // ... add public include paths required here ...
+            }
+            );
+
+
+        PrivateIncludePaths.AddRange(
+            new string[] {
+                // ... add other private include paths required here ...
+            }
+            );
+
+
+        PublicDependencyModuleNames.AddRange(
+            new string[]
+            {
+                &quot;Core&quot;,
+                &quot;RenderCore&quot;,
+                &quot;RHI&quot;,
+                // ... add other public dependencies that you statically link with here ...
+            }
+            );
+
+
+        PrivateDependencyModuleNames.AddRange(
+            new string[]
+            {
+                &quot;CoreUObject&quot;,
+                &quot;Engine&quot;,
+                &quot;Slate&quot;,
+                &quot;SlateCore&quot;,
+                &quot;Projects&quot;,
+                // ... add private dependencies that you statically link with here ...    
+            }
+            );
+
+
+        DynamicallyLoadedModuleNames.AddRange(
+            new string[]
+            {
+                // ... add any modules that your module loads dynamically here ...
+            }
+            );
+    }
+}
+</code></pre><p>记得要在插件文件夹下新建Shaders文件夹，否则编译会报错</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20201230193701738.png" alt="image-20201230193701738"></p>
+<p>创建一个最简单的usf文件</p>
+<pre><code>return Col;
+</code></pre><p>非常完美</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20201230201139323.png" alt="image-20201230201139323"></p>
+<h2 id="RayMarch"><a href="#RayMarch" class="headerlink" title="RayMarch"></a>RayMarch</h2><p>RayMarch主要分为3个步骤，<strong>构建距离场</strong>，<strong>渲染距离场</strong>，<strong>SDF渲染</strong>。RayMarch主要通过摄像机发出屏幕射线根据与物体的距离进行渲染，适合制作云等需要大量顶点构建的物体。</p>
+<h3 id="构建距离场"><a href="#构建距离场" class="headerlink" title="构建距离场"></a>构建距离场</h3><p>构建一个简单的球体距离场，return回一个正值则表面pos在球体外面，返回一个负值则证明在球体的里面</p>
+<pre><code>    //构建球体距离场
+    float sphere(float3 pos, float3 sphereCenter, float sphereRadius)
+    {
+        return distance(pos, sphereCenter) - sphereRadius;
+    }
+</code></pre><p>其次场景中可能有多个不同物体的距离场，所以我们需要SceneSDF来统一管理距离场</p>
+<pre><code>    //将多个距离场合并，操作
+    float sceneSDF(float3 pos)
+    {
+        float sphere_1 = sphere(pos, float3(0.0f, 0.0f, 0.0f), 100.0f);
+        float sphere_2 = sphere(pos, float3(100.0f, 0.0f, 0.0f), 50.0f);
+        return min(sphere_1,sphere_2);
+
+    }
+</code></pre><h3 id="距离场渲染"><a href="#距离场渲染" class="headerlink" title="距离场渲染"></a>距离场渲染</h3><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102141752621.png" alt="image-20210102141752621"></p>
+<p>首先我们需要摄像机位置，射线方向，最大步长数，最大距离，通过屏幕射线与物体求交得到场景的距离场</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/v2-5b11047910c82cbd4ea73eeb08500c5c_b.webp" alt="img"></p>
+<pre><code>//屏幕射线与物体表面求交
+    float2 RayMarch(float3 cameraPos, float3 direction, float MAX_Step, float MAX_Distance)
+    {
+        float d0 = 0.0f; //SDF值
+        int hit = 0; //用于判断是否撞击成功
+
+        for (int i = 0; i &lt; MAX_Step; i++)
+        {
+            float3 pos = cameraPos + direction * d0; //更新当前发出射线之后的位置
+            float distance = sceneSDF(pos); //检测当前pos与场景的距离值
+
+            d0 += distance; //累计SDF
+
+        //当距离值足够小的时候，就可以认为射线撞击到了物体
+            if (distance &lt; 0.1f)
+            {
+                hit = 1;
+                break;
+            }
+        //当距离值足够大但依然没有物体存在，那就可以打断循环
+            else if (distance &gt; MAX_Distance)
+            {
+                hit = 0;
+                break;
+            }
+
+        }
+
+    //返回SDF
+        return float2(d0,hit);
+    }
+</code></pre><p>返回的d0就代表着摄像机各个像素到物体的距离，我们可以利用d0来进行很多操作了。</p>
+<h3 id="SDF渲染"><a href="#SDF渲染" class="headerlink" title="SDF渲染"></a>SDF渲染</h3><p>物体的位置我们可以通过一下方法求得，通过摄像机pos + 屏幕射线*d0则可以得到物体的pos</p>
+<pre><code>float2 d = FS.RayMarch(CameraPos,Direction,MAX_Step,MAX_Distance);
+float3 pos = CameraPos + Direction * d.x;
+</code></pre><p>接下来我们可以通过计算相邻xyz点的SDF差值来的到近似的法线方向</p>
+<pre><code>    //计算法线
+    float3 GetNormal(float3 pos)
+    {
+        //通过计算xyz三个方向的差值，归一化得到近似的法线方向
+        float D_value = 0.001f;
+        return normalize(float3(
+        sceneSDF(float3(pos.x + D_value, pos.y, pos.z)) - sceneSDF(float3(pos.x - D_value, pos.y, pos.z)),
+        sceneSDF(float3(pos.x, pos.y + D_value, pos.z)) - sceneSDF(float3(pos.x, pos.y - D_value, pos.z)),
+        sceneSDF(float3(pos.x, pos.y, pos.z + D_value)) - sceneSDF(float3(pos.x, pos.y, pos.z - D_value))
+        ));
+
+    }
+</code></pre><p>得到法线之后，我们就可以进行漫反射+高光，但是我们可以将法线方向交给UE4材质，就可以享受UE4的光照效果了</p>
+<h3 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h3><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102143521881.png" alt="image-20210102143521881"></p>
+<h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><p>首先新建一个ush和usf文件，ush用于存放方法，<strong>注意如果需要定义多个方法，我们需要将方法都放进一个struct里面才能使用，否则会报错</strong></p>
+<pre><code>#pragma once    
+struct FunctionStruct
+{
+    //构建球体距离场
+    float sphere(float3 pos, float3 sphereCenter, float sphereRadius)
+    {
+        return distance(pos, sphereCenter) - sphereRadius;
+    }
+
+
+    //将多个距离场合并，操作
+    float sceneSDF(float3 pos)
+    {
+        float sphere_1 = sphere(pos, float3(0.0f, 0.0f, 0.0f), 100.0f);
+        float sphere_2 = sphere(pos, float3(100.0f, 0.0f, 0.0f), 50.0f);
+        return min(sphere_1,sphere_2);
+
+    }
+
+//屏幕射线与物体表面求交
+    float2 RayMarch(float3 cameraPos, float3 direction, float MAX_Step, float MAX_Distance)
+    {
+        float d0 = 0.0f; //SDF值
+        int hit = 0; //用于判断是否撞击成功
+
+        for (int i = 0; i &lt; MAX_Step; i++)
+        {
+            float3 pos = cameraPos + direction * d0; //更新当前发出射线之后的位置
+            float distance = sceneSDF(pos); //检测当前pos与场景的距离值
+
+            d0 += distance; //累计SDF
+
+        //当距离值足够小的时候，就可以认为射线撞击到了物体
+            if (distance &lt; 0.1f)
+            {
+                hit = 1;
+                break;
+            }
+        //当距离值足够大但依然没有物体存在，那就可以打断循环
+            else if (distance &gt; MAX_Distance)
+            {
+                hit = 0;
+                break;
+            }
+
+        }
+
+    //返回SDF
+        return float2(d0,hit);
+    }
+
+    //计算法线
+    float3 GetNormal(float3 pos)
+    {
+        //通过计算xyz三个方向的差值，归一化得到近似的法线方向
+        float D_value = 0.001f;
+        return normalize(float3(
+        sceneSDF(float3(pos.x + D_value, pos.y, pos.z)) - sceneSDF(float3(pos.x - D_value, pos.y, pos.z)),
+        sceneSDF(float3(pos.x, pos.y + D_value, pos.z)) - sceneSDF(float3(pos.x, pos.y - D_value, pos.z)),
+        sceneSDF(float3(pos.x, pos.y, pos.z + D_value)) - sceneSDF(float3(pos.x, pos.y, pos.z - D_value))
+        ));
+
+    }
+
+    //计算光照
+    float3 CalLight(float3 pos ,float3 normal)
+    {
+        float3 lightPos = float3(1.0f, 1.0f, 0.0f);
+        float3 diffuse = dot(normal, normalize(lightPos)) / 2 + 0.5;
+        return diffuse;
+
+    }
+};
+</code></pre><pre><code>#include &quot;MyFirstShader.ush&quot;
+
+FunctionStruct FS;
+
+float2 d = FS.RayMarch(CameraPos,Direction,MAX_Step,MAX_Distance);
+float3 pos = CameraPos + Direction * d.x;
+float3 normal = FS.GetNormal(pos);
+return float4(normal,d.y);
+</code></pre><p>材质中记得要把切线空间法线取消勾选，否则会出现奇怪效果</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102143853340.png" alt="image-20210102143853340"></p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><p>知乎大佬：<a href="https://zhuanlan.zhihu.com/p/95547912" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/95547912</a></p>
  
       <!-- reward -->
       
@@ -174,7 +411,7 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2019/11/13/UE4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(2)---%E8%93%9D%E5%9B%BE%E6%8E%A5%E5%8F%A3-%E6%A0%87%E7%AD%BE/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2021/01/02/UE4---RayMarching%E7%AC%94%E8%AE%B0/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -187,19 +424,10 @@
    
   <nav class="article-nav">
     
-      <a href="/2020/01/07/2019%E5%B9%B4---%E5%B0%8F%E8%AE%B0/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            2019年---小记
-          
-        </div>
-      </a>
     
-    
-      <a href="/2019/11/13/Unity%E5%AE%9E%E7%8E%B0%E7%B1%B3%E5%93%88%E6%B8%B8%E7%9A%84Mesh%E5%8F%98%E6%8D%A2%E8%BD%AC%E5%9C%BA%E6%95%88%E6%9E%9C/" class="article-nav-link">
+      <a href="/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E5%88%9B%E5%BB%BA%E5%9F%BA%E6%9C%AC%E5%87%A0%E4%BD%95%E4%BD%93/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">Unity实现米哈游的Mesh变换转场效果</div>
+        <div class="article-nav-title">DirectX11入门笔记---创建几何体以及添加BaseObject类</div>
       </a>
     
   </nav>
