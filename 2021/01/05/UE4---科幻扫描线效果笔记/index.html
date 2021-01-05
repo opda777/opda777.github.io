@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    UE4 |  
+    UE4---科幻扫描线效果笔记 |  
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -40,316 +40,251 @@
       
     <main class="content on">
       <section class="outer">
-  
-  <article class="articles">
+  <article
+  id="post-UE4---科幻扫描线效果笔记"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
     
-    
-    <h1 class="page-type-title">UE4</h1>
-    
-    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  UE4---科幻扫描线效果笔记
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/01/05/UE4---%E7%A7%91%E5%B9%BB%E6%89%AB%E6%8F%8F%E7%BA%BF%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/" class="article-date">
+  <time datetime="2021-01-05T05:00:00.000Z" itemprop="datePublished">2021-01-05</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/UE4/">UE4</a>
+  </div>
   
-  
-  
-  
-  
-  
-  <div class="archives-wrap">
-    <div class="archive-year-wrap">
-      <a href="/archives/2021" class="archive-year">2021</a>
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">614</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">2 分钟</span>
+        </span>
+    </span>
+</div>
+ 
     </div>
-    <div class="archives">
       
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/05/UE4---%E9%9B%A8%E6%BB%B4%E5%92%8C%E6%B0%B4%E6%BB%B4%E6%BB%91%E8%90%BD%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time datetime="2021-01-05T10:00:00.000Z" itemprop="datePublished">01/05</time>
-</a>
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
        
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/05/UE4---%E9%9B%A8%E6%BB%B4%E5%92%8C%E6%B0%B4%E6%BB%B4%E6%BB%91%E8%90%BD%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/"
-    >UE4---雨点和水滴滑落效果笔记</a> 
-</h2>
+  <p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%2014-44-25.gif" alt="GIF 2021-1-5 14-44-25"></p>
+<a id="more"></a>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
+<li>根据Z轴生成0-1Mask贴图</li>
+<li>控制顶部顶点的世界位置偏移</li>
+<li>抖动效果</li>
+<li>屏幕空间条</li>
+<li>菲涅尔和CameraFade</li>
+<li>输入不透明度</li>
+</ol>
+<h3 id="根据Z轴生成0-1Mask贴图"><a href="#根据Z轴生成0-1Mask贴图" class="headerlink" title="根据Z轴生成0-1Mask贴图"></a>根据Z轴生成0-1Mask贴图</h3><p>将世界空间坐标转换为模型空间，只取Z通道，QbjectBounds返回的是模型的边界，我们除以Z通道就可以得到模型从底部到顶点0-1的Mask遮罩</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105011904542.png" alt="image-20210105011904542"></p>
+<p>预览Divide</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105012049880.png" alt="image-20210105012049880"></p>
+<h3 id="控制顶部顶点的世界位置偏移"><a href="#控制顶部顶点的世界位置偏移" class="headerlink" title="控制顶部顶点的世界位置偏移"></a>控制顶部顶点的世界位置偏移</h3><p>生成的Z轴Mask遮罩是用于控制WorldPositionOffset</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105012235486.png" alt="image-20210105012235486"></p>
+<p>同样将顶点的世界空间Pos转换到模型空间，并将位置进行归一化，只取RG通道，这个RG通道其实就是顶点在XY平面移动的方向</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105012625863.png" alt="image-20210105012625863"></p>
+<p>那么Z通道自然用于是Z轴方向上的移动</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105012739210.png" alt="image-20210105012739210"></p>
+<p>通过在这两个方向上的位移，我们可以实现模型的压缩（激活全息）和顶部扩大（缩放半径），当激活全息为0时是压扁状态，为1则是全息状态</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-30-38.gif" alt="GIF 2021-1-5 1-30-38"></p>
+<h3 id="抖动效果"><a href="#抖动效果" class="headerlink" title="抖动效果"></a>抖动效果</h3><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105014109050.png" alt="image-20210105014109050"></p>
+<p>通过ScreenPosition的屏幕UV将V轴缩放到0-100，再Floor，分成100个不同的矩形区域，这里为了方便展示，我设置为0-10区间，再缩放回0-1区间，可以看到整个屏幕给分成了若干个矩形区域，并不是根据模型来切分。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-38-52.gif" alt="GIF 2021-1-5 1-38-52"></p>
+<p>我们继续连接MF_FloatNoise节点，这个节点使用传入Noise种子和一个2D向量输出一个随机值，材质函数如下</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105014231451.png" alt="image-20210105014231451"></p>
+<p>得到一直在随机变化的矩形条    </p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-43-22.gif" alt="GIF 2021-1-5 1-43-22"></p>
+<p>控制抖动用于开关抖动效果，为0开启，为1关闭，在世界空间上进行一定的抖动偏移</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105014556245.png" alt="image-20210105014556245"></p>
+<p>结果如下</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-47-16.gif" alt="GIF 2021-1-5 1-47-16"></p>
+<h3 id="屏幕空间条"><a href="#屏幕空间条" class="headerlink" title="屏幕空间条"></a>屏幕空间条</h3><p>同样是利用ScreenPosition的UV进行操作，但是上面可以看到，随着摄像机的距离，映射在模型上面的UV区域是不会变化的，一直是以屏幕为标准。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105015229996.png" alt="image-20210105015229996"></p>
+<p>这样根据摄像机与物体的距离来决定生成的UV条的数量，符合了我们的要求</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-54-08.gif" alt="GIF 2021-1-5 1-54-08"></p>
+<h3 id="菲涅尔和CameraFade"><a href="#菲涅尔和CameraFade" class="headerlink" title="菲涅尔和CameraFade"></a>菲涅尔和CameraFade</h3><p>菲涅尔用于边缘的透明，CameraFade用于靠近Mesh时透明</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105143118294.png" alt="image-20210105143118294"></p>
+<h3 id="输入不透明度"><a href="#输入不透明度" class="headerlink" title="输入不透明度"></a>输入不透明度</h3><p>将基于屏幕空间的空间条与菲涅尔，CameraFade，激活全息进行相结合，输入不透明度</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105143446247.png" alt="image-20210105143446247"></p>
+<h3 id="用于网格的Scifi材质"><a href="#用于网格的Scifi材质" class="headerlink" title="用于网格的Scifi材质"></a>用于网格的Scifi材质</h3><p>网格的Scifi材质只要修改抖动，以及输入的不透明度，删除CameraFade即可</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105144134572.png" alt="image-20210105144134572"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105144144952.png" alt="image-20210105144144952"></p>
  
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/05/UE4---%E7%A7%91%E5%B9%BB%E6%89%AB%E6%8F%8F%E7%BA%BF%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time datetime="2021-01-05T05:00:00.000Z" itemprop="datePublished">01/05</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/05/UE4---%E7%A7%91%E5%B9%BB%E6%89%AB%E6%8F%8F%E7%BA%BF%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/"
-    >UE4---科幻扫描线效果笔记</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/04/UE4---Flowmap%E7%87%83%E7%83%A7%E6%BA%B6%E8%A7%A3%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time datetime="2021-01-04T07:00:00.000Z" itemprop="datePublished">01/04</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/04/UE4---Flowmap%E7%87%83%E7%83%A7%E6%BA%B6%E8%A7%A3%E7%AC%94%E8%AE%B0/"
-    >UE4---Flowmap燃烧溶解笔记</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/03/UE4%E8%BF%98%E5%8E%9FCRT%E5%83%8F%E7%B4%A0%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time datetime="2021-01-03T06:00:00.000Z" itemprop="datePublished">01/03</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/03/UE4%E8%BF%98%E5%8E%9FCRT%E5%83%8F%E7%B4%A0%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/"
-    >UE4还原CRT像素效果笔记</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/03/UE4%E9%AB%98%E6%96%AF%E6%A8%A1%E7%B3%8A%E5%90%8E%E5%A4%84%E7%90%86/" class="archive-article-date">
-  <time datetime="2021-01-03T05:00:00.000Z" itemprop="datePublished">01/03</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/03/UE4%E9%AB%98%E6%96%AF%E6%A8%A1%E7%B3%8A%E5%90%8E%E5%A4%84%E7%90%86/"
-    >UE4高斯模糊后处理</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time datetime="2021-01-02T18:30:00.000Z" itemprop="datePublished">01/03</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/"
-    >UE4---RayMarch史莱姆</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/02/UE4---RayMarching%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time datetime="2021-01-02T05:00:00.000Z" itemprop="datePublished">01/02</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/02/UE4---RayMarching%E7%AC%94%E8%AE%B0/"
-    >UE4---RayMarching笔记</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-  
-  </div>
-  </div>
-  
-  
-  <div class="archives-wrap">
-    <div class="archive-year-wrap">
-      <a href="/archives/2020" class="archive-year">2020</a>
-    </div>
-    <div class="archives">
-      
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/" class="archive-article-date">
-  <time datetime="2020-11-01T16:00:00.000Z" itemprop="datePublished">11/02</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/"
-    >龙卷风Niagara效果</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/10/31/Poof%E6%95%88%E6%9E%9CNiagara%E5%AE%9E%E7%8E%B0/" class="archive-article-date">
-  <time datetime="2020-10-30T16:00:00.000Z" itemprop="datePublished">10/31</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2020/10/31/Poof%E6%95%88%E6%9E%9CNiagara%E5%AE%9E%E7%8E%B0/"
-    >Poof效果Niagara实现</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/02/19/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/" class="archive-article-date">
-  <time datetime="2020-02-18T16:00:00.000Z" itemprop="datePublished">02/19</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2020/02/19/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/"
-    >UE4材质大师课程笔记(二)---RenderTarget</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
+      <!-- reward -->
       
     </div>
-  </div>
-  
-  
-
-  
-  <nav class="page-nav">
     
-    <span class="page-number current">1</span><a class="page-number" href="/categories/UE4/page/2/">2</a><a class="extend next" rel="next" href="/categories/UE4/page/2/">下一页</a>
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2021/01/05/UE4---%E7%A7%91%E5%B9%BB%E6%89%AB%E6%8F%8F%E7%BA%BF%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UE4/" rel="tag">UE4</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/01/05/UE4---%E9%9B%A8%E6%BB%B4%E5%92%8C%E6%B0%B4%E6%BB%B4%E6%BB%91%E8%90%BD%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            UE4---雨点和水滴滑落效果笔记
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/01/04/UE4---Flowmap%E7%87%83%E7%83%A7%E6%BA%B6%E8%A7%A3%E7%AC%94%E8%AE%B0/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">UE4---Flowmap燃烧溶解笔记</div>
+      </a>
+    
   </nav>
-  
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TOKwTM5k1i9R4SU69rrj3lSi-gzGzoHsz",
+    app_key: "u1xz1KpQ4p0XRC7soG3FVHr4",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
 </section>
       <footer class="footer">
   <div class="outer">
@@ -499,6 +434,21 @@
     <script src="/js/jquery-2.0.3.min.js"></script>
 <script src="/js/lazyload.min.js"></script>
 <!-- Tocbot -->
+
+<script src="/js/tocbot.min.js"></script>
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">

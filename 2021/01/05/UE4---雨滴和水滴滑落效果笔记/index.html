@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    UE4 |  
+    UE4---雨点和水滴滑落效果笔记 |  
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -40,316 +40,252 @@
       
     <main class="content on">
       <section class="outer">
-  
-  <article class="articles">
+  <article
+  id="post-UE4---雨滴和水滴滑落效果笔记"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
     
-    
-    <h1 class="page-type-title">UE4</h1>
-    
-    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  UE4---雨点和水滴滑落效果笔记
+</h1>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/01/05/UE4---%E9%9B%A8%E6%BB%B4%E5%92%8C%E6%B0%B4%E6%BB%B4%E6%BB%91%E8%90%BD%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/" class="article-date">
+  <time datetime="2021-01-05T10:00:00.000Z" itemprop="datePublished">2021-01-05</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/UE4/">UE4</a>
+  </div>
   
-  
-  
-  
-  
-  
-  <div class="archives-wrap">
-    <div class="archive-year-wrap">
-      <a href="/archives/2021" class="archive-year">2021</a>
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">735</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">2 分钟</span>
+        </span>
+    </span>
+</div>
+ 
     </div>
-    <div class="archives">
       
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/05/UE4---%E9%9B%A8%E6%BB%B4%E5%92%8C%E6%B0%B4%E6%BB%B4%E6%BB%91%E8%90%BD%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time datetime="2021-01-05T10:00:00.000Z" itemprop="datePublished">01/05</time>
-</a>
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
        
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/05/UE4---%E9%9B%A8%E6%BB%B4%E5%92%8C%E6%B0%B4%E6%BB%B4%E6%BB%91%E8%90%BD%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/"
-    >UE4---雨点和水滴滑落效果笔记</a> 
-</h2>
+  <p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%2021-32-16.gif" alt="GIF 2021-1-5 21-32-16"></p>
+<a id="more"></a>
+<h3 id="涟漪Mask制作"><a href="#涟漪Mask制作" class="headerlink" title="涟漪Mask制作"></a>涟漪Mask制作</h3><p>贴图的R通道存储的是涟漪的范围，涟漪中心为最亮，往四周渐变为黑色</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105180330662.png" alt="image-20210105180330662"></p>
+<p>利用Texture.R - （1 - frac （time * 涟漪变化速度）得到沿涟漪中心往外伸展的效果</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105180706389.png" alt="image-20210105180706389"></p>
+<p><img src="https://deepspacebanana.github.io/deepspacebanana.github.io//assets/img/blog/post08_img/nodes_01_vis.gif" alt="img"></p>
+<p>利用同样的Distance获取涟漪的边缘，并缩放到0-1，最后取反</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105180806279.png" alt="image-20210105180806279"></p>
+<p>可以看到，涟漪的而结束很生硬，没有淡入淡出</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%2018-09-32.gif" alt="GIF 2021-1-5 18-09-32"></p>
+<p>利用数学运算创造一个过度平缓的函数周期，实现淡入淡出效果</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105181434294.png" alt="image-20210105181434294"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105181531663.png" alt="image-20210105181531663"></p>
+<p>最后要解决的就是涟漪的连续问题，同样解决的方法与Flowmap相同，创建两个涟漪动画，一个涟漪动画偏移一段时间，然后用Lerp函数将两端动画进行融合</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105183831136.png" alt="image-20210105183831136"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105183843705.png" alt="image-20210105183843705"></p>
+<p>就是重复感有点强烈</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%2018-45-17.gif" alt="GIF 2021-1-5 18-45-17"></p>
+<h3 id="各种混合"><a href="#各种混合" class="headerlink" title="各种混合"></a>各种混合</h3><p>得到涟漪Mask之后一切就好做很多了，接下来就是各种属性混合</p>
+<p>涟漪法线Lerp的Alpha用的是Mask动画融合的Alpha，与输入法线混合用的是涟漪Mask</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105184733930.png" alt="image-20210105184733930"></p>
+<p>基础颜色混合，输入的基础颜色与水颜色，水亮度相乘得到的就是水涟漪颜色，大多数金属材质在潮湿的情况下回变暗，所以下面的基础颜色根据金属度进行一定的Lerp操作。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105184948291.png" alt="image-20210105184948291"></p>
+<p>金属度和粗糙度混合</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105185326642.png" alt="image-20210105185326642"></p>
+<h3 id="最终涟漪"><a href="#最终涟漪" class="headerlink" title="最终涟漪"></a>最终涟漪</h3><p>这里我随便找了一个UE4自带金属材质连接MF_RainSurface进行测试</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105185553502.png" alt="image-20210105185553502"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%2018-56-30.gif" alt="GIF 2021-1-5 18-56-30"></p>
+<h3 id="水滴滑落材质"><a href="#水滴滑落材质" class="headerlink" title="水滴滑落材质"></a>水滴滑落材质</h3><p>水滴滑落大多数会出现倾斜的情况，以正方体为例，雨水从上方落下，那么滑落情况只会出现在侧面</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105200534777.png" alt="image-20210105200534777"></p>
+<p>我们从这个方面开始入手，用世界空间位置作为水滴滑落纹理的采样UV，由于只是需要侧面进行正确的采样，所以我们只需要在xz平面和yz平面进行贴图采样，根据顶点法线的X轴Mask进行lerp操作</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105201116876.png" alt="image-20210105201116876"></p>
+<p>得到效果如下</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105201142251.png" alt="image-20210105201142251"></p>
+<p>法线也用同样的UV去采样，同样的Alpha去Lerp</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105210347108.png" alt="image-20210105210347108"></p>
+<p>同样我们需要采样贴图的B通道，得到的是向下移动块状的渐变图</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105210948360.png" alt="image-20210105210948360"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105211030445.png" alt="image-20210105211030445"></p>
+<p>我们将从G通道获取的水滴图减去B通道得到的块状渐变图，可以形成水滴滑落的错觉</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105211349933.png" alt="image-20210105211349933"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%2021-14-59.gif" alt="GIF 2021-1-5 21-14-59"></p>
+<p>将水滴法线与正常的法线方向根据水滴滑落Mask进行混合（0.5,0.5,1），才能得到正确的法线</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105211605556.png" alt="image-20210105211605556"></p>
+<h3 id="水滴滑落效果和涟漪结合"><a href="#水滴滑落效果和涟漪结合" class="headerlink" title="水滴滑落效果和涟漪结合"></a>水滴滑落效果和涟漪结合</h3><p>首先要获取永远朝上的Mask贴图，其实就是将法线方向从切线空间切换到世界空间，只获取B通道</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105211951450.png" alt="image-20210105211951450"></p>
+<p>后面与1.1相乘是为减弱水滴拉伸的出现，可以看到当平面轻微倾斜的时候，会出现水平拉伸的情况</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105212902536.png" alt="image-20210105212902536"></p>
+<p>得到Z轴Mask贴图之后，将涟漪和水滴滑落Mask做最后的混合</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105213026999.png" alt="image-20210105213026999"></p>
+<h3 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h3><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%2021-32-16.gif" alt="GIF 2021-1-5 21-32-16"></p>
+<p>全家福</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105213337560.png" alt="image-20210105213337560"></p>
  
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/05/UE4---%E7%A7%91%E5%B9%BB%E6%89%AB%E6%8F%8F%E7%BA%BF%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time datetime="2021-01-05T05:00:00.000Z" itemprop="datePublished">01/05</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/05/UE4---%E7%A7%91%E5%B9%BB%E6%89%AB%E6%8F%8F%E7%BA%BF%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/"
-    >UE4---科幻扫描线效果笔记</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/04/UE4---Flowmap%E7%87%83%E7%83%A7%E6%BA%B6%E8%A7%A3%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time datetime="2021-01-04T07:00:00.000Z" itemprop="datePublished">01/04</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/04/UE4---Flowmap%E7%87%83%E7%83%A7%E6%BA%B6%E8%A7%A3%E7%AC%94%E8%AE%B0/"
-    >UE4---Flowmap燃烧溶解笔记</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/03/UE4%E8%BF%98%E5%8E%9FCRT%E5%83%8F%E7%B4%A0%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time datetime="2021-01-03T06:00:00.000Z" itemprop="datePublished">01/03</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/03/UE4%E8%BF%98%E5%8E%9FCRT%E5%83%8F%E7%B4%A0%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/"
-    >UE4还原CRT像素效果笔记</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/03/UE4%E9%AB%98%E6%96%AF%E6%A8%A1%E7%B3%8A%E5%90%8E%E5%A4%84%E7%90%86/" class="archive-article-date">
-  <time datetime="2021-01-03T05:00:00.000Z" itemprop="datePublished">01/03</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/03/UE4%E9%AB%98%E6%96%AF%E6%A8%A1%E7%B3%8A%E5%90%8E%E5%A4%84%E7%90%86/"
-    >UE4高斯模糊后处理</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time datetime="2021-01-02T18:30:00.000Z" itemprop="datePublished">01/03</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/"
-    >UE4---RayMarch史莱姆</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2021/01/02/UE4---RayMarching%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  <time datetime="2021-01-02T05:00:00.000Z" itemprop="datePublished">01/02</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2021/01/02/UE4---RayMarching%E7%AC%94%E8%AE%B0/"
-    >UE4---RayMarching笔记</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-  
-  </div>
-  </div>
-  
-  
-  <div class="archives-wrap">
-    <div class="archive-year-wrap">
-      <a href="/archives/2020" class="archive-year">2020</a>
-    </div>
-    <div class="archives">
-      
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/" class="archive-article-date">
-  <time datetime="2020-11-01T16:00:00.000Z" itemprop="datePublished">11/02</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2020/11/02/%E9%BE%99%E5%8D%B7%E9%A3%8ENiagara%E6%95%88%E6%9E%9C/"
-    >龙卷风Niagara效果</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/10/31/Poof%E6%95%88%E6%9E%9CNiagara%E5%AE%9E%E7%8E%B0/" class="archive-article-date">
-  <time datetime="2020-10-30T16:00:00.000Z" itemprop="datePublished">10/31</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2020/10/31/Poof%E6%95%88%E6%9E%9CNiagara%E5%AE%9E%E7%8E%B0/"
-    >Poof效果Niagara实现</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
-  
-  
-      <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2020/02/19/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/" class="archive-article-date">
-  <time datetime="2020-02-18T16:00:00.000Z" itemprop="datePublished">02/19</time>
-</a>
-       
-<h2 itemprop="name">
-  <a class="archive-article-title" href="/2020/02/19/UE4%E6%9D%90%E8%B4%A8%E5%A4%A7%E5%B8%88%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0(%E4%BA%8C)---RenderTarget/"
-    >UE4材质大师课程笔记(二)---RenderTarget</a> 
-</h2>
- 
-
-    </header>
-    
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/UE4/">UE4</a>
-  </div>
-
-    
-    
-  </div>
-</article>
-      
+      <!-- reward -->
       
     </div>
-  </div>
-  
-  
-
-  
-  <nav class="page-nav">
     
-    <span class="page-number current">1</span><a class="page-number" href="/categories/UE4/page/2/">2</a><a class="extend next" rel="next" href="/categories/UE4/page/2/">下一页</a>
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2021/01/05/UE4---%E9%9B%A8%E6%BB%B4%E5%92%8C%E6%B0%B4%E6%BB%B4%E6%BB%91%E8%90%BD%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UE4/" rel="tag">UE4</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2021/01/05/UE4---%E7%A7%91%E5%B9%BB%E6%89%AB%E6%8F%8F%E7%BA%BF%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">UE4---科幻扫描线效果笔记</div>
+      </a>
+    
   </nav>
-  
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "TOKwTM5k1i9R4SU69rrj3lSi-gzGzoHsz",
+    app_key: "u1xz1KpQ4p0XRC7soG3FVHr4",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+     
+</article>
+
 </section>
       <footer class="footer">
   <div class="outer">
@@ -499,6 +435,21 @@
     <script src="/js/jquery-2.0.3.min.js"></script>
 <script src="/js/lazyload.min.js"></script>
 <!-- Tocbot -->
+
+<script src="/js/tocbot.min.js"></script>
+<script>
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
