@@ -347,13 +347,6 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/Houdini/</loc>
-    <lastmod>2021-10-28</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://yoursite.com/tags/Hexo/</loc>
     <lastmod>2021-10-28</lastmod>
     <changefreq>daily</changefreq>
@@ -361,7 +354,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/Maya/</loc>
+    <loc>http://yoursite.com/tags/Houdini/</loc>
     <lastmod>2021-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -369,6 +362,13 @@
   
   <url>
     <loc>http://yoursite.com/tags/UE4/</loc>
+    <lastmod>2021-10-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/tags/Maya/</loc>
     <lastmod>2021-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -419,13 +419,6 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/categories/Houdini/</loc>
-    <lastmod>2021-10-28</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://yoursite.com/categories/Hexo/</loc>
     <lastmod>2021-10-28</lastmod>
     <changefreq>daily</changefreq>
@@ -433,7 +426,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/categories/Maya/</loc>
+    <loc>http://yoursite.com/categories/Houdini/</loc>
     <lastmod>2021-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -441,6 +434,13 @@
   
   <url>
     <loc>http://yoursite.com/categories/UE4/</loc>
+    <lastmod>2021-10-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/categories/Maya/</loc>
     <lastmod>2021-10-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
