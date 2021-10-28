@@ -619,362 +619,6 @@ m22+\frac{m32}{f} = 1 \\
       </tags>
   </entry>
   <entry>
-    <title>DirectX11入门笔记---添加第三人称摄像机和diffuse光照</title>
-    <url>/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E6%B7%BB%E5%8A%A0%E7%AC%AC%E4%B8%89%E4%BA%BA%E7%A7%B0%E6%91%84%E5%83%8F%E6%9C%BA%E5%92%8Cdiffuse%E5%85%89%E7%85%A7/</url>
-    <content><![CDATA[<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
-<a id="more"></a>
-<h2 id="第三人称摄像机"><a href="#第三人称摄像机" class="headerlink" title="第三人称摄像机"></a>第三人称摄像机</h2><p>之前我们已经把baseObject抽象出来了，但是ViewMatrix和proJMatrix还是在Opda::InitResource中创建初始化的，对我们后续的操作非常不方便，所以我们要抽象出thirdCamera类。</p>
-<pre><code>class ThirdCamera
-{
-
-public:
-    ThirdCamera();
-
-    //围绕target旋转的方法
-    void RotateAroundTarget(float RotateX,float RotateY);
-    //获取摄像机向前的方向
-    XMVECTOR GetForwardDir();
-    //缩放FOV
-    void ScrollFOV(float delta);
-
-
-    //获取观察矩阵
-    XMMATRIX GetViewMatrix();
-    //获取投影矩阵
-    XMMATRIX GetProjMatrix();
-
-public:
-
-    //近裁剪面距离
-    float distanceNear;
-    //远裁剪面距离
-    float distanceFar;
-    //FOV
-    float cameraFOV;
-    //FOV限制
-    float FOV_Min, FOV_Max;
-
-    ////摄像机位置
-    XMFLOAT3 position;
-    //旋转
-    XMFLOAT3 rotation;
-    //摄像机对准的方向
-    XMFLOAT3 target;
-    XMFLOAT3 up;
-
-
-};
-</code></pre><h3 id="主要功能的实现"><a href="#主要功能的实现" class="headerlink" title="主要功能的实现"></a>主要功能的实现</h3><p>摄像机的主要功能:</p>
-<ol>
-<li>获取ViewMatrix和ProjMatrix</li>
-<li>缩放FOV</li>
-<li>围绕Target进行旋转</li>
-</ol>
-<pre><code>ThirdCamera::ThirdCamera()
-{
-
-    //视锥体设置
-    distanceNear = 1.0f;
-    distanceFar = 1000.0f;
-
-    //默认90FOV
-    cameraFOV = 0.25f ;
-    //最大180
-    FOV_Min = (30.0f / 360.0f);
-    //最小10
-    FOV_Max = (150.0f / 360.0f);
-
-    //初始化
-    position = XMFLOAT3(0.0f, 0.0f, -5.0f);
-    rotation = XMFLOAT3(0.0f, 0.0f, 0.0f);
-    target = XMFLOAT3(0.0f, 0.0f, 0.0f);
-    up = XMFLOAT3(0.0f, 1.0f, 0.0f);
-
-}
-
-void ThirdCamera::RotateAroundTarget(float RotateX, float RotateY)
-{
-    //首先围绕TargetY轴转动
-    rotation.x = RotateX;
-    rotation.y = -RotateY;
-
-    //获取旋转之后的向前方向,位移一段距离
-    XMVECTOR forwardDir = GetForwardDir();
-    XMVECTOR tempPos = XMVectorMultiplyAdd(XMVectorReplicate(7.0f), XMVector3Normalize(forwardDir), XMLoadFloat3(&amp;target));
-
-    //计算完毕之后需要存储为XMFLOAT3类型
-    XMStoreFloat3(&amp;position, tempPos);
-
-
-}
-
-XMVECTOR ThirdCamera::GetForwardDir()
-{
-    XMMATRIX rotMatrix = XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&amp;rotation));
-    //获取Z轴
-    return rotMatrix.r[2];
-}
-
-void ThirdCamera::ScrollFOV(float delta)
-{
-    cameraFOV -= delta;
-    //限制大小
-    if (cameraFOV &gt; FOV_Max)
-    {
-        cameraFOV = FOV_Max;
-    }
-    else if (cameraFOV &lt; FOV_Min)
-    {
-        cameraFOV = FOV_Min;
-    }
-
-}
-
-XMMATRIX ThirdCamera::GetViewMatrix()
-{
-    XMVECTOR eyePos = XMVectorSet(position.x, position.y, position.z, 0.0f);
-    XMVECTOR targetPos = XMVectorSet(target.x, target.y, target.z, 0.0f);
-    XMVECTOR upDir = XMVectorSet(up.x, up.y, up.z, 0.0f);
-    XMMATRIX viewMatrix = XMMatrixTranspose(XMMatrixLookAtLH(eyePos, targetPos, upDir));
-    return viewMatrix;
-}
-
-XMMATRIX ThirdCamera::GetProjMatrix()
-{
-    XMMATRIX proJMatrix = XMMatrixTranspose(XMMatrixPerspectiveFovLH(cameraFOV * XM_PI, 640.0f / 480.0f, distanceNear, distanceFar));
-    return proJMatrix;
-}
-</code></pre><h3 id="MessageProc中对鼠标滚轮的处理"><a href="#MessageProc中对鼠标滚轮的处理" class="headerlink" title="MessageProc中对鼠标滚轮的处理"></a>MessageProc中对鼠标滚轮的处理</h3><p>缩放FOV涉及到鼠标滚轮的信息处理，在OpdaGraphics::RealMessageProc中添加对鼠标滚轮信息的处理</p>
-<pre><code>case WM_MOUSEWHEEL:
-        //处理鼠标滚轮事件
-        MouseScrollWheel((short)HIWORD(wParam));
-        break;
-</code></pre><p>这里我们只需要接受(short)HIWORD(wParam)，其他的用不到</p>
-<pre><code> afx_msg   BOOL   OnMouseWheel(  
- UINT   nFlags,  //是否按下了虚拟键
- short   zDelta,  //鼠标滚轮转动的距离，返回120的倍数
- CPoint   pt   );   //鼠标光标的位置
-</code></pre><p>这里由于我们重新设置了FOV，所以要重新更新ViewMatrix的常量缓冲区</p>
-<pre><code>void OpdaGraphics::MouseScrollWheel(short WheelDelte)
-{
-    thirdCamera-&gt;ScrollFOV((WheelDelte / 120.0f) * 0.01f);
-
-    //创建Proj变换矩阵
-    cbProj cbP;
-    cbP.ProjMatrix = thirdCamera-&gt;GetProjMatrix();
-    //更新缓冲区
-    D3D11_MAPPED_SUBRESOURCE mappedData;
-    DirectxDeviceContext-&gt;Map(constantBuffer[2].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &amp;mappedData);
-    //安全内存复制，将cbstruct复制到pData
-    memcpy_s(mappedData.pData, sizeof(cbProj), &amp;cbP, sizeof(cbProj));
-    //关闭常量缓冲区的访问权限
-    DirectxDeviceContext-&gt;Unmap(constantBuffer[2].Get(), 0);
-}
-</code></pre><p>记住对摄像机的属性进行了设置要重新更新相对应的常量缓冲区</p>
-<pre><code>thirdCamera-&gt;RotateAroundTarget(RotateX, RotateY);
-
-    //创建view变换矩阵
-    cbView cbV;
-    cbV.ViewMatrix = thirdCamera-&gt;GetViewMatrix();
-    //更新常量缓冲区
-    D3D11_MAPPED_SUBRESOURCE mappedData;
-    //用于存储map函数获取到缓冲区的内存
-    DirectxDeviceContext-&gt;Map(constantBuffer[1].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &amp;mappedData);
-    //安全内存复制，将cbstruct复制到pData
-    memcpy_s(mappedData.pData, sizeof(cbView), &amp;cbV, sizeof(cbView));
-    //关闭常量缓冲区的访问权限
-    DirectxDeviceContext-&gt;Unmap(constantBuffer[1].Get(), 0);
-</code></pre><h3 id="添加鼠标旋转功能"><a href="#添加鼠标旋转功能" class="headerlink" title="添加鼠标旋转功能"></a>添加鼠标旋转功能</h3><p>同样需要在OpdaGraphics::RealMessageProc中处理一下信息</p>
-<pre><code>    case WM_LBUTTONDOWN:
-    case WM_MBUTTONDOWN:
-    case WM_RBUTTONDOWN:
-        //处理鼠标点击事件
-        MouseDown(wParam, (int)LOWORD(lParam), (int)HIWORD(lParam));
-        break;
-    case WM_LBUTTONUP:
-    case WM_MBUTTONUP:
-    case WM_RBUTTONUP:
-        //处理鼠标松开事件
-        MouseUp(wParam, (int)LOWORD(lParam), (int)HIWORD(lParam));
-        break;
-    case WM_MOUSEMOVE:
-        MouseMove(wParam, (int)LOWORD(lParam), (int)HIWORD(lParam));
-        break;
-</code></pre><p>记录鼠标左键按下的LastPos位置，在MouseMove计算鼠标位置的delta距离，这样就能得到大概旋转的值，最后更新LastPos的位置</p>
-<pre><code>void OpdaGraphics::MouseDown(WPARAM btnState, int x, int y)
-{
-    mouseLastPosX = x;
-    mouseLastPosY = y;
-    //捕捉鼠标
-    SetCapture(hwnd);
-}
-
-void OpdaGraphics::MouseUp(WPARAM btnState, int x, int y)
-{
-    ReleaseCapture();
-}
-
-void OpdaGraphics::MouseMove(WPARAM btnState, int x, int y)
-{
-    if (btnState == MK_LBUTTON)
-    {
-        float dx = 0.01f * static_cast&lt;float&gt; (x - mouseLastPosX);
-        float dy = 0.01f * static_cast&lt;float&gt; (y - mouseLastPosY);
-
-        RotateX -= dy;
-        RotateY -= dx;
-        mouseLastPosX = x;
-        mouseLastPosY = y;
-
-    }
-}
-</code></pre><p>最后在UpdateScene中调用摄像机的RotateAroundTarget即可。</p>
-<h2 id="添加diffuse光照"><a href="#添加diffuse光照" class="headerlink" title="添加diffuse光照"></a>添加diffuse光照</h2><p>我们创建最基本的平行光diffuse光照，首先要定义好材质和灯光的数据结构</p>
-<pre><code>struct Material
-{
-    XMFLOAT4 diffuse;        //漫反射颜色
-    XMFLOAT4 specular;        //高光颜色
-    XMFLOAT4 ambient;        //环境光
-};
-
-//平行光
-struct Light
-{
-    XMFLOAT4 lightColor;        //光的颜色
-    XMFLOAT3 lightDirection;    //光的方向
-    float temp;        //对齐用的
-};
-</code></pre><h3 id="HLSL内存对齐"><a href="#HLSL内存对齐" class="headerlink" title="HLSL内存对齐"></a>HLSL内存对齐</h3><p>注意到平行光的结构体有一个Temp的数据，这个涉及到HLSL的内存对齐，不对齐会报错，程序无法运行</p>
-<p>相关文章：<a href="https://blog.csdn.net/BonChoix/article/details/8445218" target="_blank" rel="noopener">https://blog.csdn.net/BonChoix/article/details/8445218</a></p>
-<h3 id="创建材质灯光的各自缓冲区"><a href="#创建材质灯光的各自缓冲区" class="headerlink" title="创建材质灯光的各自缓冲区"></a>创建材质灯光的各自缓冲区</h3><p>同样先在OpdaGraphics::InitResource()中进行初始化创建，后续再进行优化</p>
-<pre><code>    //创建材质
-    Material normalMat;
-    Light DirectionLight;
-    DirectionLight.lightColor = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-    DirectionLight.lightDirection = XMFLOAT3(1.0f, -5.0f, 1.0f);
-    DirectionLight.temp = 0;
-    normalMat.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-    normalMat.diffuse = XMFLOAT4(0.7f, 1.0f, 1.0f, 1.0f);
-    normalMat.specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-</code></pre><p>接下来的任务就是绑定到渲染管线，注意这里我是把材质灯光的常量缓冲区绑定到了像素着色器，因为我们的光照计算是在像素着色器中进行。</p>
-<pre><code>    //将常量缓冲区绑定到像素着色器
-    DirectxDeviceContext-&gt;PSSetConstantBuffers(3, 1, constantBuffer[3].GetAddressOf());
-    DirectxDeviceContext-&gt;PSSetConstantBuffers(4, 1, constantBuffer[4].GetAddressOf());
-</code></pre><h3 id="HLSL光照计算"><a href="#HLSL光照计算" class="headerlink" title="HLSL光照计算"></a>HLSL光照计算</h3><p>普通的漫反射计算，跟UnityShader入门精要差不多，由于我们现在的物体是没有动</p>
-<pre><code>//常量缓冲区
-cbuffer cbWorld : register(b0)
-{
-    matrix WorldMatrix;
-}
-
-cbuffer cbView : register(b1)
-{
-    matrix ViewMatrix;
-}
-
-cbuffer cbProj : register(b2)
-{
-    matrix ProjMatrix;
-}
-
-cbuffer material : register(b3)
-{
-    float4 diffuse; //漫反射颜色
-    float4 specular; //高光颜色
-    float4 ambient; //环境光
-}
-
-cbuffer light : register(b4)
-{
-    float4 lightColor; //光的颜色
-    float3 lightDirection; //光的方向
-    float temp;
-}
-
-struct VertexIn
-{
-    float4 pos : POSITION;
-    float3 normal : NORMAL;
-    float4 color : COLOR;
-};
-
-struct VertexOut
-{
-    float4 pos : SV_POSITION;
-    float3 worldNormal : COLOR0;
-    float4 color : COLOR1;
-};
-
-//顶点着色器
-VertexOut VS(VertexIn vIn)
-{
-    VertexOut vOut;
-    //变换到裁剪空间，MVP矩阵
-    vOut.pos = mul(mul(mul(vIn.pos, WorldMatrix), ViewMatrix),ProjMatrix);
-    vOut.worldNormal = normalize(mul(vIn.normal, (float3x3) WorldMatrix));
-    vOut.color = vIn.color;
-    return vOut;
-}
-
-//像素着色器
-float4 PS(VertexOut pIn):SV_Target
-{
-    //计算漫反射
-    float3 lightDir = -normalize(lightDirection);
-    float3 diffuseColor = lightColor.rgb * diffuse.rgb * (dot(pIn.worldNormal,lightDir)*0.5+0.5);
-
-    float3 finalColor = saturate(diffuseColor + ambient.rgb);
-    return float4(finalColor, 1.0f);
-}
-</code></pre>]]></content>
-      <categories>
-        <category>DirectX11</category>
-      </categories>
-      <tags>
-        <tag>DirectX11</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>DirectX11入门笔记---第三方库的安装</title>
-    <url>/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/</url>
-    <content><![CDATA[<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
-<a id="more"></a>
-<h2 id="VCPkg—-安装Assimp"><a href="#VCPkg—-安装Assimp" class="headerlink" title="VCPkg—-安装Assimp"></a>VCPkg—-安装Assimp</h2><p>VCPkg相当于Python pip，是用于安装第三方库非常方便的一个工具</p>
-<p>github :<a href="https://github.com/Microsoft/vcpkg" target="_blank" rel="noopener">https://github.com/Microsoft/vcpkg</a></p>
-<p>直接下载解压到某个你喜欢的位置，官方推荐以下位置</p>
-<pre><code>C:\src\vcpkg
-</code></pre><p>解压完毕之后就可以点击bootstrap-vcpkg.bat，就完成安装了，最后我们还要设置环境变量才能在cmd中快速使用</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226191539107.png" alt="image-20201226191539107"></p>
-<p>利用命令进行第三方库的查询与安装</p>
-<pre><code>vcpkg search assimp//查询功能
-vcpkg install assimp//安装功能
-</code></pre><p>集成到Vs2019中，这样就可以直接#include了</p>
-<pre><code>vcpkg integrate install
-</code></pre><p>注意：当你继承到VS2019之后想要卸载vcpkg，要使用命令确保卸载前清理好集成</p>
-<pre><code>vcpkg integrate remove
-</code></pre><h3 id="出现的坑"><a href="#出现的坑" class="headerlink" title="出现的坑"></a>出现的坑</h3><p>我第一次安装的出现报错</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226191829240.png" alt="image-20201226191829240"></p>
-<p>解决方法：给你的VS安装英语语言包</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226192041656.png" alt="image-20201226192041656"></p>
-<h2 id="NuGet—-安装DirectXTex"><a href="#NuGet—-安装DirectXTex" class="headerlink" title="NuGet—-安装DirectXTex"></a>NuGet—-安装DirectXTex</h2><p>由于我们使用的DirectX SDK已经被集成进Windows SDK，问题是Windows SDK移除了对d3dx.h头文件，所以造成纹理贴图的导入函数并不能使用，幸运的是问题不大，官方给出了替代方法</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226195442714.png" alt="image-20201226195442714"></p>
-<p>官方把D3DX11CreateShaderResourceViewFromFile抽取到了DirectXTex库，所以我们现在的任务就是导入DirectXTex库。</p>
-<h3 id="NuGet"><a href="#NuGet" class="headerlink" title="NuGet"></a>NuGet</h3><p>NuGet 其实也是一个第三方库的管理工具，相当于Python 的pip（这个我也没搞懂Nuget和vcpkg的不同之处）</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226200325346.png" alt="image-20201226200325346"></p>
-<p>打开之后，搜索DirectXTex安装即可</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226200430333.png" alt="image-20201226200430333"></p>
-<h3 id="出现的坑-1"><a href="#出现的坑-1" class="headerlink" title="出现的坑"></a>出现的坑</h3><p>问题例子：<a href="https://blog.csdn.net/kunlunjunzi/article/details/77970949" target="_blank" rel="noopener">https://blog.csdn.net/kunlunjunzi/article/details/77970949</a></p>
-<p>只需要与DirectXTex的运行库设置一致即可</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226201121962.png" alt="image-20201226201121962"></p>
-]]></content>
-      <categories>
-        <category>DirectX11</category>
-      </categories>
-      <tags>
-        <tag>DirectX11</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>DirectX11入门笔记---绘制三角形</title>
     <url>/2020/12/20/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%BB%98%E5%88%B6%E4%B8%89%E8%A7%92%E5%BD%A2/</url>
     <content><![CDATA[<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
@@ -1320,155 +964,6 @@ struct VertexPosColor
       </tags>
   </entry>
   <entry>
-    <title>DirectX11入门笔记---计时器实现</title>
-    <url>/2020/12/18/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E8%AE%A1%E6%97%B6%E5%99%A8%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
-<a id="more"></a>
-<h2 id="计时器"><a href="#计时器" class="headerlink" title="计时器"></a>计时器</h2><p>计时器支持暂停，开始，重置，每帧调用功能，程序中每一帧调用一次计数，并随时返回距离上一次计数之间的差值。这个差值就是控制游戏、动画更新的最重要的数据。</p>
-<p> 这个定时器用到了Windows中高精度的计时函数：<strong>QueryPerformanceCounter</strong>（用于计算调用的时间差）</p>
-<p><strong>QueryPerformanceFrequency</strong>（返回计时器的计算频率，每秒的计算次数，用于转换秒的转换因子）</p>
-<pre><code>BOOL QueryPerformanceCounter(  LARGE_INTEGER* lpPerformanceCount );
-BOOL QueryPerformanceFrequency(  LARGE_INTEGER* lpFrequency );
-</code></pre><h3 id="计时器类"><a href="#计时器类" class="headerlink" title="计时器类"></a>计时器类</h3><pre><code>#pragma once
-
-// 计时器
-class Timer
-{
-public:
-    // 构造函数
-    Timer();
-
-    float TotalTime() const;        //返回从开始计时到现在的总时间
-    float DeltaTime() const;        //返回时间差
-
-    void Start();        //取消暂停时调用
-    void Stop();        //暂停时调用
-    void Reset();        //消息循环前调用
-    void Tick();        //每帧调用
-
-private:
-    float secsPerCount;        //系统有关，把时间单位转换为秒的转换因子
-    float deltaTime;        //时间差
-
-    __int64 baseTime;        //计时器开始工作的起始时间点
-    __int64 stopTime;        //暂停状态的起始时间点
-    __int64 pauseTime;        //累计的暂停时间
-    __int64 currTime;        //当前起始时间点
-    __int64 prevTime;        //上次起始时间点
-
-    bool IsStop;        //是否暂停
-
-};
-</code></pre><pre><code>#include &quot;Timer.h&quot;
-#include &lt;Windows.h&gt;
-
-// 进行初始化
-Timer::Timer():secsPerCount(0.0f),deltaTime(0),pauseTime(0),prevTime(0),
-currTime(0),IsStop(false)
-{
-    //计算秒转换因子
-    __int64 countPerSec;
-    QueryPerformanceFrequency((LARGE_INTEGER*)&amp;countPerSec);
-    secsPerCount = 1.0f / (double)countPerSec;
-}
-
-float Timer::TotalTime() const
-{
-    //判断是否处于暂停状态
-    if (IsStop)
-    {
-        return (float)((stopTime - pauseTime) - baseTime * secsPerCount);
-    }
-    else
-    {
-        return (float)((currTime - pauseTime) - baseTime * secsPerCount);
-    }
-}
-
-float Timer::DeltaTime() const
-{
-    return deltaTime;
-}
-
-void Timer::Start()
-{
-    //记录当前时间
-    __int64 currTime_Temp;
-    QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
-
-    //判断是否处于暂停状态
-    if (IsStop)
-    {
-        //添加上暂停的这段时间
-        pauseTime += currTime_Temp - stopTime;
-        //因为重新计时，所以我们要重新设置
-        prevTime = currTime;
-        stopTime = 0;
-        IsStop = false;
-    }
-}
-
-void Timer::Stop()
-{
-    //判断是否处于暂停状态
-    if (!IsStop)
-    {
-        //记录暂停的时间
-        __int64 currTime_Temp;
-        QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
-        //设置暂停标志
-        stopTime = currTime_Temp;
-        IsStop = true;
-    }
-}
-
-void Timer::Reset()
-{
-    __int64 currTime_Temp;
-    QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
-    //因为重置计时器，所以baseTime，prevTime，stopTime要重新设置
-    baseTime = currTime_Temp;
-    prevTime = currTime_Temp;
-    stopTime = 0;
-    IsStop = false;
-}
-
-void Timer::Tick()
-{
-    //判断是否暂停
-    if (IsStop)
-    {
-        deltaTime = 0.0;
-        return;
-    }
-
-    //获取当前时间值
-    __int64 currTime_Temp;
-    QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
-    currTime = currTime_Temp;
-
-    //计算时间差
-    deltaTime = (currTime - prevTime) * secsPerCount;
-
-    //为计算下一帧做准备
-    prevTime = currTime;
-
-    //确保deltaTime不是负值
-    //出现负值的情况：1.处理器进入节电模式        2.切换到另外一个处理器
-    if (deltaTime &lt; 0)
-    {
-        deltaTime = 0;
-    }
-}
-</code></pre>]]></content>
-      <categories>
-        <category>DirectX11</category>
-      </categories>
-      <tags>
-        <tag>DirectX11</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>DirectX11入门笔记---绘制立方体</title>
     <url>/2020/12/22/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%BB%98%E5%88%B6%E7%AB%8B%E6%96%B9%E4%BD%93/</url>
     <content><![CDATA[<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
@@ -1725,6 +1220,552 @@ float4 PS(VertexOut pIn):SV_Target
       </tags>
   </entry>
   <entry>
+    <title>DirectX11入门笔记---第三方库的安装</title>
+    <url>/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
+<a id="more"></a>
+<h2 id="VCPkg—-安装Assimp"><a href="#VCPkg—-安装Assimp" class="headerlink" title="VCPkg—-安装Assimp"></a>VCPkg—-安装Assimp</h2><p>VCPkg相当于Python pip，是用于安装第三方库非常方便的一个工具</p>
+<p>github :<a href="https://github.com/Microsoft/vcpkg" target="_blank" rel="noopener">https://github.com/Microsoft/vcpkg</a></p>
+<p>直接下载解压到某个你喜欢的位置，官方推荐以下位置</p>
+<pre><code>C:\src\vcpkg
+</code></pre><p>解压完毕之后就可以点击bootstrap-vcpkg.bat，就完成安装了，最后我们还要设置环境变量才能在cmd中快速使用</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226191539107.png" alt="image-20201226191539107"></p>
+<p>利用命令进行第三方库的查询与安装</p>
+<pre><code>vcpkg search assimp//查询功能
+vcpkg install assimp//安装功能
+</code></pre><p>集成到Vs2019中，这样就可以直接#include了</p>
+<pre><code>vcpkg integrate install
+</code></pre><p>注意：当你继承到VS2019之后想要卸载vcpkg，要使用命令确保卸载前清理好集成</p>
+<pre><code>vcpkg integrate remove
+</code></pre><h3 id="出现的坑"><a href="#出现的坑" class="headerlink" title="出现的坑"></a>出现的坑</h3><p>我第一次安装的出现报错</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226191829240.png" alt="image-20201226191829240"></p>
+<p>解决方法：给你的VS安装英语语言包</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226192041656.png" alt="image-20201226192041656"></p>
+<h2 id="NuGet—-安装DirectXTex"><a href="#NuGet—-安装DirectXTex" class="headerlink" title="NuGet—-安装DirectXTex"></a>NuGet—-安装DirectXTex</h2><p>由于我们使用的DirectX SDK已经被集成进Windows SDK，问题是Windows SDK移除了对d3dx.h头文件，所以造成纹理贴图的导入函数并不能使用，幸运的是问题不大，官方给出了替代方法</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226195442714.png" alt="image-20201226195442714"></p>
+<p>官方把D3DX11CreateShaderResourceViewFromFile抽取到了DirectXTex库，所以我们现在的任务就是导入DirectXTex库。</p>
+<h3 id="NuGet"><a href="#NuGet" class="headerlink" title="NuGet"></a>NuGet</h3><p>NuGet 其实也是一个第三方库的管理工具，相当于Python 的pip（这个我也没搞懂Nuget和vcpkg的不同之处）</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226200325346.png" alt="image-20201226200325346"></p>
+<p>打开之后，搜索DirectXTex安装即可</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226200430333.png" alt="image-20201226200430333"></p>
+<h3 id="出现的坑-1"><a href="#出现的坑-1" class="headerlink" title="出现的坑"></a>出现的坑</h3><p>问题例子：<a href="https://blog.csdn.net/kunlunjunzi/article/details/77970949" target="_blank" rel="noopener">https://blog.csdn.net/kunlunjunzi/article/details/77970949</a></p>
+<p>只需要与DirectXTex的运行库设置一致即可</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201226201121962.png" alt="image-20201226201121962"></p>
+]]></content>
+      <categories>
+        <category>DirectX11</category>
+      </categories>
+      <tags>
+        <tag>DirectX11</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>DirectX11入门笔记---添加第三人称摄像机和diffuse光照</title>
+    <url>/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E6%B7%BB%E5%8A%A0%E7%AC%AC%E4%B8%89%E4%BA%BA%E7%A7%B0%E6%91%84%E5%83%8F%E6%9C%BA%E5%92%8Cdiffuse%E5%85%89%E7%85%A7/</url>
+    <content><![CDATA[<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
+<a id="more"></a>
+<h2 id="第三人称摄像机"><a href="#第三人称摄像机" class="headerlink" title="第三人称摄像机"></a>第三人称摄像机</h2><p>之前我们已经把baseObject抽象出来了，但是ViewMatrix和proJMatrix还是在Opda::InitResource中创建初始化的，对我们后续的操作非常不方便，所以我们要抽象出thirdCamera类。</p>
+<pre><code>class ThirdCamera
+{
+
+public:
+    ThirdCamera();
+
+    //围绕target旋转的方法
+    void RotateAroundTarget(float RotateX,float RotateY);
+    //获取摄像机向前的方向
+    XMVECTOR GetForwardDir();
+    //缩放FOV
+    void ScrollFOV(float delta);
+
+
+    //获取观察矩阵
+    XMMATRIX GetViewMatrix();
+    //获取投影矩阵
+    XMMATRIX GetProjMatrix();
+
+public:
+
+    //近裁剪面距离
+    float distanceNear;
+    //远裁剪面距离
+    float distanceFar;
+    //FOV
+    float cameraFOV;
+    //FOV限制
+    float FOV_Min, FOV_Max;
+
+    ////摄像机位置
+    XMFLOAT3 position;
+    //旋转
+    XMFLOAT3 rotation;
+    //摄像机对准的方向
+    XMFLOAT3 target;
+    XMFLOAT3 up;
+
+
+};
+</code></pre><h3 id="主要功能的实现"><a href="#主要功能的实现" class="headerlink" title="主要功能的实现"></a>主要功能的实现</h3><p>摄像机的主要功能:</p>
+<ol>
+<li>获取ViewMatrix和ProjMatrix</li>
+<li>缩放FOV</li>
+<li>围绕Target进行旋转</li>
+</ol>
+<pre><code>ThirdCamera::ThirdCamera()
+{
+
+    //视锥体设置
+    distanceNear = 1.0f;
+    distanceFar = 1000.0f;
+
+    //默认90FOV
+    cameraFOV = 0.25f ;
+    //最大180
+    FOV_Min = (30.0f / 360.0f);
+    //最小10
+    FOV_Max = (150.0f / 360.0f);
+
+    //初始化
+    position = XMFLOAT3(0.0f, 0.0f, -5.0f);
+    rotation = XMFLOAT3(0.0f, 0.0f, 0.0f);
+    target = XMFLOAT3(0.0f, 0.0f, 0.0f);
+    up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+
+}
+
+void ThirdCamera::RotateAroundTarget(float RotateX, float RotateY)
+{
+    //首先围绕TargetY轴转动
+    rotation.x = RotateX;
+    rotation.y = -RotateY;
+
+    //获取旋转之后的向前方向,位移一段距离
+    XMVECTOR forwardDir = GetForwardDir();
+    XMVECTOR tempPos = XMVectorMultiplyAdd(XMVectorReplicate(7.0f), XMVector3Normalize(forwardDir), XMLoadFloat3(&amp;target));
+
+    //计算完毕之后需要存储为XMFLOAT3类型
+    XMStoreFloat3(&amp;position, tempPos);
+
+
+}
+
+XMVECTOR ThirdCamera::GetForwardDir()
+{
+    XMMATRIX rotMatrix = XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&amp;rotation));
+    //获取Z轴
+    return rotMatrix.r[2];
+}
+
+void ThirdCamera::ScrollFOV(float delta)
+{
+    cameraFOV -= delta;
+    //限制大小
+    if (cameraFOV &gt; FOV_Max)
+    {
+        cameraFOV = FOV_Max;
+    }
+    else if (cameraFOV &lt; FOV_Min)
+    {
+        cameraFOV = FOV_Min;
+    }
+
+}
+
+XMMATRIX ThirdCamera::GetViewMatrix()
+{
+    XMVECTOR eyePos = XMVectorSet(position.x, position.y, position.z, 0.0f);
+    XMVECTOR targetPos = XMVectorSet(target.x, target.y, target.z, 0.0f);
+    XMVECTOR upDir = XMVectorSet(up.x, up.y, up.z, 0.0f);
+    XMMATRIX viewMatrix = XMMatrixTranspose(XMMatrixLookAtLH(eyePos, targetPos, upDir));
+    return viewMatrix;
+}
+
+XMMATRIX ThirdCamera::GetProjMatrix()
+{
+    XMMATRIX proJMatrix = XMMatrixTranspose(XMMatrixPerspectiveFovLH(cameraFOV * XM_PI, 640.0f / 480.0f, distanceNear, distanceFar));
+    return proJMatrix;
+}
+</code></pre><h3 id="MessageProc中对鼠标滚轮的处理"><a href="#MessageProc中对鼠标滚轮的处理" class="headerlink" title="MessageProc中对鼠标滚轮的处理"></a>MessageProc中对鼠标滚轮的处理</h3><p>缩放FOV涉及到鼠标滚轮的信息处理，在OpdaGraphics::RealMessageProc中添加对鼠标滚轮信息的处理</p>
+<pre><code>case WM_MOUSEWHEEL:
+        //处理鼠标滚轮事件
+        MouseScrollWheel((short)HIWORD(wParam));
+        break;
+</code></pre><p>这里我们只需要接受(short)HIWORD(wParam)，其他的用不到</p>
+<pre><code> afx_msg   BOOL   OnMouseWheel(  
+ UINT   nFlags,  //是否按下了虚拟键
+ short   zDelta,  //鼠标滚轮转动的距离，返回120的倍数
+ CPoint   pt   );   //鼠标光标的位置
+</code></pre><p>这里由于我们重新设置了FOV，所以要重新更新ViewMatrix的常量缓冲区</p>
+<pre><code>void OpdaGraphics::MouseScrollWheel(short WheelDelte)
+{
+    thirdCamera-&gt;ScrollFOV((WheelDelte / 120.0f) * 0.01f);
+
+    //创建Proj变换矩阵
+    cbProj cbP;
+    cbP.ProjMatrix = thirdCamera-&gt;GetProjMatrix();
+    //更新缓冲区
+    D3D11_MAPPED_SUBRESOURCE mappedData;
+    DirectxDeviceContext-&gt;Map(constantBuffer[2].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &amp;mappedData);
+    //安全内存复制，将cbstruct复制到pData
+    memcpy_s(mappedData.pData, sizeof(cbProj), &amp;cbP, sizeof(cbProj));
+    //关闭常量缓冲区的访问权限
+    DirectxDeviceContext-&gt;Unmap(constantBuffer[2].Get(), 0);
+}
+</code></pre><p>记住对摄像机的属性进行了设置要重新更新相对应的常量缓冲区</p>
+<pre><code>thirdCamera-&gt;RotateAroundTarget(RotateX, RotateY);
+
+    //创建view变换矩阵
+    cbView cbV;
+    cbV.ViewMatrix = thirdCamera-&gt;GetViewMatrix();
+    //更新常量缓冲区
+    D3D11_MAPPED_SUBRESOURCE mappedData;
+    //用于存储map函数获取到缓冲区的内存
+    DirectxDeviceContext-&gt;Map(constantBuffer[1].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &amp;mappedData);
+    //安全内存复制，将cbstruct复制到pData
+    memcpy_s(mappedData.pData, sizeof(cbView), &amp;cbV, sizeof(cbView));
+    //关闭常量缓冲区的访问权限
+    DirectxDeviceContext-&gt;Unmap(constantBuffer[1].Get(), 0);
+</code></pre><h3 id="添加鼠标旋转功能"><a href="#添加鼠标旋转功能" class="headerlink" title="添加鼠标旋转功能"></a>添加鼠标旋转功能</h3><p>同样需要在OpdaGraphics::RealMessageProc中处理一下信息</p>
+<pre><code>    case WM_LBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+        //处理鼠标点击事件
+        MouseDown(wParam, (int)LOWORD(lParam), (int)HIWORD(lParam));
+        break;
+    case WM_LBUTTONUP:
+    case WM_MBUTTONUP:
+    case WM_RBUTTONUP:
+        //处理鼠标松开事件
+        MouseUp(wParam, (int)LOWORD(lParam), (int)HIWORD(lParam));
+        break;
+    case WM_MOUSEMOVE:
+        MouseMove(wParam, (int)LOWORD(lParam), (int)HIWORD(lParam));
+        break;
+</code></pre><p>记录鼠标左键按下的LastPos位置，在MouseMove计算鼠标位置的delta距离，这样就能得到大概旋转的值，最后更新LastPos的位置</p>
+<pre><code>void OpdaGraphics::MouseDown(WPARAM btnState, int x, int y)
+{
+    mouseLastPosX = x;
+    mouseLastPosY = y;
+    //捕捉鼠标
+    SetCapture(hwnd);
+}
+
+void OpdaGraphics::MouseUp(WPARAM btnState, int x, int y)
+{
+    ReleaseCapture();
+}
+
+void OpdaGraphics::MouseMove(WPARAM btnState, int x, int y)
+{
+    if (btnState == MK_LBUTTON)
+    {
+        float dx = 0.01f * static_cast&lt;float&gt; (x - mouseLastPosX);
+        float dy = 0.01f * static_cast&lt;float&gt; (y - mouseLastPosY);
+
+        RotateX -= dy;
+        RotateY -= dx;
+        mouseLastPosX = x;
+        mouseLastPosY = y;
+
+    }
+}
+</code></pre><p>最后在UpdateScene中调用摄像机的RotateAroundTarget即可。</p>
+<h2 id="添加diffuse光照"><a href="#添加diffuse光照" class="headerlink" title="添加diffuse光照"></a>添加diffuse光照</h2><p>我们创建最基本的平行光diffuse光照，首先要定义好材质和灯光的数据结构</p>
+<pre><code>struct Material
+{
+    XMFLOAT4 diffuse;        //漫反射颜色
+    XMFLOAT4 specular;        //高光颜色
+    XMFLOAT4 ambient;        //环境光
+};
+
+//平行光
+struct Light
+{
+    XMFLOAT4 lightColor;        //光的颜色
+    XMFLOAT3 lightDirection;    //光的方向
+    float temp;        //对齐用的
+};
+</code></pre><h3 id="HLSL内存对齐"><a href="#HLSL内存对齐" class="headerlink" title="HLSL内存对齐"></a>HLSL内存对齐</h3><p>注意到平行光的结构体有一个Temp的数据，这个涉及到HLSL的内存对齐，不对齐会报错，程序无法运行</p>
+<p>相关文章：<a href="https://blog.csdn.net/BonChoix/article/details/8445218" target="_blank" rel="noopener">https://blog.csdn.net/BonChoix/article/details/8445218</a></p>
+<h3 id="创建材质灯光的各自缓冲区"><a href="#创建材质灯光的各自缓冲区" class="headerlink" title="创建材质灯光的各自缓冲区"></a>创建材质灯光的各自缓冲区</h3><p>同样先在OpdaGraphics::InitResource()中进行初始化创建，后续再进行优化</p>
+<pre><code>    //创建材质
+    Material normalMat;
+    Light DirectionLight;
+    DirectionLight.lightColor = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+    DirectionLight.lightDirection = XMFLOAT3(1.0f, -5.0f, 1.0f);
+    DirectionLight.temp = 0;
+    normalMat.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+    normalMat.diffuse = XMFLOAT4(0.7f, 1.0f, 1.0f, 1.0f);
+    normalMat.specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+</code></pre><p>接下来的任务就是绑定到渲染管线，注意这里我是把材质灯光的常量缓冲区绑定到了像素着色器，因为我们的光照计算是在像素着色器中进行。</p>
+<pre><code>    //将常量缓冲区绑定到像素着色器
+    DirectxDeviceContext-&gt;PSSetConstantBuffers(3, 1, constantBuffer[3].GetAddressOf());
+    DirectxDeviceContext-&gt;PSSetConstantBuffers(4, 1, constantBuffer[4].GetAddressOf());
+</code></pre><h3 id="HLSL光照计算"><a href="#HLSL光照计算" class="headerlink" title="HLSL光照计算"></a>HLSL光照计算</h3><p>普通的漫反射计算，跟UnityShader入门精要差不多，由于我们现在的物体是没有动</p>
+<pre><code>//常量缓冲区
+cbuffer cbWorld : register(b0)
+{
+    matrix WorldMatrix;
+}
+
+cbuffer cbView : register(b1)
+{
+    matrix ViewMatrix;
+}
+
+cbuffer cbProj : register(b2)
+{
+    matrix ProjMatrix;
+}
+
+cbuffer material : register(b3)
+{
+    float4 diffuse; //漫反射颜色
+    float4 specular; //高光颜色
+    float4 ambient; //环境光
+}
+
+cbuffer light : register(b4)
+{
+    float4 lightColor; //光的颜色
+    float3 lightDirection; //光的方向
+    float temp;
+}
+
+struct VertexIn
+{
+    float4 pos : POSITION;
+    float3 normal : NORMAL;
+    float4 color : COLOR;
+};
+
+struct VertexOut
+{
+    float4 pos : SV_POSITION;
+    float3 worldNormal : COLOR0;
+    float4 color : COLOR1;
+};
+
+//顶点着色器
+VertexOut VS(VertexIn vIn)
+{
+    VertexOut vOut;
+    //变换到裁剪空间，MVP矩阵
+    vOut.pos = mul(mul(mul(vIn.pos, WorldMatrix), ViewMatrix),ProjMatrix);
+    vOut.worldNormal = normalize(mul(vIn.normal, (float3x3) WorldMatrix));
+    vOut.color = vIn.color;
+    return vOut;
+}
+
+//像素着色器
+float4 PS(VertexOut pIn):SV_Target
+{
+    //计算漫反射
+    float3 lightDir = -normalize(lightDirection);
+    float3 diffuseColor = lightColor.rgb * diffuse.rgb * (dot(pIn.worldNormal,lightDir)*0.5+0.5);
+
+    float3 finalColor = saturate(diffuseColor + ambient.rgb);
+    return float4(finalColor, 1.0f);
+}
+</code></pre>]]></content>
+      <categories>
+        <category>DirectX11</category>
+      </categories>
+      <tags>
+        <tag>DirectX11</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>DirectX11入门笔记---计时器实现</title>
+    <url>/2020/12/18/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E8%AE%A1%E6%97%B6%E5%99%A8%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
+<a id="more"></a>
+<h2 id="计时器"><a href="#计时器" class="headerlink" title="计时器"></a>计时器</h2><p>计时器支持暂停，开始，重置，每帧调用功能，程序中每一帧调用一次计数，并随时返回距离上一次计数之间的差值。这个差值就是控制游戏、动画更新的最重要的数据。</p>
+<p> 这个定时器用到了Windows中高精度的计时函数：<strong>QueryPerformanceCounter</strong>（用于计算调用的时间差）</p>
+<p><strong>QueryPerformanceFrequency</strong>（返回计时器的计算频率，每秒的计算次数，用于转换秒的转换因子）</p>
+<pre><code>BOOL QueryPerformanceCounter(  LARGE_INTEGER* lpPerformanceCount );
+BOOL QueryPerformanceFrequency(  LARGE_INTEGER* lpFrequency );
+</code></pre><h3 id="计时器类"><a href="#计时器类" class="headerlink" title="计时器类"></a>计时器类</h3><pre><code>#pragma once
+
+// 计时器
+class Timer
+{
+public:
+    // 构造函数
+    Timer();
+
+    float TotalTime() const;        //返回从开始计时到现在的总时间
+    float DeltaTime() const;        //返回时间差
+
+    void Start();        //取消暂停时调用
+    void Stop();        //暂停时调用
+    void Reset();        //消息循环前调用
+    void Tick();        //每帧调用
+
+private:
+    float secsPerCount;        //系统有关，把时间单位转换为秒的转换因子
+    float deltaTime;        //时间差
+
+    __int64 baseTime;        //计时器开始工作的起始时间点
+    __int64 stopTime;        //暂停状态的起始时间点
+    __int64 pauseTime;        //累计的暂停时间
+    __int64 currTime;        //当前起始时间点
+    __int64 prevTime;        //上次起始时间点
+
+    bool IsStop;        //是否暂停
+
+};
+</code></pre><pre><code>#include &quot;Timer.h&quot;
+#include &lt;Windows.h&gt;
+
+// 进行初始化
+Timer::Timer():secsPerCount(0.0f),deltaTime(0),pauseTime(0),prevTime(0),
+currTime(0),IsStop(false)
+{
+    //计算秒转换因子
+    __int64 countPerSec;
+    QueryPerformanceFrequency((LARGE_INTEGER*)&amp;countPerSec);
+    secsPerCount = 1.0f / (double)countPerSec;
+}
+
+float Timer::TotalTime() const
+{
+    //判断是否处于暂停状态
+    if (IsStop)
+    {
+        return (float)((stopTime - pauseTime) - baseTime * secsPerCount);
+    }
+    else
+    {
+        return (float)((currTime - pauseTime) - baseTime * secsPerCount);
+    }
+}
+
+float Timer::DeltaTime() const
+{
+    return deltaTime;
+}
+
+void Timer::Start()
+{
+    //记录当前时间
+    __int64 currTime_Temp;
+    QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
+
+    //判断是否处于暂停状态
+    if (IsStop)
+    {
+        //添加上暂停的这段时间
+        pauseTime += currTime_Temp - stopTime;
+        //因为重新计时，所以我们要重新设置
+        prevTime = currTime;
+        stopTime = 0;
+        IsStop = false;
+    }
+}
+
+void Timer::Stop()
+{
+    //判断是否处于暂停状态
+    if (!IsStop)
+    {
+        //记录暂停的时间
+        __int64 currTime_Temp;
+        QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
+        //设置暂停标志
+        stopTime = currTime_Temp;
+        IsStop = true;
+    }
+}
+
+void Timer::Reset()
+{
+    __int64 currTime_Temp;
+    QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
+    //因为重置计时器，所以baseTime，prevTime，stopTime要重新设置
+    baseTime = currTime_Temp;
+    prevTime = currTime_Temp;
+    stopTime = 0;
+    IsStop = false;
+}
+
+void Timer::Tick()
+{
+    //判断是否暂停
+    if (IsStop)
+    {
+        deltaTime = 0.0;
+        return;
+    }
+
+    //获取当前时间值
+    __int64 currTime_Temp;
+    QueryPerformanceCounter((LARGE_INTEGER*)&amp;currTime_Temp);
+    currTime = currTime_Temp;
+
+    //计算时间差
+    deltaTime = (currTime - prevTime) * secsPerCount;
+
+    //为计算下一帧做准备
+    prevTime = currTime;
+
+    //确保deltaTime不是负值
+    //出现负值的情况：1.处理器进入节电模式        2.切换到另外一个处理器
+    if (deltaTime &lt; 0)
+    {
+        deltaTime = 0;
+    }
+}
+</code></pre>]]></content>
+      <categories>
+        <category>DirectX11</category>
+      </categories>
+      <tags>
+        <tag>DirectX11</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo博客搭建过程(踩坑)</title>
+    <url>/2019/10/30/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​         本文主要用来记录自己Hexo博客搭建过程中遇到的坑。</p>
+ <a id="more"></a> 
+<h1 id="个人域名篇"><a href="#个人域名篇" class="headerlink" title="个人域名篇"></a>个人域名篇</h1><p>​         这个个人域名的确有点坑，明明按着教程的操作一步一步来的，还是弄了一晚上，到最后才发现是校园网DNS的坑。。。</p>
+<h2 id="1-准备"><a href="#1-准备" class="headerlink" title="1.准备"></a>1.准备</h2><p>​        首先我们要购买一个属于自己的域名，可以去腾讯云，阿里云等网站进行购买，这里我在阿里云购买opda.tech，为什么不用com域名，因为这个便宜。</p>
+<p>​    购买域名后我们还要得到github仓库的IP。通过cmd命令行，输入Ping 你的名字.github.io获取名字   </p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/2.png" alt></p>
+<p>红色箭头所指就是你github仓库的IP，然后我们就可以进行DNS解析。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/1.png" alt></p>
+<p>进去之后，点击新手引导，输入cmd获得的IP即可。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/4.png" alt></p>
+<p>解析完的结果</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/11.png" alt></p>
+<p>​    </p>
+<h2 id="2-github的绑定"><a href="#2-github的绑定" class="headerlink" title="2.github的绑定"></a>2.github的绑定</h2><p>​        进入你创建的仓库内，点击Setting</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/5.png" alt></p>
+<p>​        GitHub Pages设置</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/6.png" alt></p>
+<p>就这样github仓库的绑定就完成啦！</p>
+<h2 id="3-最后一步"><a href="#3-最后一步" class="headerlink" title="3.最后一步"></a>3.最后一步</h2><p>我们还要在本地博客的source文件夹下新建一个CNAME.txt文本，在里面输入我们的自定义域名，修改完毕之后记得把CNAME的txt后缀去掉！！！不然会不行的（感谢猫桑的bug发现）</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/7.png" alt></p>
+<p>最后我们Git Base重新部署一下博客就行啦！</p>
+<pre><code class="lang-base">hexo clean
+hexo g
+hexo d
+</code></pre>
+<h2 id="4-深坑"><a href="#4-深坑" class="headerlink" title="4.深坑"></a>4.深坑</h2><p>​        如果你是校园网用户的话，你要小心校园网DNS这个坑，会让你无法访问你自己的域名，所以解决方法就是修改我们的DNS就好了。</p>
+<p>打开我们的控制面板—-网络共享中心</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/8.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/9.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/10.png" alt></p>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>DirectX11入门笔记---DirectX初始化</title>
     <url>/2020/12/17/Directx11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---DirectX%E5%88%9D%E5%A7%8B%E5%8C%96/</url>
     <content><![CDATA[<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p>
@@ -1973,44 +2014,53 @@ IDXGISwapChain **ppSwapChain);         // 返回创建后的交换链
       </tags>
   </entry>
   <entry>
-    <title>Hexo博客搭建过程(踩坑)</title>
-    <url>/2019/10/30/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>​         本文主要用来记录自己Hexo博客搭建过程中遇到的坑。</p>
- <a id="more"></a> 
-<h1 id="个人域名篇"><a href="#个人域名篇" class="headerlink" title="个人域名篇"></a>个人域名篇</h1><p>​         这个个人域名的确有点坑，明明按着教程的操作一步一步来的，还是弄了一晚上，到最后才发现是校园网DNS的坑。。。</p>
-<h2 id="1-准备"><a href="#1-准备" class="headerlink" title="1.准备"></a>1.准备</h2><p>​        首先我们要购买一个属于自己的域名，可以去腾讯云，阿里云等网站进行购买，这里我在阿里云购买opda.tech，为什么不用com域名，因为这个便宜。</p>
-<p>​    购买域名后我们还要得到github仓库的IP。通过cmd命令行，输入Ping 你的名字.github.io获取名字   </p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/2.png" alt></p>
-<p>红色箭头所指就是你github仓库的IP，然后我们就可以进行DNS解析。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/1.png" alt></p>
-<p>进去之后，点击新手引导，输入cmd获得的IP即可。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/4.png" alt></p>
-<p>解析完的结果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/11.png" alt></p>
-<p>​    </p>
-<h2 id="2-github的绑定"><a href="#2-github的绑定" class="headerlink" title="2.github的绑定"></a>2.github的绑定</h2><p>​        进入你创建的仓库内，点击Setting</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/5.png" alt></p>
-<p>​        GitHub Pages设置</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/6.png" alt></p>
-<p>就这样github仓库的绑定就完成啦！</p>
-<h2 id="3-最后一步"><a href="#3-最后一步" class="headerlink" title="3.最后一步"></a>3.最后一步</h2><p>我们还要在本地博客的source文件夹下新建一个CNAME.txt文本，在里面输入我们的自定义域名，修改完毕之后记得把CNAME的txt后缀去掉！！！不然会不行的（感谢猫桑的bug发现）</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/7.png" alt></p>
-<p>最后我们Git Base重新部署一下博客就行啦！</p>
-<pre><code class="lang-base">hexo clean
-hexo g
-hexo d
-</code></pre>
-<h2 id="4-深坑"><a href="#4-深坑" class="headerlink" title="4.深坑"></a>4.深坑</h2><p>​        如果你是校园网用户的话，你要小心校园网DNS这个坑，会让你无法访问你自己的域名，所以解决方法就是修改我们的DNS就好了。</p>
-<p>打开我们的控制面板—-网络共享中心</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/8.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/9.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Hexo-Build/10.png" alt></p>
+    <title>Houdini利用基本形状构建地形(一)</title>
+    <url>/2020/11/28/Houdini%E5%88%A9%E7%94%A8%E5%9F%BA%E6%9C%AC%E5%BD%A2%E7%8A%B6%E6%9E%84%E5%BB%BA%E5%9C%B0%E5%BD%A2/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Houdini官方教程笔记，随手记录，会比较乱</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130154350820.png" alt="image-20201130154350820"></p>
+<a id="more"></a>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>主要利用box搭建原型，然后细化，最后分层Mask导出</p>
+<h3 id="利用HeightFieldProject投射构建基本地形"><a href="#利用HeightFieldProject投射构建基本地形" class="headerlink" title="利用HeightFieldProject投射构建基本地形"></a>利用HeightFieldProject投射构建基本地形</h3><p>首先利用box或者其他网格节点merge成自己想要的地形形状</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161006105.png" alt="image-20201128161006105"></p>
+<p>得到结果，这里project的Max，根据你的网格进行拉伸</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161116638.png" alt="image-20201128161116638"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161023938.png" alt="image-20201128161023938"></p>
+<p>也可以利用project的Mini进行网格映射的下沉，可以选择是否勾选HitFarthest，就是以最远面还是最近面来作为投射的结果</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161227502.png" alt="image-20201128161227502"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161238029.png" alt="image-20201128161238029"></p>
+<p>得到基本的形状，然后就可以在这个基础上进行侵蚀，模糊等等操作</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161429075.png" alt="image-20201128161429075"></p>
+<h3 id="基本地形的继续细化"><a href="#基本地形的继续细化" class="headerlink" title="基本地形的继续细化"></a>基本地形的继续细化</h3><p>使用blur会造成地形形状的软化缩小，所以为了在固定地形形状的前提下进行地形的blur，可以使用一下节点，<strong>Expand</strong>为扩大的意思，这样先扩大再blur即可保持基本形状的不变</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161854074.png" alt="image-20201128161854074"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161913940.png" alt="image-20201128161913940"></p>
+<p>接下来就是distort，添加noise让地形更加丰富</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128162230010.png" alt="image-20201128162230010"></p>
+<p>得到的最终结果</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128162253237.png" alt="image-20201128162253237"></p>
+<h3 id="模拟地形的侵蚀"><a href="#模拟地形的侵蚀" class="headerlink" title="模拟地形的侵蚀"></a>模拟地形的侵蚀</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128162505936.png" alt="image-20201128162505936"></p>
+<p>利用erode模型流水和热力的侵蚀</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128162739054.png" alt="image-20201128162739054"></p>
+<p>根据maskbyfeature来进行Slump坍塌侵蚀的模拟</p>
+<h3 id="进行Mask分层"><a href="#进行Mask分层" class="headerlink" title="进行Mask分层"></a>进行Mask分层</h3><p>Mask层是在UE4中进行地形材质landscape的使用。首先我们要获得layer_02层，利用Mask by feature获得斜坡mask</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128164755717.png" alt="image-20201128164755717"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128164804090.png" alt="image-20201128164804090"></p>
+<p>再利用mask By feature 减去一些曲率mask</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128164904279.png" alt="image-20201128164904279"></p>
+<p>最后用copylayer将Mask层存储为layer_02层</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128165104837.png" alt="image-20201128165104837"></p>
+<p>再利用remap将Mask翻转同样操作得到Layer_01层，最后利用blast只保留我们需要的mask层信息</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128165309831.png" alt="image-20201128165309831"></p>
+<h3 id="赋予材质"><a href="#赋予材质" class="headerlink" title="赋予材质"></a>赋予材质</h3><p>这样导出到UE4时就可以自动赋予UE4材质而不需要手动去拉取材质了，但这个unreal_Material目前有Bug无法使用….</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128165524432.png" alt="image-20201128165524432"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128165405739.png" alt="image-20201128165405739"></p>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128165608747.png" alt="image-20201128165608747"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128165620882.png" alt="image-20201128165620882"></p>
 ]]></content>
       <categories>
-        <category>Hexo</category>
+        <category>Houdini</category>
       </categories>
       <tags>
-        <tag>Hexo</tag>
+        <tag>Houdini</tag>
       </tags>
   </entry>
   <entry>
@@ -2123,411 +2173,42 @@ hexo d
       </tags>
   </entry>
   <entry>
-    <title>Houdini利用基本形状构建地形(一)</title>
-    <url>/2020/11/28/Houdini%E5%88%A9%E7%94%A8%E5%9F%BA%E6%9C%AC%E5%BD%A2%E7%8A%B6%E6%9E%84%E5%BB%BA%E5%9C%B0%E5%BD%A2/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Houdini官方教程笔记，随手记录，会比较乱</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201130154350820.png" alt="image-20201130154350820"></p>
+    <title>SP学习笔记(一)</title>
+    <url>/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E4%B8%80)/</url>
+    <content><![CDATA[<h2 id="创建项目和基本操作"><a href="#创建项目和基本操作" class="headerlink" title="创建项目和基本操作"></a>创建项目和基本操作</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00005.png" alt="HighresScreenshot00005"></p>
 <a id="more"></a>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>主要利用box搭建原型，然后细化，最后分层Mask导出</p>
-<h3 id="利用HeightFieldProject投射构建基本地形"><a href="#利用HeightFieldProject投射构建基本地形" class="headerlink" title="利用HeightFieldProject投射构建基本地形"></a>利用HeightFieldProject投射构建基本地形</h3><p>首先利用box或者其他网格节点merge成自己想要的地形形状</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161006105.png" alt="image-20201128161006105"></p>
-<p>得到结果，这里project的Max，根据你的网格进行拉伸</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161116638.png" alt="image-20201128161116638"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161023938.png" alt="image-20201128161023938"></p>
-<p>也可以利用project的Mini进行网格映射的下沉，可以选择是否勾选HitFarthest，就是以最远面还是最近面来作为投射的结果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161227502.png" alt="image-20201128161227502"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161238029.png" alt="image-20201128161238029"></p>
-<p>得到基本的形状，然后就可以在这个基础上进行侵蚀，模糊等等操作</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161429075.png" alt="image-20201128161429075"></p>
-<h3 id="基本地形的继续细化"><a href="#基本地形的继续细化" class="headerlink" title="基本地形的继续细化"></a>基本地形的继续细化</h3><p>使用blur会造成地形形状的软化缩小，所以为了在固定地形形状的前提下进行地形的blur，可以使用一下节点，<strong>Expand</strong>为扩大的意思，这样先扩大再blur即可保持基本形状的不变</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161854074.png" alt="image-20201128161854074"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128161913940.png" alt="image-20201128161913940"></p>
-<p>接下来就是distort，添加noise让地形更加丰富</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128162230010.png" alt="image-20201128162230010"></p>
-<p>得到的最终结果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128162253237.png" alt="image-20201128162253237"></p>
-<h3 id="模拟地形的侵蚀"><a href="#模拟地形的侵蚀" class="headerlink" title="模拟地形的侵蚀"></a>模拟地形的侵蚀</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128162505936.png" alt="image-20201128162505936"></p>
-<p>利用erode模型流水和热力的侵蚀</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128162739054.png" alt="image-20201128162739054"></p>
-<p>根据maskbyfeature来进行Slump坍塌侵蚀的模拟</p>
-<h3 id="进行Mask分层"><a href="#进行Mask分层" class="headerlink" title="进行Mask分层"></a>进行Mask分层</h3><p>Mask层是在UE4中进行地形材质landscape的使用。首先我们要获得layer_02层，利用Mask by feature获得斜坡mask</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128164755717.png" alt="image-20201128164755717"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128164804090.png" alt="image-20201128164804090"></p>
-<p>再利用mask By feature 减去一些曲率mask</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128164904279.png" alt="image-20201128164904279"></p>
-<p>最后用copylayer将Mask层存储为layer_02层</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128165104837.png" alt="image-20201128165104837"></p>
-<p>再利用remap将Mask翻转同样操作得到Layer_01层，最后利用blast只保留我们需要的mask层信息</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128165309831.png" alt="image-20201128165309831"></p>
-<h3 id="赋予材质"><a href="#赋予材质" class="headerlink" title="赋予材质"></a>赋予材质</h3><p>这样导出到UE4时就可以自动赋予UE4材质而不需要手动去拉取材质了，但这个unreal_Material目前有Bug无法使用….</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128165524432.png" alt="image-20201128165524432"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128165405739.png" alt="image-20201128165405739"></p>
-<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128165608747.png" alt="image-20201128165608747"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201128165620882.png" alt="image-20201128165620882"></p>
+<p>左上角文件 —- 新建，因为我打算把贴图到UE4尝试，所以选择的模板为UE4</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201110539670.png" alt="image-20201201110539670"></p>
+<p>Alt + 鼠标左键旋转视图    Alt + 鼠标滚轮平移视图    Shift + 右键旋转HDR环境改变光照</p>
+<h2 id="玻璃材质"><a href="#玻璃材质" class="headerlink" title="玻璃材质"></a>玻璃材质</h2><p>纹理集列表就是在三维软件中设置的材质ID，你分了多少个材质，在SP就会显示多少个</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201111210864.png" alt="image-20201201111210864"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201111454415.png" alt="image-20201201111454415"></p>
+<p>为glass材质新建一个Shader重命名为Glass，并且在纹理集设置添加opaticy通道</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201111611371.png" alt="image-20201201111611371"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201111754424.png" alt="image-20201201111754424"></p>
+<p>因为Glass shader使用的还是pbr-meta-rough并不会造成透明效果，所以我们要在着色器设置里修改为pbr-metal-rough-with-alpha-blending</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201111947608.png" alt="image-20201201111947608"></p>
+<p>接下来新建一个填充图层，并且只输出opacity通道</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201112044502.png" alt="image-20201201112044502"></p>
+<p>达到效果</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201112056726.png" alt="image-20201201112056726"></p>
+<h2 id="烘焙贴图"><a href="#烘焙贴图" class="headerlink" title="烘焙贴图"></a>烘焙贴图</h2><p>纹理集设置 —- 烘焙贴图，由于我们没有高模，所以没必要烘焙Normal，厚度贴图要用到的地方比如次表面散射，所以不必要烘焙，同时为了烘焙材质ID贴图，所以教程特意复制了一个同样的模型，并为模型赋予基本颜色</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201113416434.png" alt="image-20201201113416434"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201113709879.png" alt="image-20201201113709879"></p>
+<h3 id="出现问题"><a href="#出现问题" class="headerlink" title="出现问题"></a>出现问题</h3><p>由于我们选择的烘焙方式是默认烘焙，所以会容易出现投射错误</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201113921529.png" alt="ID"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201113944633.png" alt="曲率"></p>
+<p>所以我们要修改Match方式为By Mesh，按照Mesh来进行投射烘焙，他对于模型的匹配时根据后缀来进行的，所以命名一定要规范，不然会错误</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201114222490.png" alt="image-20201201114222490"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201114243344.png" alt="命名规范"></p>
+<p>得到正确的结果</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201114503788.png" alt="image-20201201114503788"></p>
 ]]></content>
       <categories>
-        <category>Houdini</category>
+        <category>Substance painter</category>
       </categories>
       <tags>
-        <tag>Houdini</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Poof效果Niagara实现</title>
-    <url>/2020/10/31/Poof%E6%95%88%E6%9E%9CNiagara%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>教程：<a href="https://www.youtube.com/watch?v=aiw1slB4Mdo&amp;t=1677s" target="_blank" rel="noopener">https://www.youtube.com/watch?v=aiw1slB4Mdo&amp;t=1677s</a>    </p>
-<p>这位老哥的Niagara教程非常的棒，思路很清晰。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/Poof%E6%95%88%E6%9E%9C.gif" alt="Poof效果"></p>
- <a id="more"></a> 
-<h2 id="分析实现点"><a href="#分析实现点" class="headerlink" title="分析实现点"></a>分析实现点</h2><p>1.底层的烟雾效果    2.四处飞散的烟雾效果    3.爆炸火花和漂浮火花效果</p>
-<h2 id="底层的烟雾效果"><a href="#底层的烟雾效果" class="headerlink" title="底层的烟雾效果"></a>底层的烟雾效果</h2><p><strong>主要思路</strong>：利用Cylinder Location生成沿圆柱体表面的粒子，再Add Velocity达到外扩效果，最后Scale Sprite Size调整大小。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031154142500.png" alt="image-20201031154142500"></p>
-<h3 id="Cylinder-Location"><a href="#Cylinder-Location" class="headerlink" title="Cylinder Location"></a>Cylinder Location</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031154347484.png" alt="image-20201031154347484"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170321744.png" alt="image-20201030170321744"></p>
-<p>可以通过勾选SurfaceOnly，让点只生成在圆柱的表面</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170359427.png" alt="image-20201030170359427"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170405653.png" alt="image-20201030170405653"></p>
-<p>也可以选择是否封盖模式，可以看到这样点就不会生成在圆柱的上下表面</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170548167.png" alt="image-20201030170548167"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170552930.png" alt="image-20201030170552930"></p>
-<h3 id="Drag"><a href="#Drag" class="headerlink" title="Drag"></a>Drag</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031154558620.png" alt="image-20201031154558620"></p>
-<p>其实在我看来就是摩擦力，能达到一个非常好的物理模拟效果。</p>
-<h3 id="为烟雾添加Light效果"><a href="#为烟雾添加Light效果" class="headerlink" title="为烟雾添加Light效果"></a>为烟雾添加Light效果</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031154937201.png" alt="image-20201031154937201"></p>
-<h2 id="四处飞散的烟雾效果"><a href="#四处飞散的烟雾效果" class="headerlink" title="四处飞散的烟雾效果"></a>四处飞散的烟雾效果</h2><p>思路：首先用一个Emitter发射出5个点来模拟烟雾的轨迹，Generate Location Event发出Event，然后另一个Emitter接受Event，完成了粒子之间的属性传递。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031155452425.png" alt="发出Event的Emitter"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031155533248.png" alt="接收Event的Emitter"></p>
-<h3 id="Add-Velocity-from-point"><a href="#Add-Velocity-from-point" class="headerlink" title="Add Velocity from point"></a>Add Velocity from point</h3><p>这个也是用于添加Velocity，大概意思是根据Velocity Origin 来计算粒子点的速度，Simulation Position指Niagara System中在场景中的位置</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031155754305.png" alt="image-20201031155754305"></p>
-<h3 id="Generate-Location-Event"><a href="#Generate-Location-Event" class="headerlink" title="Generate Location Event"></a>Generate Location Event</h3><p>这个需要在发射器属性中勾选持久ID，Event主要实现的是Emitter之间的信息传递，一个Emitter发出Event，另一个Emitter进行监听</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031160049739.png" alt="image-20201031160049739"></p>
-<p>Event Send Rate：Event发射的速率多少，会影响接收方Emitter生成粒子的数量</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031155942917.png" alt="image-20201031155942917"></p>
-<h3 id="Receive-Location-Event"><a href="#Receive-Location-Event" class="headerlink" title="Receive Location Event"></a>Receive Location Event</h3><p>顾名思义是接受Event</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031160428716.png" alt="image-20201031160428716"></p>
-<h2 id="爆炸火花和漂浮火花效果"><a href="#爆炸火花和漂浮火花效果" class="headerlink" title="爆炸火花和漂浮火花效果"></a>爆炸火花和漂浮火花效果</h2><p>这个比较简单，都是利用Add Velocity from point 添加了速度，让粒子往外扩，添加Curl Noise Force让粒子更飘动更随机一点，其中Hit Emitter的size是经过拉伸的，这样才能形成长方形效果，最后都是调整Size曲线</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031160730199.png" alt="image-20201031160730199"></p>
-<h2 id="特别注意"><a href="#特别注意" class="headerlink" title="特别注意"></a>特别注意</h2><p>如果在材质中开启默认光照，特别注意光照对粒子的效果，可能会照成粒子变黑</p>
-<h2 id="材质"><a href="#材质" class="headerlink" title="材质"></a>材质</h2><p>朴实无华</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031161649592.png" alt="image-20201031161649592"></p>
-]]></content>
-      <categories>
-        <category>UE4</category>
-      </categories>
-      <tags>
-        <tag>UE4</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Maya导出存储文件工具</title>
-    <url>/2020/08/31/Maya%E5%AF%BC%E5%87%BA%E5%AD%98%E5%82%A8%E6%96%87%E4%BB%B6%E5%B7%A5%E5%85%B7/</url>
-    <content><![CDATA[<p>笔记记录</p>
-<a id="more"></a>
-<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>保存场景为ma文件，并且可以加载，刷新等。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/GIF%202020-8-31%2015-49-31.gif" alt></p>
-<h2 id="主要思路"><a href="#主要思路" class="headerlink" title="主要思路"></a>主要思路</h2><p>主要逻辑在controllerLibrary.py脚本，save，find，load3个方法。创建ControllerLibrary类继承于dict字典类，数据存储name,path,screenshot的相关路径等等。</p>
-<p>主要API：cmds.file()进行文件的存储和读取    cmds.viewFit():将摄像机对准物体    cmds.playblast():渲染导出图片    json.dump()：json文件的编码写入    json.load():json文件的解码读取</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200831160940099.png" alt="image-20200831160940099"></p>
-<pre><code>#-*-coding:gbk-*-
-
-from maya import cmds
-import os
-import json
-import pprint
-
-#获取Maya文档路径
-USERAPPDIR = cmds.internalVar(userAppDir=True)
-#文件夹路径
-DIRECTORY = os.path.join(USERAPPDIR, &quot;controllerLibrary&quot;)
-
-
-def createDirectory(directory=DIRECTORY):
-    &quot;&quot;&quot;
-    根据文件路径创建文件夹
-    Args:
-        directory(str): 要创建的文件夹路径
-
-    Returns:
-
-    &quot;&quot;&quot;
-    #首先判断文件夹是否存在
-    if not os.path.exists(directory):
-        #如果不存在那就创建文件夹
-        os.mkdir(directory)
-
-
-#继承字典类
-class ControllerLibrary(dict):
-
-    #保存文件方法
-    #**info关键字参数
-    def save(self,name,screenshot=True,directory=DIRECTORY,**info):
-
-        #首先要确认要保存的路径是否存在
-        createDirectory(directory)
-
-        #保存文件路径
-        path = os.path.join(directory,&quot;{0}.ma&quot;.format(name))
-        #json保存文件
-        infoFile = os.path.join(directory,&quot;{0}.json&quot;.format(name))
-        info[&quot;name&quot;] = name
-        info[&quot;path&quot;] = path
-
-        #判是否需要screenShot
-        if screenshot:
-            self.saveScreenshot(name,directory)
-
-        #进行场景文件的保存,保存格式为mayaAscii
-        cmds.file(rename=path)
-
-        #如果进行了选择，就单独保存选择了的物体场景
-        if cmds.ls(selection=True):
-            cmds.file(force=True,type=&quot;mayaAscii&quot;,exportSelected=True)
-
-        #否则保存全部场景物体
-        else:
-            cmds.file(save=True,type=&quot;mayaAscii&quot;,force=True)
-
-        #打开infoFile文件,保存为json格式,写入文件
-        with open(infoFile,&quot;w&quot;) as f:
-            json.dump(info,f,indent=4)
-
-        self[name] = path
-
-    #获得文件夹下的所有文件
-    def find(self,directory=DIRECTORY):
-        # 进行清空，避免删除.ma文件时没有更新
-        self.clear()
-
-        if not os.path.exists(directory):
-            return None
-
-        files = os.listdir(directory)
-
-        #进行特定筛选，只获取ma文件
-        mayaFiles = [f for f in files if f.endswith(&quot;.ma&quot;)]
-
-        #进行键值对存储
-        for ma in mayaFiles:
-            #分离文件名和扩展名
-            name,ext = os.path.splitext(ma)
-            path = os.path.join(directory,ma)
-
-            #查看是否json文件
-            infoFile = &quot;{0}.json&quot;.format(name)
-            if infoFile in files:
-                infoFile = os.path.join(directory,infoFile)
-                #读取每个场景配置的json文件
-                with open(infoFile,&quot;r&quot;) as f:
-                    #进行读取
-                    info = json.load(f)
-
-            else:
-                print(u&quot;没有发现{0}文件&quot;.format(infoFile))
-                info = {}
-
-            #查看是否screenshot图片
-            screenshot = &quot;{0}.jpg&quot;.format(name)
-            if screenshot in files:
-                info[&quot;screenshot&quot;] = os.path.join(directory,screenshot)
-
-            info[&quot;name&quot;]=name
-            info[&quot;path&quot;]=path
-
-            self[name]=info
-            #print(info)
-
-    #加载
-    def load(self,name):
-        path = self[name][&quot;path&quot;]
-
-        #进行加载
-        cmds.file(path,i=True,usingNamespaces=False)
-
-    #保存屏幕截图
-    def saveScreenshot(self,name,directory=DIRECTORY):
-        #确定图片保存的路径
-        path = os.path.join(directory,&quot;{0}.jpg&quot;.format(name))
-
-        #将摄像机对准物体，以方便进行截图
-        cmds.viewFit()
-        #确定保存图片格式为jpg
-        cmds.setAttr(&quot;defaultRenderGlobals.imageFormat&quot;,8)
-
-        #进行截图,这个相当于渲染命令
-        &quot;&quot;&quot;
-        completeFilename:导出图片的路径    forceOverwrite:是否覆盖现有的playblast     format:输出的格式
-        width,heigt:分辨率     showOrnaments:是否显示轴坐标图      viewer:是否启动播放查看器
-        &quot;&quot;&quot;
-        cmds.playblast(completeFilename=path,forceOverwrite=True,format=&quot;image&quot;,width=200,height=200,
-                       showOrnaments=False,startTime=1,endTime=1,viewer=False)
-
-        return path
-</code></pre><p>主要逻辑构建好，就可以构建UI了，UI构建在libraryUI.py中完成</p>
-<pre><code>#-*-coding:gbk-*-
-
-import controllerLibrary
-from imp import reload
-reload(controllerLibrary)
-from PySide2 import QtWidgets,QtCore,QtGui
-import maya.OpenMayaUI as omui
-import maya.cmds as cmds
-from shiboken2 import wrapInstance
-
-
-#获取maya主窗口
-def maya_main_window():
-    main_window_ptr = omui.MQtUtil.mainWindow()
-    return wrapInstance(long(main_window_ptr),QtWidgets.QWidget)
-
-
-#ui类
-class ControllerLibraryUI(QtWidgets.QDialog):
-
-    #初始化
-    def __init__(self,parent=maya_main_window()):
-        super(ControllerLibraryUI, self).__init__(parent)
-        self.library = controllerLibrary.ControllerLibrary()
-
-        #图标size
-        self.size = 64
-        #格子Sizd
-        self.buffer=12
-
-        #设置窗口标题
-        self.setWindowTitle(u&quot;控制Library窗口&quot;)
-        #关闭问号按钮
-        self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
-
-        self.createWidgets()
-        self.createLayouts()
-        self.createConnects()
-
-        #填充ListWidget
-        self.populate()
-
-    def createWidgets(self):
-        self.save_btn = QtWidgets.QPushButton(&quot;save&quot;)
-        self.saveName_lineEdit = QtWidgets.QLineEdit()
-
-        #设置listWidget
-        self.file_listWidget = QtWidgets.QListWidget()
-        #图标模式
-        self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)
-        #设置图标大小
-        self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))
-        #设置拉伸模式为Adjust
-        self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)
-        #设置GridSize
-        self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))
-
-        self.import_btn = QtWidgets.QPushButton(&quot;Import&quot;)
-        self.refresh_btn = QtWidgets.QPushButton(&quot;Refresh&quot;)
-        self.close_btn = QtWidgets.QPushButton(&quot;Close&quot;)
-
-    def createLayouts(self):
-        main_layout = QtWidgets.QVBoxLayout(self)
-
-        save_layout = QtWidgets.QHBoxLayout()
-        save_layout.addWidget(self.saveName_lineEdit)
-        save_layout.addWidget(self.save_btn)
-        main_layout.addLayout(save_layout)
-
-        main_layout.addWidget(self.file_listWidget)
-
-        btn_layout = QtWidgets.QHBoxLayout()
-        btn_layout.addWidget(self.import_btn)
-        btn_layout.addWidget(self.refresh_btn)
-        btn_layout.addWidget(self.close_btn)
-        main_layout.addLayout(btn_layout)
-
-
-
-    def createConnects(self):
-        self.save_btn.clicked.connect(self.save)
-
-        self.import_btn.clicked.connect(self.load)
-        self.refresh_btn.clicked.connect(self.populate)
-        self.close_btn.clicked.connect(self.close)
-
-    def populate(self):
-
-        #清空file_list，避免重复增加
-        self.file_listWidget.clear()
-        #获取Directory文件夹下经过筛选的文件
-        self.library.find()
-
-        #获取键值对
-        for name,info in self.library.items():
-            #创建ListWidegtItem
-            item = QtWidgets.QListWidgetItem(name)
-            #添加到file_listWidget
-            self.file_listWidget.addItem(item)
-
-            #查看是否有截图
-            screenshot = info.get(&quot;screenshot&quot;)
-            if screenshot:
-                icon = QtGui.QIcon(screenshot)
-                item.setIcon(icon)
-
-    def load(self):
-        #获取当前选中的ListWidgetItem
-        currentItem = self.file_listWidget.currentItem()
-        #如果没有选中，则弹出警告
-        if not currentItem:
-            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;请选择文件！！&quot;)
-            return
-
-        self.library.load(currentItem.text())
-
-    def save(self):
-        #首先获取lineEdit的str
-        name = self.saveName_lineEdit.text()
-
-        #去除name的首尾空格
-        if not name.strip():
-            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;名字不合法！！&quot;)
-            return
-
-        self.library.save(name)
-        #重新更新ListWidget
-        self.populate()
-        #重置LineEdit
-        self.saveName_lineEdit.setText(&quot;&quot;)
-
-
-def showUI():
-    ui = ControllerLibraryUI()
-    ui.show()
-
-    return ui
-</code></pre><h2 id="QListView和QListWidget的区别"><a href="#QListView和QListWidget的区别" class="headerlink" title="QListView和QListWidget的区别"></a>QListView和QListWidget的区别</h2><p>我上次搞图片快速分类工具的时候，对于图片文件的预览我使用了QListView来进行数据的展示。这次我用QListWidget列表展示数据，那么他们到底有什么不一样呢？</p>
-<p><strong>QlistView类用于展示数据，它的子类是QListWIdget。QListView是基于模型（Model）的，需要程序来建立模型，然后再保存数据。QListWidget是一个升级版本的QListView，它已经建立了一个数据储存模型（QListWidgetItem），直接调用addItem（）函数，就可以添加条目（Item）</strong></p>
-<p>图片快速分类中QlistView的使用</p>
-<pre><code>        #创建QFileSystemModel
-        #QFileSystemModel是一个维护文件目录内容信息的模型，它本身不包含任何数据项，而只是表示本地文件系统上的文件和目录。
-        self.file_model = QtWidgets.QFileSystemModel()
-        #设置过滤器
-        self.file_model.setNameFilters(self.FILTERS)
-        #隐藏过滤掉的文件
-        self.file_model.setNameFilterDisables(False)
-        #设置Model
-        self.ui.image_list_view.setModel(self.file_model)
-</code></pre><p>存储导入工具中QListWidget的使用</p>
-<pre><code>        #设置listWidget
-        self.file_listWidget = QtWidgets.QListWidget()
-        #图标模式
-        self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)
-        #设置图标大小
-        self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))
-        #设置拉伸模式为Adjust
-        self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)
-        #设置GridSize                        self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))
-</code></pre>]]></content>
-      <categories>
-        <category>Maya</category>
-      </categories>
-      <tags>
-        <tag>Maya</tag>
+        <tag>Substance painter</tag>
       </tags>
   </entry>
   <entry>
@@ -2893,42 +2574,361 @@ if __name__ == &#39;__main__&#39;:
       </tags>
   </entry>
   <entry>
-    <title>SP学习笔记(一)</title>
-    <url>/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E4%B8%80)/</url>
-    <content><![CDATA[<h2 id="创建项目和基本操作"><a href="#创建项目和基本操作" class="headerlink" title="创建项目和基本操作"></a>创建项目和基本操作</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00005.png" alt="HighresScreenshot00005"></p>
+    <title>Maya导出存储文件工具</title>
+    <url>/2020/08/31/Maya%E5%AF%BC%E5%87%BA%E5%AD%98%E5%82%A8%E6%96%87%E4%BB%B6%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<p>笔记记录</p>
 <a id="more"></a>
-<p>左上角文件 —- 新建，因为我打算把贴图到UE4尝试，所以选择的模板为UE4</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201110539670.png" alt="image-20201201110539670"></p>
-<p>Alt + 鼠标左键旋转视图    Alt + 鼠标滚轮平移视图    Shift + 右键旋转HDR环境改变光照</p>
-<h2 id="玻璃材质"><a href="#玻璃材质" class="headerlink" title="玻璃材质"></a>玻璃材质</h2><p>纹理集列表就是在三维软件中设置的材质ID，你分了多少个材质，在SP就会显示多少个</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201111210864.png" alt="image-20201201111210864"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201111454415.png" alt="image-20201201111454415"></p>
-<p>为glass材质新建一个Shader重命名为Glass，并且在纹理集设置添加opaticy通道</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201111611371.png" alt="image-20201201111611371"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201111754424.png" alt="image-20201201111754424"></p>
-<p>因为Glass shader使用的还是pbr-meta-rough并不会造成透明效果，所以我们要在着色器设置里修改为pbr-metal-rough-with-alpha-blending</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201111947608.png" alt="image-20201201111947608"></p>
-<p>接下来新建一个填充图层，并且只输出opacity通道</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201112044502.png" alt="image-20201201112044502"></p>
-<p>达到效果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201112056726.png" alt="image-20201201112056726"></p>
-<h2 id="烘焙贴图"><a href="#烘焙贴图" class="headerlink" title="烘焙贴图"></a>烘焙贴图</h2><p>纹理集设置 —- 烘焙贴图，由于我们没有高模，所以没必要烘焙Normal，厚度贴图要用到的地方比如次表面散射，所以不必要烘焙，同时为了烘焙材质ID贴图，所以教程特意复制了一个同样的模型，并为模型赋予基本颜色</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201113416434.png" alt="image-20201201113416434"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201113709879.png" alt="image-20201201113709879"></p>
-<h3 id="出现问题"><a href="#出现问题" class="headerlink" title="出现问题"></a>出现问题</h3><p>由于我们选择的烘焙方式是默认烘焙，所以会容易出现投射错误</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201113921529.png" alt="ID"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201113944633.png" alt="曲率"></p>
-<p>所以我们要修改Match方式为By Mesh，按照Mesh来进行投射烘焙，他对于模型的匹配时根据后缀来进行的，所以命名一定要规范，不然会错误</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201114222490.png" alt="image-20201201114222490"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201114243344.png" alt="命名规范"></p>
-<p>得到正确的结果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201114503788.png" alt="image-20201201114503788"></p>
-]]></content>
+<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>保存场景为ma文件，并且可以加载，刷新等。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/GIF%202020-8-31%2015-49-31.gif" alt></p>
+<h2 id="主要思路"><a href="#主要思路" class="headerlink" title="主要思路"></a>主要思路</h2><p>主要逻辑在controllerLibrary.py脚本，save，find，load3个方法。创建ControllerLibrary类继承于dict字典类，数据存储name,path,screenshot的相关路径等等。</p>
+<p>主要API：cmds.file()进行文件的存储和读取    cmds.viewFit():将摄像机对准物体    cmds.playblast():渲染导出图片    json.dump()：json文件的编码写入    json.load():json文件的解码读取</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20200831160940099.png" alt="image-20200831160940099"></p>
+<pre><code>#-*-coding:gbk-*-
+
+from maya import cmds
+import os
+import json
+import pprint
+
+#获取Maya文档路径
+USERAPPDIR = cmds.internalVar(userAppDir=True)
+#文件夹路径
+DIRECTORY = os.path.join(USERAPPDIR, &quot;controllerLibrary&quot;)
+
+
+def createDirectory(directory=DIRECTORY):
+    &quot;&quot;&quot;
+    根据文件路径创建文件夹
+    Args:
+        directory(str): 要创建的文件夹路径
+
+    Returns:
+
+    &quot;&quot;&quot;
+    #首先判断文件夹是否存在
+    if not os.path.exists(directory):
+        #如果不存在那就创建文件夹
+        os.mkdir(directory)
+
+
+#继承字典类
+class ControllerLibrary(dict):
+
+    #保存文件方法
+    #**info关键字参数
+    def save(self,name,screenshot=True,directory=DIRECTORY,**info):
+
+        #首先要确认要保存的路径是否存在
+        createDirectory(directory)
+
+        #保存文件路径
+        path = os.path.join(directory,&quot;{0}.ma&quot;.format(name))
+        #json保存文件
+        infoFile = os.path.join(directory,&quot;{0}.json&quot;.format(name))
+        info[&quot;name&quot;] = name
+        info[&quot;path&quot;] = path
+
+        #判是否需要screenShot
+        if screenshot:
+            self.saveScreenshot(name,directory)
+
+        #进行场景文件的保存,保存格式为mayaAscii
+        cmds.file(rename=path)
+
+        #如果进行了选择，就单独保存选择了的物体场景
+        if cmds.ls(selection=True):
+            cmds.file(force=True,type=&quot;mayaAscii&quot;,exportSelected=True)
+
+        #否则保存全部场景物体
+        else:
+            cmds.file(save=True,type=&quot;mayaAscii&quot;,force=True)
+
+        #打开infoFile文件,保存为json格式,写入文件
+        with open(infoFile,&quot;w&quot;) as f:
+            json.dump(info,f,indent=4)
+
+        self[name] = path
+
+    #获得文件夹下的所有文件
+    def find(self,directory=DIRECTORY):
+        # 进行清空，避免删除.ma文件时没有更新
+        self.clear()
+
+        if not os.path.exists(directory):
+            return None
+
+        files = os.listdir(directory)
+
+        #进行特定筛选，只获取ma文件
+        mayaFiles = [f for f in files if f.endswith(&quot;.ma&quot;)]
+
+        #进行键值对存储
+        for ma in mayaFiles:
+            #分离文件名和扩展名
+            name,ext = os.path.splitext(ma)
+            path = os.path.join(directory,ma)
+
+            #查看是否json文件
+            infoFile = &quot;{0}.json&quot;.format(name)
+            if infoFile in files:
+                infoFile = os.path.join(directory,infoFile)
+                #读取每个场景配置的json文件
+                with open(infoFile,&quot;r&quot;) as f:
+                    #进行读取
+                    info = json.load(f)
+
+            else:
+                print(u&quot;没有发现{0}文件&quot;.format(infoFile))
+                info = {}
+
+            #查看是否screenshot图片
+            screenshot = &quot;{0}.jpg&quot;.format(name)
+            if screenshot in files:
+                info[&quot;screenshot&quot;] = os.path.join(directory,screenshot)
+
+            info[&quot;name&quot;]=name
+            info[&quot;path&quot;]=path
+
+            self[name]=info
+            #print(info)
+
+    #加载
+    def load(self,name):
+        path = self[name][&quot;path&quot;]
+
+        #进行加载
+        cmds.file(path,i=True,usingNamespaces=False)
+
+    #保存屏幕截图
+    def saveScreenshot(self,name,directory=DIRECTORY):
+        #确定图片保存的路径
+        path = os.path.join(directory,&quot;{0}.jpg&quot;.format(name))
+
+        #将摄像机对准物体，以方便进行截图
+        cmds.viewFit()
+        #确定保存图片格式为jpg
+        cmds.setAttr(&quot;defaultRenderGlobals.imageFormat&quot;,8)
+
+        #进行截图,这个相当于渲染命令
+        &quot;&quot;&quot;
+        completeFilename:导出图片的路径    forceOverwrite:是否覆盖现有的playblast     format:输出的格式
+        width,heigt:分辨率     showOrnaments:是否显示轴坐标图      viewer:是否启动播放查看器
+        &quot;&quot;&quot;
+        cmds.playblast(completeFilename=path,forceOverwrite=True,format=&quot;image&quot;,width=200,height=200,
+                       showOrnaments=False,startTime=1,endTime=1,viewer=False)
+
+        return path
+</code></pre><p>主要逻辑构建好，就可以构建UI了，UI构建在libraryUI.py中完成</p>
+<pre><code>#-*-coding:gbk-*-
+
+import controllerLibrary
+from imp import reload
+reload(controllerLibrary)
+from PySide2 import QtWidgets,QtCore,QtGui
+import maya.OpenMayaUI as omui
+import maya.cmds as cmds
+from shiboken2 import wrapInstance
+
+
+#获取maya主窗口
+def maya_main_window():
+    main_window_ptr = omui.MQtUtil.mainWindow()
+    return wrapInstance(long(main_window_ptr),QtWidgets.QWidget)
+
+
+#ui类
+class ControllerLibraryUI(QtWidgets.QDialog):
+
+    #初始化
+    def __init__(self,parent=maya_main_window()):
+        super(ControllerLibraryUI, self).__init__(parent)
+        self.library = controllerLibrary.ControllerLibrary()
+
+        #图标size
+        self.size = 64
+        #格子Sizd
+        self.buffer=12
+
+        #设置窗口标题
+        self.setWindowTitle(u&quot;控制Library窗口&quot;)
+        #关闭问号按钮
+        self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
+
+        self.createWidgets()
+        self.createLayouts()
+        self.createConnects()
+
+        #填充ListWidget
+        self.populate()
+
+    def createWidgets(self):
+        self.save_btn = QtWidgets.QPushButton(&quot;save&quot;)
+        self.saveName_lineEdit = QtWidgets.QLineEdit()
+
+        #设置listWidget
+        self.file_listWidget = QtWidgets.QListWidget()
+        #图标模式
+        self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)
+        #设置图标大小
+        self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))
+        #设置拉伸模式为Adjust
+        self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)
+        #设置GridSize
+        self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))
+
+        self.import_btn = QtWidgets.QPushButton(&quot;Import&quot;)
+        self.refresh_btn = QtWidgets.QPushButton(&quot;Refresh&quot;)
+        self.close_btn = QtWidgets.QPushButton(&quot;Close&quot;)
+
+    def createLayouts(self):
+        main_layout = QtWidgets.QVBoxLayout(self)
+
+        save_layout = QtWidgets.QHBoxLayout()
+        save_layout.addWidget(self.saveName_lineEdit)
+        save_layout.addWidget(self.save_btn)
+        main_layout.addLayout(save_layout)
+
+        main_layout.addWidget(self.file_listWidget)
+
+        btn_layout = QtWidgets.QHBoxLayout()
+        btn_layout.addWidget(self.import_btn)
+        btn_layout.addWidget(self.refresh_btn)
+        btn_layout.addWidget(self.close_btn)
+        main_layout.addLayout(btn_layout)
+
+
+
+    def createConnects(self):
+        self.save_btn.clicked.connect(self.save)
+
+        self.import_btn.clicked.connect(self.load)
+        self.refresh_btn.clicked.connect(self.populate)
+        self.close_btn.clicked.connect(self.close)
+
+    def populate(self):
+
+        #清空file_list，避免重复增加
+        self.file_listWidget.clear()
+        #获取Directory文件夹下经过筛选的文件
+        self.library.find()
+
+        #获取键值对
+        for name,info in self.library.items():
+            #创建ListWidegtItem
+            item = QtWidgets.QListWidgetItem(name)
+            #添加到file_listWidget
+            self.file_listWidget.addItem(item)
+
+            #查看是否有截图
+            screenshot = info.get(&quot;screenshot&quot;)
+            if screenshot:
+                icon = QtGui.QIcon(screenshot)
+                item.setIcon(icon)
+
+    def load(self):
+        #获取当前选中的ListWidgetItem
+        currentItem = self.file_listWidget.currentItem()
+        #如果没有选中，则弹出警告
+        if not currentItem:
+            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;请选择文件！！&quot;)
+            return
+
+        self.library.load(currentItem.text())
+
+    def save(self):
+        #首先获取lineEdit的str
+        name = self.saveName_lineEdit.text()
+
+        #去除name的首尾空格
+        if not name.strip():
+            QtWidgets.QMessageBox.warning(self,&quot;warning&quot;,u&quot;名字不合法！！&quot;)
+            return
+
+        self.library.save(name)
+        #重新更新ListWidget
+        self.populate()
+        #重置LineEdit
+        self.saveName_lineEdit.setText(&quot;&quot;)
+
+
+def showUI():
+    ui = ControllerLibraryUI()
+    ui.show()
+
+    return ui
+</code></pre><h2 id="QListView和QListWidget的区别"><a href="#QListView和QListWidget的区别" class="headerlink" title="QListView和QListWidget的区别"></a>QListView和QListWidget的区别</h2><p>我上次搞图片快速分类工具的时候，对于图片文件的预览我使用了QListView来进行数据的展示。这次我用QListWidget列表展示数据，那么他们到底有什么不一样呢？</p>
+<p><strong>QlistView类用于展示数据，它的子类是QListWIdget。QListView是基于模型（Model）的，需要程序来建立模型，然后再保存数据。QListWidget是一个升级版本的QListView，它已经建立了一个数据储存模型（QListWidgetItem），直接调用addItem（）函数，就可以添加条目（Item）</strong></p>
+<p>图片快速分类中QlistView的使用</p>
+<pre><code>        #创建QFileSystemModel
+        #QFileSystemModel是一个维护文件目录内容信息的模型，它本身不包含任何数据项，而只是表示本地文件系统上的文件和目录。
+        self.file_model = QtWidgets.QFileSystemModel()
+        #设置过滤器
+        self.file_model.setNameFilters(self.FILTERS)
+        #隐藏过滤掉的文件
+        self.file_model.setNameFilterDisables(False)
+        #设置Model
+        self.ui.image_list_view.setModel(self.file_model)
+</code></pre><p>存储导入工具中QListWidget的使用</p>
+<pre><code>        #设置listWidget
+        self.file_listWidget = QtWidgets.QListWidget()
+        #图标模式
+        self.file_listWidget.setViewMode(QtWidgets.QListWidget.IconMode)
+        #设置图标大小
+        self.file_listWidget.setIconSize(QtCore.QSize(self.size,self.size))
+        #设置拉伸模式为Adjust
+        self.file_listWidget.setResizeMode(QtWidgets.QListWidget.Adjust)
+        #设置GridSize                        self.file_listWidget.setGridSize(QtCore.QSize(self.size+self.buffer,self.size+self.buffer))
+</code></pre>]]></content>
       <categories>
-        <category>Substance painter</category>
+        <category>Maya</category>
       </categories>
       <tags>
-        <tag>Substance painter</tag>
+        <tag>Maya</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Poof效果Niagara实现</title>
+    <url>/2020/10/31/Poof%E6%95%88%E6%9E%9CNiagara%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<h2 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h2><p>教程：<a href="https://www.youtube.com/watch?v=aiw1slB4Mdo&amp;t=1677s" target="_blank" rel="noopener">https://www.youtube.com/watch?v=aiw1slB4Mdo&amp;t=1677s</a>    </p>
+<p>这位老哥的Niagara教程非常的棒，思路很清晰。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/Poof%E6%95%88%E6%9E%9C.gif" alt="Poof效果"></p>
+ <a id="more"></a> 
+<h2 id="分析实现点"><a href="#分析实现点" class="headerlink" title="分析实现点"></a>分析实现点</h2><p>1.底层的烟雾效果    2.四处飞散的烟雾效果    3.爆炸火花和漂浮火花效果</p>
+<h2 id="底层的烟雾效果"><a href="#底层的烟雾效果" class="headerlink" title="底层的烟雾效果"></a>底层的烟雾效果</h2><p><strong>主要思路</strong>：利用Cylinder Location生成沿圆柱体表面的粒子，再Add Velocity达到外扩效果，最后Scale Sprite Size调整大小。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031154142500.png" alt="image-20201031154142500"></p>
+<h3 id="Cylinder-Location"><a href="#Cylinder-Location" class="headerlink" title="Cylinder Location"></a>Cylinder Location</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031154347484.png" alt="image-20201031154347484"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170321744.png" alt="image-20201030170321744"></p>
+<p>可以通过勾选SurfaceOnly，让点只生成在圆柱的表面</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170359427.png" alt="image-20201030170359427"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170405653.png" alt="image-20201030170405653"></p>
+<p>也可以选择是否封盖模式，可以看到这样点就不会生成在圆柱的上下表面</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170548167.png" alt="image-20201030170548167"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201030170552930.png" alt="image-20201030170552930"></p>
+<h3 id="Drag"><a href="#Drag" class="headerlink" title="Drag"></a>Drag</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031154558620.png" alt="image-20201031154558620"></p>
+<p>其实在我看来就是摩擦力，能达到一个非常好的物理模拟效果。</p>
+<h3 id="为烟雾添加Light效果"><a href="#为烟雾添加Light效果" class="headerlink" title="为烟雾添加Light效果"></a>为烟雾添加Light效果</h3><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031154937201.png" alt="image-20201031154937201"></p>
+<h2 id="四处飞散的烟雾效果"><a href="#四处飞散的烟雾效果" class="headerlink" title="四处飞散的烟雾效果"></a>四处飞散的烟雾效果</h2><p>思路：首先用一个Emitter发射出5个点来模拟烟雾的轨迹，Generate Location Event发出Event，然后另一个Emitter接受Event，完成了粒子之间的属性传递。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031155452425.png" alt="发出Event的Emitter"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031155533248.png" alt="接收Event的Emitter"></p>
+<h3 id="Add-Velocity-from-point"><a href="#Add-Velocity-from-point" class="headerlink" title="Add Velocity from point"></a>Add Velocity from point</h3><p>这个也是用于添加Velocity，大概意思是根据Velocity Origin 来计算粒子点的速度，Simulation Position指Niagara System中在场景中的位置</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031155754305.png" alt="image-20201031155754305"></p>
+<h3 id="Generate-Location-Event"><a href="#Generate-Location-Event" class="headerlink" title="Generate Location Event"></a>Generate Location Event</h3><p>这个需要在发射器属性中勾选持久ID，Event主要实现的是Emitter之间的信息传递，一个Emitter发出Event，另一个Emitter进行监听</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031160049739.png" alt="image-20201031160049739"></p>
+<p>Event Send Rate：Event发射的速率多少，会影响接收方Emitter生成粒子的数量</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031155942917.png" alt="image-20201031155942917"></p>
+<h3 id="Receive-Location-Event"><a href="#Receive-Location-Event" class="headerlink" title="Receive Location Event"></a>Receive Location Event</h3><p>顾名思义是接受Event</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031160428716.png" alt="image-20201031160428716"></p>
+<h2 id="爆炸火花和漂浮火花效果"><a href="#爆炸火花和漂浮火花效果" class="headerlink" title="爆炸火花和漂浮火花效果"></a>爆炸火花和漂浮火花效果</h2><p>这个比较简单，都是利用Add Velocity from point 添加了速度，让粒子往外扩，添加Curl Noise Force让粒子更飘动更随机一点，其中Hit Emitter的size是经过拉伸的，这样才能形成长方形效果，最后都是调整Size曲线</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031160730199.png" alt="image-20201031160730199"></p>
+<h2 id="特别注意"><a href="#特别注意" class="headerlink" title="特别注意"></a>特别注意</h2><p>如果在材质中开启默认光照，特别注意光照对粒子的效果，可能会照成粒子变黑</p>
+<h2 id="材质"><a href="#材质" class="headerlink" title="材质"></a>材质</h2><p>朴实无华</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201031161649592.png" alt="image-20201031161649592"></p>
+]]></content>
+      <categories>
+        <category>UE4</category>
+      </categories>
+      <tags>
+        <tag>UE4</tag>
       </tags>
   </entry>
   <entry>
@@ -3024,6 +3024,22 @@ if __name__ == &#39;__main__&#39;:
       </tags>
   </entry>
   <entry>
+    <title>SP学习笔记(六)---最终成果</title>
+    <url>/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E5%85%AD)/</url>
+    <content><![CDATA[<h2 id="渲染作品图片"><a href="#渲染作品图片" class="headerlink" title="渲染作品图片"></a>渲染作品图片</h2><p>Iray，只渲了两分钟电脑实在顶不住了<img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/%E6%B8%B2%E6%9F%93%E6%88%90%E5%9B%BE.jpg" alt="渲染成图"></p>
+<a id="more"></a>
+<p>UE4由于没有添加任何效果可能看起来有点难看，但问题不大</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00004.png" alt="HighresScreenshot00004"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00003.png" alt="HighresScreenshot00003"></p>
+]]></content>
+      <categories>
+        <category>Substance painter</category>
+      </categories>
+      <tags>
+        <tag>Substance painter</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SP学习笔记(五)</title>
     <url>/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E4%BA%94)/</url>
     <content><![CDATA[<h2 id="使用id贴图和多边形填充工具制作遮罩"><a href="#使用id贴图和多边形填充工具制作遮罩" class="headerlink" title="使用id贴图和多边形填充工具制作遮罩"></a>使用id贴图和多边形填充工具制作遮罩</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00005.png" alt="HighresScreenshot00005"></p>
@@ -3062,83 +3078,6 @@ if __name__ == &#39;__main__&#39;:
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202171816849.png" alt="image-20201202171816849"></p>
 <p>再新建一个rough调节layer，用于调整玻璃的粗糙度变化</p>
 <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202173442953.png" alt="image-20201202173442953"></p>
-]]></content>
-      <categories>
-        <category>Substance painter</category>
-      </categories>
-      <tags>
-        <tag>Substance painter</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SP学习笔记(六)---最终成果</title>
-    <url>/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E5%85%AD)/</url>
-    <content><![CDATA[<h2 id="渲染作品图片"><a href="#渲染作品图片" class="headerlink" title="渲染作品图片"></a>渲染作品图片</h2><p>Iray，只渲了两分钟电脑实在顶不住了<img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/%E6%B8%B2%E6%9F%93%E6%88%90%E5%9B%BE.jpg" alt="渲染成图"></p>
-<a id="more"></a>
-<p>UE4由于没有添加任何效果可能看起来有点难看，但问题不大</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00004.png" alt="HighresScreenshot00004"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00003.png" alt="HighresScreenshot00003"></p>
-]]></content>
-      <categories>
-        <category>Substance painter</category>
-      </categories>
-      <tags>
-        <tag>Substance painter</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SP学习笔记(四)</title>
-    <url>/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E5%9B%9B)/</url>
-    <content><![CDATA[<h2 id="理解笔刷系统"><a href="#理解笔刷系统" class="headerlink" title="理解笔刷系统"></a>理解笔刷系统</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00005.png" alt="HighresScreenshot00005"></p>
-<a id="more"></a>
-<h3 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h3><p>ctrl + 鼠标右键左右移动控制笔刷大小</p>
-<p>ctrl + 鼠标右键上下移动控制笔刷软硬</p>
-<p>ctrl + 鼠标左键左右控制笔刷透明度</p>
-<p>ctrl + 鼠标左键上下控制笔刷旋转</p>
-<p>左上的画笔调节栏</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201221236504.png" alt="image-20201201221236504"></p>
-<p>当我们把笔刷透明度调整为少于100的时候，他会自动叠加到100透明度的效果，如果不想叠加可以按着A + 鼠标左键进行绘制</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/%E7%AC%94%E5%88%B7%E9%80%8F%E6%98%8E%E5%BA%A6.gif" alt="笔刷透明度"></p>
-<p>平滑笔刷可以绘制曲线的时候变得很漂亮平滑</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202115810636.png" alt="image-20201202115810636"></p>
-<p>跟随路径作用是让绘制的图案跟随曲线的旋转而旋转</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202120102297.png" alt="image-20201202120102297"></p>
-<p>绘画面板右键可以看到有：创建工具预设，创建材质预设，创建笔刷预设</p>
-<p>工具预设：保存材质和笔刷</p>
-<p>材质预设：只保存材质</p>
-<p>笔刷预设：只保存笔刷</p>
-<p>根据校准的选择会造成绘制的不同</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132143033.png" alt="image-20201202132143033"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132341569.png" alt="image-20201202132341569"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132400295.png" alt="image-20201202132400295"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132413256.png" alt="image-20201202132413256"></p>
-<p>添加绘制模板Stencil，其实就是提供一个基于屏幕空间的遮罩</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132739768.png" alt="image-20201202132739768"></p>
-<h2 id="使用绘画特效，映射和克隆工具"><a href="#使用绘画特效，映射和克隆工具" class="headerlink" title="使用绘画特效，映射和克隆工具"></a>使用绘画特效，映射和克隆工具</h2><p>绘画特效其实就是人为绘制遮罩，X快速切换绘制的黑白颜色</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202133248432.png" alt="image-20201202133248432"></p>
-<p>映射工具就是基于屏幕空间的纹理绘制</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202133551413.png" alt="image-20201202133551413"></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202133716766.png" alt="image-20201202133716766"></p>
-<p>克隆工具就是PS的仿制图章，需要将用到的通道混合模式都设置为Passthrough才有效，按V键对源区域进行采样</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202134301094.png" alt="image-20201202134301094"></p>
-<h2 id="使用锚定点"><a href="#使用锚定点" class="headerlink" title="使用锚定点"></a>使用锚定点</h2><p>锚定点是一种在一个图层中设置目标通道，让其他图层使用的工具</p>
-<p>添加文字layer，需要将笔刷的Alpha选为文字贴图Font Chathura</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202134640596.png" alt="image-20201202134640596"></p>
-<p>切换到AO通道，可以看到刚才添加的文字层并没有AO信息，所以我们可以为其添加AO信息</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202134848402.png" alt="image-20201202134848402"></p>
-<p>添加HBAO滤镜就可以为文字layer的AO信息</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202135059369.png" alt="image-20201202135059369"></p>
-<p>最后添加一下Blur滤镜</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202135451556.png" alt="image-20201202135451556"></p>
-<p>可以看到我们的文字并没有和rust铁锈材质进行结合，因为rust铁锈材质的遮罩是根据模型烘焙好的信息进行区分的，但是文字layer的height信息和AO信息都是后面加的，并没有存在烘焙好的贴图上，这时候锚定点的作用就来了。</p>
-<p>首先为文字layer右键添加一个锚定点</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202140128258.png" alt="image-20201202140128258"></p>
-<p>在rust的mask editor中微高度添加锚定点，由于我们文字layer只输出height信息，所以引用通道也要选择为Height</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202140503858.png" alt="image-20201202140503858"></p>
-<p>其次在微细节中进行细节的调整，并打开微高度开关，可以看到文字上也有了铁锈的痕迹</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202140857193.png" alt="image-20201202140857193"></p>
-<p>添加个人标记嘻嘻嘻</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202142517637.png" alt="image-20201202142517637"></p>
 ]]></content>
       <categories>
         <category>Substance painter</category>
@@ -3213,218 +3152,64 @@ if __name__ == &#39;__main__&#39;:
       </tags>
   </entry>
   <entry>
-    <title>UE4---RayMarch史莱姆</title>
-    <url>/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103023008823.png" alt="image-20210103023008823"></p>
+    <title>SP学习笔记(四)</title>
+    <url>/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E5%9B%9B)/</url>
+    <content><![CDATA[<h2 id="理解笔刷系统"><a href="#理解笔刷系统" class="headerlink" title="理解笔刷系统"></a>理解笔刷系统</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00005.png" alt="HighresScreenshot00005"></p>
 <a id="more"></a>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>1.利用RayMarch先绘制个球</p>
-<p>2.处理材质与其他模型交界过硬问题</p>
-<p>3.构建法线</p>
-<p>4.平滑合并</p>
-<h3 id="绘制球"><a href="#绘制球" class="headerlink" title="绘制球"></a>绘制球</h3><p>同样是首先传入CameraDir和WorldPos，MAX_Step，构建距离场，渲染距离场，屏幕射线与物体进行求交</p>
-<pre><code>float4 finalCol = 0.0f;
-float3 pos = WorldPos;
-
-for (int i = 0; i&lt;MAX_Step; i++)
-{
-    //球体距离场
-    float distance = length(pos) - 50.0f;
-
-    //判断距离是否足够接近
-    if (distance&lt;0.01f)
-    {
-        finalCol = 1.0f;
-        break;
-    }
-
-    //累加距离
-    pos += CameraDir * distance;
-}
-
-return finalCol;
-</code></pre><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102155523945.png" alt="image-20210102155523945"></p>
-<p>现在还有一个问题就是，我们RayMarch绘制得到的球体不会跟随物体的移动而移动</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-2%2015-57-15.gif" alt="GIF 2021-1-2 15-57-15"></p>
-<p>解决方法：我们添加一个ObjectPostion的偏移即可，ObjectPostion其实就是场景物体的中心轴位置</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102155925606.png" alt="image-20210102155925606"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102155939867.png" alt="image-20210102155939867"></p>
-<p>只要把ObjectPostion节点传入usf进行处理即可</p>
-<pre><code>float distance = length(pos - ObjectPos) - 50.0f;
-</code></pre><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102160234169.png" alt="image-20210102160234169"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-2%2016-01-22.gif" alt="GIF 2021-1-2 16-01-22"></p>
-<h3 id="处理材质与其他模型交界过硬问题"><a href="#处理材质与其他模型交界过硬问题" class="headerlink" title="处理材质与其他模型交界过硬问题"></a>处理材质与其他模型交界过硬问题</h3><p>可以看到交界非常的硬，我们解决这个问题一般使用SceneDepth解决</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102162741467.png" alt="image-20210102162741467"></p>
-<p>在for循环中添加以下代码</p>
-<pre><code>    //处理与其他模型交界过硬问题
-    if (SceneDepth &lt; length(pos - CameraPos))
-    {
-        break;
-    }
-</code></pre><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102162817759.png" alt="image-20210102162817759"></p>
-<p>物体在屏幕中间时显示正常，当物体移动到屏幕边缘时，球体会出现严重的变形</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-2%2020-14-37.gif" alt="GIF 2021-1-2 20-14-37"></p>
-<p>出现问题的原因：当我们摄像机往左移动时候，场景深度并没有改变都是一样的，但是我们的length(pos - CameraPos)由于我们摄像机的移动是变大了，所以造成畸变变小。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102201739300.png" alt="image-20210102201739300"></p>
-<p>相对于摄像机平面同一条直线上的场景深度是一样，这可以我们可以看渲染管线的变换可以知道，当然我这里选择用材质来证明，可以看到同一直线上的颜色一致的。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102202259011.png" alt="image-20210102202259011"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102202322138.png" alt="image-20210102202322138"></p>
-<p>解决方法：用一个trick对SceneDepth进行弥补，其实就是用CameraVector和CameraDirectionVector进行弥补</p>
-<p>CameraVector像素指向Camera的方向</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/CameraVectorImage.png" alt="img"></p>
-<p>CameraDirectionVector摄像机面对的方向</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102204629558.png" alt="image-20210102204629558"></p>
-<p>通过点积即可完成对边缘SceneDepth的弥补操作</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102204843678.png" alt="image-20210102204843678"></p>
-<p>最后结果，可以看出畸变情况好了很多</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-2%2020-49-16.gif" alt="GIF 2021-1-2 20-49-16"></p>
-<h3 id="构建法线"><a href="#构建法线" class="headerlink" title="构建法线"></a>构建法线</h3><p>思路和上一篇文章一样，代码如下，<strong>注意定义多个函数需要把函数放入结构体内</strong>    </p>
-<pre><code>struct FunctionStruct
-{
-    //构建球体距离场
-    float sphere(float3 pos)
-    {
-        return length(pos) - 50.0f;
-
-    }
-
-    //计算法线方向
-    float3 CalNormal(float3 pos)
-    {
-        float D_value = 0.01f;
-        return normalize(float3(
-        sphere(float3(pos.x + D_value, pos.y, pos.z)) - sphere(float3(pos.x - D_value, pos.y, pos.z)),
-        sphere(float3(pos.x, pos.y + D_value, pos.z)) - sphere(float3(pos.x, pos.y - D_value, pos.z)),
-        sphere(float3(pos.x, pos.y, pos.z + D_value)) - sphere(float3(pos.x, pos.y, pos.z - D_value))
-        ));
-
-    }
-};
-
-FunctionStruct FS;
-float hit = 0.0f;
-float3 pos = WorldPos;
-float3 normal = 0.0f;
-
-for (int i = 0; i&lt;MAX_Step; i++)
-{
-
-    //处理与其他模型交界过硬问题
-    if (SceneDepth &lt; length(pos - CameraPos))
-    {
-        break;
-    }
-
-    //球体距离场
-    float distance = FS.sphere(pos - ObjectPos);
-
-    //判断距离是否足够接近
-    if (distance&lt;0.01f)
-    {
-        hit = 1.0f;
-        normal = FS.CalNormal(pos - ObjectPos);
-        break;
-    }
-
-
-    //累加距离
-    pos += CameraDir * distance;
-}
-
-return float4(normal,hit);
-</code></pre><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102211839166.png" alt="image-20210102211839166"></p>
-<p>获取法线之后要传入UE4材质就可以享受UE4的光照效果，需要着色模型为默认光照，光照模式为体积方向，取消勾选切线空间法线</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102212252727.png" alt="image-20210102212252727"></p>
-<h3 id="平滑合并"><a href="#平滑合并" class="headerlink" title="平滑合并"></a>平滑合并</h3><p>平滑函数</p>
-<pre><code>float smin( float a, float b, float k){
-    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0);
-    return lerp( b, a, h) - k*h*(1.0-h);
-}
-</code></pre><p>这里就有一个问题，平滑函数需要a,b两个距离场参数，但是我们只有到球体的距离场，那怎么获取b参数呢？</p>
-<p>原视频作者给出了两种方案。</p>
-<h4 id="方案1（不太明白）"><a href="#方案1（不太明白）" class="headerlink" title="方案1（不太明白）"></a>方案1（不太明白）</h4><p>利用SceneDepth - length(pos - CameraPos)得到b参数，然后进行平滑合并</p>
-<pre><code>    float a = FS.sphere(pos - ObjectPos);
-    float b = SceneDepth - length(pos - CameraPos);
-    float distance = FS.smin(a,b,Smooth);
-</code></pre><p>如果我们将合并到的distance直接累加到pos，虽然球体与其他模型边缘会平滑，但是整体的效果会是错误的，用于存放球体的模型都会被渲染出来</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103014640415.png" alt="image-20210103014640415"></p>
-<p>因为得到的distance只有接近边缘时才会正确，所以我们不以distance进行累加，而是让pos每次循环沿屏幕射线前进1(感觉非常耗性能)</p>
-<pre><code>for (int i = 0; i&lt;MAX_Step; i++)
-{
-
-    //处理与其他模型交界过硬问题
-    if (SceneDepth &lt; length(pos - CameraPos))
-    {
-        break;
-    }
-
-    //球体距离场
-    float a = FS.sphere(pos - ObjectPos);
-    float b = SceneDepth - length(pos - CameraPos);
-    float distance = FS.smin(a,b,Smooth);
-
-    //判断距离是否足够接近
-    if (distance&lt;0.01f)
-    {
-        hit = 1.0f;
-        normal = FS.CalNormal(pos - ObjectPos);
-        break;
-    }
-
-
-    //累加距离
-    pos += CameraDir * 1;
-}
-</code></pre><p>这样就得到一个非常漂亮的史莱姆了</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103015700192.png" alt="image-20210103015700192"></p>
-<p>创建材质实例更容易进行调节</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103015759196.png" alt="image-20210103015759196"></p>
-<h4 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h4><p>UE4是支持生成网格距离场的，项目设置—-distance</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103015956546.png" alt="image-20210103015956546"></p>
-<p>可以看到为正方体和存放球体的模型以及平面都生成了距离场，但是分辨率不高</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103020419152.png" alt="image-20210103020419152"></p>
-<p>这里我们没必要为存放球体模型生成距离场，取消勾选距离场光照</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103020518820.png" alt="image-20210103020518820"></p>
-<p>在世界场景设置中设置距离场精细度</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103020723548.png" alt="image-20210103020723548"></p>
-<p>通过DistanceToNeareastSurface节点获取最近平面距离</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103020906402.png" alt="image-20210103020906402"></p>
-<p>如果我们需要在自己的usf中使用该节点，可以查看HLSL代码查看函数名称，如果带有global则全局可用</p>
-<pre><code>for (int i = 0; i&lt;MAX_Step; i++)
-{
-
-    //处理与其他模型交界过硬问题
-    if (SceneDepth &lt; length(pos - CameraPos))
-    {
-        break;
-    }
-
-    //球体距离场
-    float a = FS.sphere(pos - ObjectPos);
-    //float b = SceneDepth - length(pos - CameraPos);
-    float b = GetDistanceToNearestSurfaceGlobal(pos);
-    float distance = FS.smin(a,b,Smooth);
-
-    //判断距离是否足够接近
-    if (distance&lt;Stop)
-    {
-        hit = 1.0f;
-        normal = FS.CalNormal(pos - ObjectPos);
-        break;
-    }
-
-
-    //累加距离
-    pos += CameraDir * 1;
-}
-</code></pre><p>得到漂亮的小球</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103022635893.png" alt="image-20210103022635893"></p>
-<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>感觉RayMarching太耗性能了，而且近看有因为精细度造成的锯齿问题，还有有很好的数学能力才会绘制出好看的场景</p>
+<h3 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h3><p>ctrl + 鼠标右键左右移动控制笔刷大小</p>
+<p>ctrl + 鼠标右键上下移动控制笔刷软硬</p>
+<p>ctrl + 鼠标左键左右控制笔刷透明度</p>
+<p>ctrl + 鼠标左键上下控制笔刷旋转</p>
+<p>左上的画笔调节栏</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201201221236504.png" alt="image-20201201221236504"></p>
+<p>当我们把笔刷透明度调整为少于100的时候，他会自动叠加到100透明度的效果，如果不想叠加可以按着A + 鼠标左键进行绘制</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/%E7%AC%94%E5%88%B7%E9%80%8F%E6%98%8E%E5%BA%A6.gif" alt="笔刷透明度"></p>
+<p>平滑笔刷可以绘制曲线的时候变得很漂亮平滑</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202115810636.png" alt="image-20201202115810636"></p>
+<p>跟随路径作用是让绘制的图案跟随曲线的旋转而旋转</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202120102297.png" alt="image-20201202120102297"></p>
+<p>绘画面板右键可以看到有：创建工具预设，创建材质预设，创建笔刷预设</p>
+<p>工具预设：保存材质和笔刷</p>
+<p>材质预设：只保存材质</p>
+<p>笔刷预设：只保存笔刷</p>
+<p>根据校准的选择会造成绘制的不同</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132143033.png" alt="image-20201202132143033"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132341569.png" alt="image-20201202132341569"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132400295.png" alt="image-20201202132400295"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132413256.png" alt="image-20201202132413256"></p>
+<p>添加绘制模板Stencil，其实就是提供一个基于屏幕空间的遮罩</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202132739768.png" alt="image-20201202132739768"></p>
+<h2 id="使用绘画特效，映射和克隆工具"><a href="#使用绘画特效，映射和克隆工具" class="headerlink" title="使用绘画特效，映射和克隆工具"></a>使用绘画特效，映射和克隆工具</h2><p>绘画特效其实就是人为绘制遮罩，X快速切换绘制的黑白颜色</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202133248432.png" alt="image-20201202133248432"></p>
+<p>映射工具就是基于屏幕空间的纹理绘制</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202133551413.png" alt="image-20201202133551413"></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202133716766.png" alt="image-20201202133716766"></p>
+<p>克隆工具就是PS的仿制图章，需要将用到的通道混合模式都设置为Passthrough才有效，按V键对源区域进行采样</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202134301094.png" alt="image-20201202134301094"></p>
+<h2 id="使用锚定点"><a href="#使用锚定点" class="headerlink" title="使用锚定点"></a>使用锚定点</h2><p>锚定点是一种在一个图层中设置目标通道，让其他图层使用的工具</p>
+<p>添加文字layer，需要将笔刷的Alpha选为文字贴图Font Chathura</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202134640596.png" alt="image-20201202134640596"></p>
+<p>切换到AO通道，可以看到刚才添加的文字层并没有AO信息，所以我们可以为其添加AO信息</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202134848402.png" alt="image-20201202134848402"></p>
+<p>添加HBAO滤镜就可以为文字layer的AO信息</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202135059369.png" alt="image-20201202135059369"></p>
+<p>最后添加一下Blur滤镜</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202135451556.png" alt="image-20201202135451556"></p>
+<p>可以看到我们的文字并没有和rust铁锈材质进行结合，因为rust铁锈材质的遮罩是根据模型烘焙好的信息进行区分的，但是文字layer的height信息和AO信息都是后面加的，并没有存在烘焙好的贴图上，这时候锚定点的作用就来了。</p>
+<p>首先为文字layer右键添加一个锚定点</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202140128258.png" alt="image-20201202140128258"></p>
+<p>在rust的mask editor中微高度添加锚定点，由于我们文字layer只输出height信息，所以引用通道也要选择为Height</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202140503858.png" alt="image-20201202140503858"></p>
+<p>其次在微细节中进行细节的调整，并打开微高度开关，可以看到文字上也有了铁锈的痕迹</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202140857193.png" alt="image-20201202140857193"></p>
+<p>添加个人标记嘻嘻嘻</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201202142517637.png" alt="image-20201202142517637"></p>
 ]]></content>
       <categories>
-        <category>UE4</category>
+        <category>Substance painter</category>
       </categories>
       <tags>
-        <tag>UE4</tag>
+        <tag>Substance painter</tag>
       </tags>
   </entry>
   <entry>
@@ -3691,6 +3476,276 @@ return float4(normal,d.y);
       </tags>
   </entry>
   <entry>
+    <title>UE4---科幻扫描线效果笔记</title>
+    <url>/2021/01/05/UE4---%E7%A7%91%E5%B9%BB%E6%89%AB%E6%8F%8F%E7%BA%BF%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%2014-44-25.gif" alt="GIF 2021-1-5 14-44-25"></p>
+<a id="more"></a>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
+<li>根据Z轴生成0-1Mask贴图</li>
+<li>控制顶部顶点的世界位置偏移</li>
+<li>抖动效果</li>
+<li>屏幕空间条</li>
+<li>菲涅尔和CameraFade</li>
+<li>输入不透明度</li>
+</ol>
+<h3 id="根据Z轴生成0-1Mask贴图"><a href="#根据Z轴生成0-1Mask贴图" class="headerlink" title="根据Z轴生成0-1Mask贴图"></a>根据Z轴生成0-1Mask贴图</h3><p>将世界空间坐标转换为模型空间，只取Z通道，QbjectBounds返回的是模型的边界，我们除以Z通道就可以得到模型从底部到顶点0-1的Mask遮罩</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105011904542.png" alt="image-20210105011904542"></p>
+<p>预览Divide</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105012049880.png" alt="image-20210105012049880"></p>
+<h3 id="控制顶部顶点的世界位置偏移"><a href="#控制顶部顶点的世界位置偏移" class="headerlink" title="控制顶部顶点的世界位置偏移"></a>控制顶部顶点的世界位置偏移</h3><p>生成的Z轴Mask遮罩是用于控制WorldPositionOffset</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105012235486.png" alt="image-20210105012235486"></p>
+<p>同样将顶点的世界空间Pos转换到模型空间，并将位置进行归一化，只取RG通道，这个RG通道其实就是顶点在XY平面移动的方向</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105012625863.png" alt="image-20210105012625863"></p>
+<p>那么Z通道自然用于是Z轴方向上的移动</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105012739210.png" alt="image-20210105012739210"></p>
+<p>通过在这两个方向上的位移，我们可以实现模型的压缩（激活全息）和顶部扩大（缩放半径），当激活全息为0时是压扁状态，为1则是全息状态</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-30-38.gif" alt="GIF 2021-1-5 1-30-38"></p>
+<h3 id="抖动效果"><a href="#抖动效果" class="headerlink" title="抖动效果"></a>抖动效果</h3><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105014109050.png" alt="image-20210105014109050"></p>
+<p>通过ScreenPosition的屏幕UV将V轴缩放到0-100，再Floor，分成100个不同的矩形区域，这里为了方便展示，我设置为0-10区间，再缩放回0-1区间，可以看到整个屏幕给分成了若干个矩形区域，并不是根据模型来切分。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-38-52.gif" alt="GIF 2021-1-5 1-38-52"></p>
+<p>我们继续连接MF_FloatNoise节点，这个节点使用传入Noise种子和一个2D向量输出一个随机值，材质函数如下</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105014231451.png" alt="image-20210105014231451"></p>
+<p>得到一直在随机变化的矩形条    </p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-43-22.gif" alt="GIF 2021-1-5 1-43-22"></p>
+<p>控制抖动用于开关抖动效果，为0开启，为1关闭，在世界空间上进行一定的抖动偏移</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105014556245.png" alt="image-20210105014556245"></p>
+<p>结果如下</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-47-16.gif" alt="GIF 2021-1-5 1-47-16"></p>
+<h3 id="屏幕空间条"><a href="#屏幕空间条" class="headerlink" title="屏幕空间条"></a>屏幕空间条</h3><p>同样是利用ScreenPosition的UV进行操作，但是上面可以看到，随着摄像机的距离，映射在模型上面的UV区域是不会变化的，一直是以屏幕为标准。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105015229996.png" alt="image-20210105015229996"></p>
+<p>这样根据摄像机与物体的距离来决定生成的UV条的数量，符合了我们的要求</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-54-08.gif" alt="GIF 2021-1-5 1-54-08"></p>
+<h3 id="菲涅尔和CameraFade"><a href="#菲涅尔和CameraFade" class="headerlink" title="菲涅尔和CameraFade"></a>菲涅尔和CameraFade</h3><p>菲涅尔用于边缘的透明，CameraFade用于靠近Mesh时透明</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105143118294.png" alt="image-20210105143118294"></p>
+<h3 id="输入不透明度"><a href="#输入不透明度" class="headerlink" title="输入不透明度"></a>输入不透明度</h3><p>将基于屏幕空间的空间条与菲涅尔，CameraFade，激活全息进行相结合，输入不透明度</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105143446247.png" alt="image-20210105143446247"></p>
+<h3 id="用于网格的Scifi材质"><a href="#用于网格的Scifi材质" class="headerlink" title="用于网格的Scifi材质"></a>用于网格的Scifi材质</h3><p>网格的Scifi材质只要修改抖动，以及输入的不透明度，删除CameraFade即可</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105144134572.png" alt="image-20210105144134572"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105144144952.png" alt="image-20210105144144952"></p>
+]]></content>
+      <categories>
+        <category>UE4</category>
+      </categories>
+      <tags>
+        <tag>UE4</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>UE4---RayMarch史莱姆</title>
+    <url>/2021/01/03/UE4---%E5%8F%B2%E8%8E%B1%E5%A7%86%E5%88%B6%E4%BD%9C%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103023008823.png" alt="image-20210103023008823"></p>
+<a id="more"></a>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>1.利用RayMarch先绘制个球</p>
+<p>2.处理材质与其他模型交界过硬问题</p>
+<p>3.构建法线</p>
+<p>4.平滑合并</p>
+<h3 id="绘制球"><a href="#绘制球" class="headerlink" title="绘制球"></a>绘制球</h3><p>同样是首先传入CameraDir和WorldPos，MAX_Step，构建距离场，渲染距离场，屏幕射线与物体进行求交</p>
+<pre><code>float4 finalCol = 0.0f;
+float3 pos = WorldPos;
+
+for (int i = 0; i&lt;MAX_Step; i++)
+{
+    //球体距离场
+    float distance = length(pos) - 50.0f;
+
+    //判断距离是否足够接近
+    if (distance&lt;0.01f)
+    {
+        finalCol = 1.0f;
+        break;
+    }
+
+    //累加距离
+    pos += CameraDir * distance;
+}
+
+return finalCol;
+</code></pre><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102155523945.png" alt="image-20210102155523945"></p>
+<p>现在还有一个问题就是，我们RayMarch绘制得到的球体不会跟随物体的移动而移动</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-2%2015-57-15.gif" alt="GIF 2021-1-2 15-57-15"></p>
+<p>解决方法：我们添加一个ObjectPostion的偏移即可，ObjectPostion其实就是场景物体的中心轴位置</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102155925606.png" alt="image-20210102155925606"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102155939867.png" alt="image-20210102155939867"></p>
+<p>只要把ObjectPostion节点传入usf进行处理即可</p>
+<pre><code>float distance = length(pos - ObjectPos) - 50.0f;
+</code></pre><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102160234169.png" alt="image-20210102160234169"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-2%2016-01-22.gif" alt="GIF 2021-1-2 16-01-22"></p>
+<h3 id="处理材质与其他模型交界过硬问题"><a href="#处理材质与其他模型交界过硬问题" class="headerlink" title="处理材质与其他模型交界过硬问题"></a>处理材质与其他模型交界过硬问题</h3><p>可以看到交界非常的硬，我们解决这个问题一般使用SceneDepth解决</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102162741467.png" alt="image-20210102162741467"></p>
+<p>在for循环中添加以下代码</p>
+<pre><code>    //处理与其他模型交界过硬问题
+    if (SceneDepth &lt; length(pos - CameraPos))
+    {
+        break;
+    }
+</code></pre><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102162817759.png" alt="image-20210102162817759"></p>
+<p>物体在屏幕中间时显示正常，当物体移动到屏幕边缘时，球体会出现严重的变形</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-2%2020-14-37.gif" alt="GIF 2021-1-2 20-14-37"></p>
+<p>出现问题的原因：当我们摄像机往左移动时候，场景深度并没有改变都是一样的，但是我们的length(pos - CameraPos)由于我们摄像机的移动是变大了，所以造成畸变变小。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102201739300.png" alt="image-20210102201739300"></p>
+<p>相对于摄像机平面同一条直线上的场景深度是一样，这可以我们可以看渲染管线的变换可以知道，当然我这里选择用材质来证明，可以看到同一直线上的颜色一致的。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102202259011.png" alt="image-20210102202259011"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102202322138.png" alt="image-20210102202322138"></p>
+<p>解决方法：用一个trick对SceneDepth进行弥补，其实就是用CameraVector和CameraDirectionVector进行弥补</p>
+<p>CameraVector像素指向Camera的方向</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/CameraVectorImage.png" alt="img"></p>
+<p>CameraDirectionVector摄像机面对的方向</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102204629558.png" alt="image-20210102204629558"></p>
+<p>通过点积即可完成对边缘SceneDepth的弥补操作</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102204843678.png" alt="image-20210102204843678"></p>
+<p>最后结果，可以看出畸变情况好了很多</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-2%2020-49-16.gif" alt="GIF 2021-1-2 20-49-16"></p>
+<h3 id="构建法线"><a href="#构建法线" class="headerlink" title="构建法线"></a>构建法线</h3><p>思路和上一篇文章一样，代码如下，<strong>注意定义多个函数需要把函数放入结构体内</strong>    </p>
+<pre><code>struct FunctionStruct
+{
+    //构建球体距离场
+    float sphere(float3 pos)
+    {
+        return length(pos) - 50.0f;
+
+    }
+
+    //计算法线方向
+    float3 CalNormal(float3 pos)
+    {
+        float D_value = 0.01f;
+        return normalize(float3(
+        sphere(float3(pos.x + D_value, pos.y, pos.z)) - sphere(float3(pos.x - D_value, pos.y, pos.z)),
+        sphere(float3(pos.x, pos.y + D_value, pos.z)) - sphere(float3(pos.x, pos.y - D_value, pos.z)),
+        sphere(float3(pos.x, pos.y, pos.z + D_value)) - sphere(float3(pos.x, pos.y, pos.z - D_value))
+        ));
+
+    }
+};
+
+FunctionStruct FS;
+float hit = 0.0f;
+float3 pos = WorldPos;
+float3 normal = 0.0f;
+
+for (int i = 0; i&lt;MAX_Step; i++)
+{
+
+    //处理与其他模型交界过硬问题
+    if (SceneDepth &lt; length(pos - CameraPos))
+    {
+        break;
+    }
+
+    //球体距离场
+    float distance = FS.sphere(pos - ObjectPos);
+
+    //判断距离是否足够接近
+    if (distance&lt;0.01f)
+    {
+        hit = 1.0f;
+        normal = FS.CalNormal(pos - ObjectPos);
+        break;
+    }
+
+
+    //累加距离
+    pos += CameraDir * distance;
+}
+
+return float4(normal,hit);
+</code></pre><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102211839166.png" alt="image-20210102211839166"></p>
+<p>获取法线之后要传入UE4材质就可以享受UE4的光照效果，需要着色模型为默认光照，光照模式为体积方向，取消勾选切线空间法线</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210102212252727.png" alt="image-20210102212252727"></p>
+<h3 id="平滑合并"><a href="#平滑合并" class="headerlink" title="平滑合并"></a>平滑合并</h3><p>平滑函数</p>
+<pre><code>float smin( float a, float b, float k){
+    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0);
+    return lerp( b, a, h) - k*h*(1.0-h);
+}
+</code></pre><p>这里就有一个问题，平滑函数需要a,b两个距离场参数，但是我们只有到球体的距离场，那怎么获取b参数呢？</p>
+<p>原视频作者给出了两种方案。</p>
+<h4 id="方案1（不太明白）"><a href="#方案1（不太明白）" class="headerlink" title="方案1（不太明白）"></a>方案1（不太明白）</h4><p>利用SceneDepth - length(pos - CameraPos)得到b参数，然后进行平滑合并</p>
+<pre><code>    float a = FS.sphere(pos - ObjectPos);
+    float b = SceneDepth - length(pos - CameraPos);
+    float distance = FS.smin(a,b,Smooth);
+</code></pre><p>如果我们将合并到的distance直接累加到pos，虽然球体与其他模型边缘会平滑，但是整体的效果会是错误的，用于存放球体的模型都会被渲染出来</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103014640415.png" alt="image-20210103014640415"></p>
+<p>因为得到的distance只有接近边缘时才会正确，所以我们不以distance进行累加，而是让pos每次循环沿屏幕射线前进1(感觉非常耗性能)</p>
+<pre><code>for (int i = 0; i&lt;MAX_Step; i++)
+{
+
+    //处理与其他模型交界过硬问题
+    if (SceneDepth &lt; length(pos - CameraPos))
+    {
+        break;
+    }
+
+    //球体距离场
+    float a = FS.sphere(pos - ObjectPos);
+    float b = SceneDepth - length(pos - CameraPos);
+    float distance = FS.smin(a,b,Smooth);
+
+    //判断距离是否足够接近
+    if (distance&lt;0.01f)
+    {
+        hit = 1.0f;
+        normal = FS.CalNormal(pos - ObjectPos);
+        break;
+    }
+
+
+    //累加距离
+    pos += CameraDir * 1;
+}
+</code></pre><p>这样就得到一个非常漂亮的史莱姆了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103015700192.png" alt="image-20210103015700192"></p>
+<p>创建材质实例更容易进行调节</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103015759196.png" alt="image-20210103015759196"></p>
+<h4 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h4><p>UE4是支持生成网格距离场的，项目设置—-distance</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103015956546.png" alt="image-20210103015956546"></p>
+<p>可以看到为正方体和存放球体的模型以及平面都生成了距离场，但是分辨率不高</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103020419152.png" alt="image-20210103020419152"></p>
+<p>这里我们没必要为存放球体模型生成距离场，取消勾选距离场光照</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103020518820.png" alt="image-20210103020518820"></p>
+<p>在世界场景设置中设置距离场精细度</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103020723548.png" alt="image-20210103020723548"></p>
+<p>通过DistanceToNeareastSurface节点获取最近平面距离</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103020906402.png" alt="image-20210103020906402"></p>
+<p>如果我们需要在自己的usf中使用该节点，可以查看HLSL代码查看函数名称，如果带有global则全局可用</p>
+<pre><code>for (int i = 0; i&lt;MAX_Step; i++)
+{
+
+    //处理与其他模型交界过硬问题
+    if (SceneDepth &lt; length(pos - CameraPos))
+    {
+        break;
+    }
+
+    //球体距离场
+    float a = FS.sphere(pos - ObjectPos);
+    //float b = SceneDepth - length(pos - CameraPos);
+    float b = GetDistanceToNearestSurfaceGlobal(pos);
+    float distance = FS.smin(a,b,Smooth);
+
+    //判断距离是否足够接近
+    if (distance&lt;Stop)
+    {
+        hit = 1.0f;
+        normal = FS.CalNormal(pos - ObjectPos);
+        break;
+    }
+
+
+    //累加距离
+    pos += CameraDir * 1;
+}
+</code></pre><p>得到漂亮的小球</p>
+<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210103022635893.png" alt="image-20210103022635893"></p>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>感觉RayMarching太耗性能了，而且近看有因为精细度造成的锯齿问题，还有有很好的数学能力才会绘制出好看的场景</p>
+]]></content>
+      <categories>
+        <category>UE4</category>
+      </categories>
+      <tags>
+        <tag>UE4</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>UE4---雨点和水滴滑落效果笔记</title>
     <url>/2021/01/05/UE4---%E9%9B%A8%E6%BB%B4%E5%92%8C%E6%B0%B4%E6%BB%B4%E6%BB%91%E8%90%BD%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%2021-32-16.gif" alt="GIF 2021-1-5 21-32-16"></p>
@@ -3747,61 +3802,6 @@ return float4(normal,d.y);
 <h3 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h3><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%2021-32-16.gif" alt="GIF 2021-1-5 21-32-16"></p>
 <p>全家福</p>
 <p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105213337560.png" alt="image-20210105213337560"></p>
-]]></content>
-      <categories>
-        <category>UE4</category>
-      </categories>
-      <tags>
-        <tag>UE4</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>UE4---科幻扫描线效果笔记</title>
-    <url>/2021/01/05/UE4---%E7%A7%91%E5%B9%BB%E6%89%AB%E6%8F%8F%E7%BA%BF%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%2014-44-25.gif" alt="GIF 2021-1-5 14-44-25"></p>
-<a id="more"></a>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
-<li>根据Z轴生成0-1Mask贴图</li>
-<li>控制顶部顶点的世界位置偏移</li>
-<li>抖动效果</li>
-<li>屏幕空间条</li>
-<li>菲涅尔和CameraFade</li>
-<li>输入不透明度</li>
-</ol>
-<h3 id="根据Z轴生成0-1Mask贴图"><a href="#根据Z轴生成0-1Mask贴图" class="headerlink" title="根据Z轴生成0-1Mask贴图"></a>根据Z轴生成0-1Mask贴图</h3><p>将世界空间坐标转换为模型空间，只取Z通道，QbjectBounds返回的是模型的边界，我们除以Z通道就可以得到模型从底部到顶点0-1的Mask遮罩</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105011904542.png" alt="image-20210105011904542"></p>
-<p>预览Divide</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105012049880.png" alt="image-20210105012049880"></p>
-<h3 id="控制顶部顶点的世界位置偏移"><a href="#控制顶部顶点的世界位置偏移" class="headerlink" title="控制顶部顶点的世界位置偏移"></a>控制顶部顶点的世界位置偏移</h3><p>生成的Z轴Mask遮罩是用于控制WorldPositionOffset</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105012235486.png" alt="image-20210105012235486"></p>
-<p>同样将顶点的世界空间Pos转换到模型空间，并将位置进行归一化，只取RG通道，这个RG通道其实就是顶点在XY平面移动的方向</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105012625863.png" alt="image-20210105012625863"></p>
-<p>那么Z通道自然用于是Z轴方向上的移动</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105012739210.png" alt="image-20210105012739210"></p>
-<p>通过在这两个方向上的位移，我们可以实现模型的压缩（激活全息）和顶部扩大（缩放半径），当激活全息为0时是压扁状态，为1则是全息状态</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-30-38.gif" alt="GIF 2021-1-5 1-30-38"></p>
-<h3 id="抖动效果"><a href="#抖动效果" class="headerlink" title="抖动效果"></a>抖动效果</h3><p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105014109050.png" alt="image-20210105014109050"></p>
-<p>通过ScreenPosition的屏幕UV将V轴缩放到0-100，再Floor，分成100个不同的矩形区域，这里为了方便展示，我设置为0-10区间，再缩放回0-1区间，可以看到整个屏幕给分成了若干个矩形区域，并不是根据模型来切分。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-38-52.gif" alt="GIF 2021-1-5 1-38-52"></p>
-<p>我们继续连接MF_FloatNoise节点，这个节点使用传入Noise种子和一个2D向量输出一个随机值，材质函数如下</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105014231451.png" alt="image-20210105014231451"></p>
-<p>得到一直在随机变化的矩形条    </p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-43-22.gif" alt="GIF 2021-1-5 1-43-22"></p>
-<p>控制抖动用于开关抖动效果，为0开启，为1关闭，在世界空间上进行一定的抖动偏移</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105014556245.png" alt="image-20210105014556245"></p>
-<p>结果如下</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-47-16.gif" alt="GIF 2021-1-5 1-47-16"></p>
-<h3 id="屏幕空间条"><a href="#屏幕空间条" class="headerlink" title="屏幕空间条"></a>屏幕空间条</h3><p>同样是利用ScreenPosition的UV进行操作，但是上面可以看到，随着摄像机的距离，映射在模型上面的UV区域是不会变化的，一直是以屏幕为标准。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105015229996.png" alt="image-20210105015229996"></p>
-<p>这样根据摄像机与物体的距离来决定生成的UV条的数量，符合了我们的要求</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/GIF%202021-1-5%201-54-08.gif" alt="GIF 2021-1-5 1-54-08"></p>
-<h3 id="菲涅尔和CameraFade"><a href="#菲涅尔和CameraFade" class="headerlink" title="菲涅尔和CameraFade"></a>菲涅尔和CameraFade</h3><p>菲涅尔用于边缘的透明，CameraFade用于靠近Mesh时透明</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105143118294.png" alt="image-20210105143118294"></p>
-<h3 id="输入不透明度"><a href="#输入不透明度" class="headerlink" title="输入不透明度"></a>输入不透明度</h3><p>将基于屏幕空间的空间条与菲涅尔，CameraFade，激活全息进行相结合，输入不透明度</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105143446247.png" alt="image-20210105143446247"></p>
-<h3 id="用于网格的Scifi材质"><a href="#用于网格的Scifi材质" class="headerlink" title="用于网格的Scifi材质"></a>用于网格的Scifi材质</h3><p>网格的Scifi材质只要修改抖动，以及输入的不透明度，删除CameraFade即可</p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105144134572.png" alt="image-20210105144134572"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210105144144952.png" alt="image-20210105144144952"></p>
 ]]></content>
       <categories>
         <category>UE4</category>
@@ -3953,6 +3953,40 @@ return float4(normal,d.y);
       </tags>
   </entry>
   <entry>
+    <title>Unity VEG实现烟花效果</title>
+    <url>/2019/11/01/Unity-VEG%E5%AE%9E%E7%8E%B0%E7%83%9F%E8%8A%B1%E6%95%88%E6%9E%9C/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这次利用VEG实现普通烟花效果。</p>
+ <a id="more"></a> 
+<h2 id="主粒子"><a href="#主粒子" class="headerlink" title="主粒子"></a>主粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/1.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/2.png" alt></p>
+<p>设置主粒子的速度，位置，周期等参数。</p>
+<h3 id="Position-Line"><a href="#Position-Line" class="headerlink" title="Position(Line)"></a>Position(Line)</h3><p>用于设置粒子的初始化位置，从Start到End随机生成一个位置点。</p>
+<h2 id="烟花粒子"><a href="#烟花粒子" class="headerlink" title="烟花粒子"></a>烟花粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/3.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/4.png" alt></p>
+<p>这里利用GPU Event当主粒子消亡时生成新的眼花粒子。</p>
+<h3 id="GPU-Event"><a href="#GPU-Event" class="headerlink" title="GPU Event"></a>GPU Event</h3><p> GPU事件由系统在特定条件下触发，并且可以被其他系统捕获以生成新粒子。 可以通过读取Source或使用Inherit Source节点在子系统中访问事件数据。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/5.png" alt></p>
+<h2 id="主粒子的拖尾粒子"><a href="#主粒子的拖尾粒子" class="headerlink" title="主粒子的拖尾粒子"></a>主粒子的拖尾粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/6.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/7.png" alt></p>
+<h2 id="烟花粒子的拖尾"><a href="#烟花粒子的拖尾" class="headerlink" title="烟花粒子的拖尾"></a>烟花粒子的拖尾</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/8.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/9.png" alt></p>
+<p>就这样我们的烟花就完成啦</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/10.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/11.png" alt></p>
+<p>现在看起来还是有点难看的，但问题不大，给它加点后处理就好了，PostProcessVolume</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/12.png" alt></p>
+<p>就这样，好看多了</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/13.png" alt></p>
+<h1 id="未完待续"><a href="#未完待续" class="headerlink" title="未完待续"></a>未完待续</h1><p>可能后面还想加点其他的功能，所以未完待续。</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>UE4还原CRT像素效果笔记</title>
     <url>/2021/01/03/UE4%E8%BF%98%E5%8E%9FCRT%E5%83%8F%E7%B4%A0%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/image-20210104003141990.png" alt="image-20210104003141990"></p>
@@ -4003,6 +4037,71 @@ return float4(normal,d.y);
       </categories>
       <tags>
         <tag>UE4</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity Visual Effect Graph初探</title>
+    <url>/2019/10/31/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近为了实现动画课程设计的烟花效果，所以要学习一下Unity的新特效工具Visual Effect Graph，特此记录学习的过程，避免以后会忘记。</p>
+ <a id="more"></a> 
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><blockquote>
+<p>目前Visual Effect Graph只能在HDRP中使用，也就是说必须使用Unity2018.3以上的版本。</p>
+</blockquote>
+<h2 id="为什么要使用VEF"><a href="#为什么要使用VEF" class="headerlink" title="为什么要使用VEF"></a>为什么要使用VEF</h2><p>我们已经有传统的Particle System系统，那为什么要用VEF呢？</p>
+<p>其实VEF能比传统的Particle System能做出更加复杂酷炫的特效，具体可以查看Unity的官方文档。而且我们认为VEF还有一个更加巨大有点就是可视化，我刚开始接触Particle System的时候，看到这么多参数，头都晕了….这次VEF的工作流非常的清楚。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/24.jpg" alt="VEF和传统Particle System区别"></p>
+<h2 id="VEF的工作流"><a href="#VEF的工作流" class="headerlink" title="VEF的工作流"></a>VEF的工作流</h2><p>关于VEF的安装和配置就不说了，官方文档有详细的讲解。</p>
+<p>首先我们来看一下VEF的画面，可以看出和shader Graph非常的相似。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/1.png" alt="VEG"></p>
+<p>VEF默认模板由4个流程构成(VEF称为Context)，包含着多个Block，整个VEF工作流抽象成4个部分</p>
+<h3 id="Spawn"><a href="#Spawn" class="headerlink" title="Spawn"></a>Spawn</h3><p>负责生成粒子，右键点击添加的Block都是与粒子生成相关。</p>
+<h3 id="Initialize"><a href="#Initialize" class="headerlink" title="Initialize"></a>Initialize</h3><p>初始化模块，负责初始化粒子的属性，如初始速度，生命周期。</p>
+<h3 id="Update"><a href="#Update" class="headerlink" title="Update"></a>Update</h3><p>每帧对粒子的参数进行更新，比如重力，移动速度，坐标等。</p>
+<h3 id="Output"><a href="#Output" class="headerlink" title="Output"></a>Output</h3><p>主要负责粒子的渲染，如颜色，形状等。</p>
+<h4 id="注意-1"><a href="#注意-1" class="headerlink" title="注意"></a>注意</h4><p>每个Context连接并不是唯一，比如一个Spawn可连接多个Initialize，朝多个方向发射</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/2.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/3.png" alt></p>
+<h2 id="VEF的使用"><a href="#VEF的使用" class="headerlink" title="VEF的使用"></a>VEF的使用</h2><h3 id="小测试"><a href="#小测试" class="headerlink" title="小测试"></a>小测试</h3><p>VEF的小测试，以粒子的初始速度为基准设置粒子的颜色</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/4.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/5.png" alt></p>
+<p>实现以原点为圆心，半径为1，圆以内的呈绿色，圆以外的呈紫色。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/6.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/7.png" alt></p>
+<p>也可添加Get Attribute：Color结点获取粒子原本的颜色，达到新效果。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/8.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/9.png" alt></p>
+<h3 id="Point-Cache-bake-tool-点阵缓存烘焙器"><a href="#Point-Cache-bake-tool-点阵缓存烘焙器" class="headerlink" title="Point Cache bake tool(点阵缓存烘焙器)"></a>Point Cache bake tool(点阵缓存烘焙器)</h3><p>这个是VEG添加的新工具，它的作用是把一张图或者Mesh的信息，烘焙成一张点阵图，然后再VEG中使用，可烘焙的信息有颜色，法线，位置，UV信息等。</p>
+<p>首先点开烘焙工具，烘焙工具在上方Window—-Visual Effects—-Utilities—-Point Cache bake tool,选择要烘焙的网格和信息，这里我选择胶囊体作为测试。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/10.png" alt></p>
+<p>在VEG中使用以下两个节点，即可得到一个粒子形成的胶囊体</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/11.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/12.png" alt></p>
+<h3 id="Vector-Field-Force-矢量场力"><a href="#Vector-Field-Force-矢量场力" class="headerlink" title="Vector Field Force(矢量场力)"></a>Vector Field Force(矢量场力)</h3><p>官方文档解释：矢量场力施加从包含矢量数据的3D纹理中获取的力。我也不是很明白，以后有机会再研究。通过结合矢量场力和Point Cache我们可以实现粒子物体爆掉的感觉。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/13.png" alt></p>
+<h3 id="VFX-Binder脚本，参数与事件的绑定"><a href="#VFX-Binder脚本，参数与事件的绑定" class="headerlink" title="VFX Binder脚本，参数与事件的绑定"></a>VFX Binder脚本，参数与事件的绑定</h3><p>为了在游戏运行时根据游戏内的逻辑来实时动态改变VEG，我们可以用VFX Binder绑定脚本。</p>
+<h4 id="参数绑定"><a href="#参数绑定" class="headerlink" title="参数绑定"></a>参数绑定</h4><p>首先，我们为VFX添加VFX Parameter binder脚本</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/14.png" alt></p>
+<p>在Hierarchy面板新建一个Cube，这个Cube用于传递位置参数进VEG，实时更新粒子喷发的位置。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/15.png" alt></p>
+<p>进入VEG在参数面板新建一个Vector3用于存储Cube的位置参数，并传递给粒子。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/18.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/17.png" alt="最终结果"></p>
+<h4 id="事件绑定"><a href="#事件绑定" class="headerlink" title="事件绑定"></a>事件绑定</h4><p>在VEG里事件作为一个单独的Context，不能附加任何的Block并且只能和Spawn相连，作用是管理Spawn的发射开关。</p>
+<p>现在做鼠标点击位置生成粒子效果</p>
+<p>首先新建一个Plane作为脚本的载体，并且绑定VFX Mouse Event Blinder事件,拖入新建的VFX</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/22.png" alt></p>
+<p>双击VEX，新建一个Event，注意名字要和脚本上的EventName要一致。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/21.png" alt></p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/23.png" alt></p>
+<h5 id="注意-2"><a href="#注意-2" class="headerlink" title="注意"></a>注意</h5><p>Location为Source的Attribute只能用在Initializes中的Block上</p>
+<p>最后我们就能实现鼠标点击位置生成粒子的效果了。</p>
+<h1 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h1><p>第一次尝试这样做笔记，比较痛苦，但成就感也是满满的。</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -4081,105 +4180,6 @@ return PixelSum / WeightSum;
       </categories>
       <tags>
         <tag>UE4</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity VEG实现烟花效果</title>
-    <url>/2019/11/01/Unity-VEG%E5%AE%9E%E7%8E%B0%E7%83%9F%E8%8A%B1%E6%95%88%E6%9E%9C/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这次利用VEG实现普通烟花效果。</p>
- <a id="more"></a> 
-<h2 id="主粒子"><a href="#主粒子" class="headerlink" title="主粒子"></a>主粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/1.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/2.png" alt></p>
-<p>设置主粒子的速度，位置，周期等参数。</p>
-<h3 id="Position-Line"><a href="#Position-Line" class="headerlink" title="Position(Line)"></a>Position(Line)</h3><p>用于设置粒子的初始化位置，从Start到End随机生成一个位置点。</p>
-<h2 id="烟花粒子"><a href="#烟花粒子" class="headerlink" title="烟花粒子"></a>烟花粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/3.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/4.png" alt></p>
-<p>这里利用GPU Event当主粒子消亡时生成新的眼花粒子。</p>
-<h3 id="GPU-Event"><a href="#GPU-Event" class="headerlink" title="GPU Event"></a>GPU Event</h3><p> GPU事件由系统在特定条件下触发，并且可以被其他系统捕获以生成新粒子。 可以通过读取Source或使用Inherit Source节点在子系统中访问事件数据。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/5.png" alt></p>
-<h2 id="主粒子的拖尾粒子"><a href="#主粒子的拖尾粒子" class="headerlink" title="主粒子的拖尾粒子"></a>主粒子的拖尾粒子</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/6.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/7.png" alt></p>
-<h2 id="烟花粒子的拖尾"><a href="#烟花粒子的拖尾" class="headerlink" title="烟花粒子的拖尾"></a>烟花粒子的拖尾</h2><p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/8.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/9.png" alt></p>
-<p>就这样我们的烟花就完成啦</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/10.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/11.png" alt></p>
-<p>现在看起来还是有点难看的，但问题不大，给它加点后处理就好了，PostProcessVolume</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/12.png" alt></p>
-<p>就这样，好看多了</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-VEG-Firework/13.png" alt></p>
-<h1 id="未完待续"><a href="#未完待续" class="headerlink" title="未完待续"></a>未完待续</h1><p>可能后面还想加点其他的功能，所以未完待续。</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity Visual Effect Graph初探</title>
-    <url>/2019/10/31/Unity-Visual-Effect-Graph%E5%88%9D%E6%8E%A2/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近为了实现动画课程设计的烟花效果，所以要学习一下Unity的新特效工具Visual Effect Graph，特此记录学习的过程，避免以后会忘记。</p>
- <a id="more"></a> 
-<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><blockquote>
-<p>目前Visual Effect Graph只能在HDRP中使用，也就是说必须使用Unity2018.3以上的版本。</p>
-</blockquote>
-<h2 id="为什么要使用VEF"><a href="#为什么要使用VEF" class="headerlink" title="为什么要使用VEF"></a>为什么要使用VEF</h2><p>我们已经有传统的Particle System系统，那为什么要用VEF呢？</p>
-<p>其实VEF能比传统的Particle System能做出更加复杂酷炫的特效，具体可以查看Unity的官方文档。而且我们认为VEF还有一个更加巨大有点就是可视化，我刚开始接触Particle System的时候，看到这么多参数，头都晕了….这次VEF的工作流非常的清楚。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/24.jpg" alt="VEF和传统Particle System区别"></p>
-<h2 id="VEF的工作流"><a href="#VEF的工作流" class="headerlink" title="VEF的工作流"></a>VEF的工作流</h2><p>关于VEF的安装和配置就不说了，官方文档有详细的讲解。</p>
-<p>首先我们来看一下VEF的画面，可以看出和shader Graph非常的相似。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/1.png" alt="VEG"></p>
-<p>VEF默认模板由4个流程构成(VEF称为Context)，包含着多个Block，整个VEF工作流抽象成4个部分</p>
-<h3 id="Spawn"><a href="#Spawn" class="headerlink" title="Spawn"></a>Spawn</h3><p>负责生成粒子，右键点击添加的Block都是与粒子生成相关。</p>
-<h3 id="Initialize"><a href="#Initialize" class="headerlink" title="Initialize"></a>Initialize</h3><p>初始化模块，负责初始化粒子的属性，如初始速度，生命周期。</p>
-<h3 id="Update"><a href="#Update" class="headerlink" title="Update"></a>Update</h3><p>每帧对粒子的参数进行更新，比如重力，移动速度，坐标等。</p>
-<h3 id="Output"><a href="#Output" class="headerlink" title="Output"></a>Output</h3><p>主要负责粒子的渲染，如颜色，形状等。</p>
-<h4 id="注意-1"><a href="#注意-1" class="headerlink" title="注意"></a>注意</h4><p>每个Context连接并不是唯一，比如一个Spawn可连接多个Initialize，朝多个方向发射</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/2.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/3.png" alt></p>
-<h2 id="VEF的使用"><a href="#VEF的使用" class="headerlink" title="VEF的使用"></a>VEF的使用</h2><h3 id="小测试"><a href="#小测试" class="headerlink" title="小测试"></a>小测试</h3><p>VEF的小测试，以粒子的初始速度为基准设置粒子的颜色</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/4.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/5.png" alt></p>
-<p>实现以原点为圆心，半径为1，圆以内的呈绿色，圆以外的呈紫色。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/6.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/7.png" alt></p>
-<p>也可添加Get Attribute：Color结点获取粒子原本的颜色，达到新效果。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/8.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/9.png" alt></p>
-<h3 id="Point-Cache-bake-tool-点阵缓存烘焙器"><a href="#Point-Cache-bake-tool-点阵缓存烘焙器" class="headerlink" title="Point Cache bake tool(点阵缓存烘焙器)"></a>Point Cache bake tool(点阵缓存烘焙器)</h3><p>这个是VEG添加的新工具，它的作用是把一张图或者Mesh的信息，烘焙成一张点阵图，然后再VEG中使用，可烘焙的信息有颜色，法线，位置，UV信息等。</p>
-<p>首先点开烘焙工具，烘焙工具在上方Window—-Visual Effects—-Utilities—-Point Cache bake tool,选择要烘焙的网格和信息，这里我选择胶囊体作为测试。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/10.png" alt></p>
-<p>在VEG中使用以下两个节点，即可得到一个粒子形成的胶囊体</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/11.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/12.png" alt></p>
-<h3 id="Vector-Field-Force-矢量场力"><a href="#Vector-Field-Force-矢量场力" class="headerlink" title="Vector Field Force(矢量场力)"></a>Vector Field Force(矢量场力)</h3><p>官方文档解释：矢量场力施加从包含矢量数据的3D纹理中获取的力。我也不是很明白，以后有机会再研究。通过结合矢量场力和Point Cache我们可以实现粒子物体爆掉的感觉。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/13.png" alt></p>
-<h3 id="VFX-Binder脚本，参数与事件的绑定"><a href="#VFX-Binder脚本，参数与事件的绑定" class="headerlink" title="VFX Binder脚本，参数与事件的绑定"></a>VFX Binder脚本，参数与事件的绑定</h3><p>为了在游戏运行时根据游戏内的逻辑来实时动态改变VEG，我们可以用VFX Binder绑定脚本。</p>
-<h4 id="参数绑定"><a href="#参数绑定" class="headerlink" title="参数绑定"></a>参数绑定</h4><p>首先，我们为VFX添加VFX Parameter binder脚本</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/14.png" alt></p>
-<p>在Hierarchy面板新建一个Cube，这个Cube用于传递位置参数进VEG，实时更新粒子喷发的位置。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/15.png" alt></p>
-<p>进入VEG在参数面板新建一个Vector3用于存储Cube的位置参数，并传递给粒子。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/18.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/17.png" alt="最终结果"></p>
-<h4 id="事件绑定"><a href="#事件绑定" class="headerlink" title="事件绑定"></a>事件绑定</h4><p>在VEG里事件作为一个单独的Context，不能附加任何的Block并且只能和Spawn相连，作用是管理Spawn的发射开关。</p>
-<p>现在做鼠标点击位置生成粒子效果</p>
-<p>首先新建一个Plane作为脚本的载体，并且绑定VFX Mouse Event Blinder事件,拖入新建的VFX</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/22.png" alt></p>
-<p>双击VEX，新建一个Event，注意名字要和脚本上的EventName要一致。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/21.png" alt></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/Image/Unity-Visual-Effect-Graph/23.png" alt></p>
-<h5 id="注意-2"><a href="#注意-2" class="headerlink" title="注意"></a>注意</h5><p>Location为Source的Attribute只能用在Initializes中的Block上</p>
-<p>最后我们就能实现鼠标点击位置生成粒子的效果了。</p>
-<h1 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h1><p>第一次尝试这样做笔记，比较痛苦，但成就感也是满满的。</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -5106,6 +5106,44 @@ Shader &quot;Custom/MeshShader&quot;
       </tags>
   </entry>
   <entry>
+    <title>作业说明</title>
+    <url>/2021/10/05/%E6%97%A0%E6%A0%87%E9%A2%98Markdown/</url>
+    <content><![CDATA[<h2 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h2><p>高模Houdini渲染效果图</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/%E6%B8%B2%E6%9F%93%E6%95%88%E6%9E%9C%E5%9B%BE.png" alt="渲染效果图"></p>
+<p>调整树叶的范围就是啊啊啊啊</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010139997.png" alt></p>
+<p>树叶低模效果，黑色区域可以烘焙Opacity贴图到游戏引擎内完成剔除。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722005100488.png" alt></p>
+<p>树叶低模</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722005937330.png" alt></p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><h3 id="石墙的构造"><a href="#石墙的构造" class="headerlink" title="石墙的构造"></a>石墙的构造</h3><p>首先创建grid，利用copy节点完成grid行列的复制，并在x轴方向随机偏移</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010352397.png" alt></p>
+<p>在面片撒点利用Voronoifracture形成破裂效果</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010433962.png" alt></p>
+<p>随机挤出的厚度以及缩放的大小，并用Noise去营造石块的磨损感</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010543889.png" alt></p>
+<p>利用面与面之间的最近点计算，进行遮挡点的删除</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010730307.png" alt></p>
+<p>通过VDB构建石墙的低模</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010821048.png" alt></p>
+<h3 id="叶子的构造"><a href="#叶子的构造" class="headerlink" title="叶子的构造"></a>叶子的构造</h3><p>首先通过trace节点完成叶子的建模</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722011053695.png" alt></p>
+<p>利用刚体进行模拟叶子掉落的解算</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722011222222.png" alt></p>
+<p>通过volumesampler进行SDF采样对于返回值大于0，既在体积外部的点都删除，得到基础的叶子整体模型</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722012615155.png" alt></p>
+<p>最后讲叶子整体模型对地面以及石墙进行一定的贴近，并进行面数的删减</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722012921251.png" alt></p>
+<p>最后利用labs maper Baker进行高低模的贴图烘焙</p>
+]]></content>
+      <categories>
+        <category>UE4</category>
+      </categories>
+      <tags>
+        <tag>UE4</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>秋招总结</title>
     <url>/2020/10/12/%E7%A7%8B%E6%8B%9B%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>本科双非，有一段腾讯的暑期实习经历，岗位是TA技术美术，因为实习的时候被深圳的物价和房价给吓到了，再加上家在广州，所以基本目标都在广州的游戏公司，也投了北京上海的游戏公司，原本想拿来练练手的，可能是双非学历再加上简历内容确实不太与游戏行业相关，所以基本石沉大海哈哈哈，根本不给机会</p>
@@ -5190,44 +5228,6 @@ Shader &quot;Custom/MeshShader&quot;
       </categories>
       <tags>
         <tag>杂记</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>作业说明</title>
-    <url>/2021/10/05/%E6%97%A0%E6%A0%87%E9%A2%98Markdown/</url>
-    <content><![CDATA[<h2 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h2><p>高模Houdini渲染效果图</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/%E6%B8%B2%E6%9F%93%E6%95%88%E6%9E%9C%E5%9B%BE.png" alt="渲染效果图"></p>
-<p>调整树叶的范围就是啊啊啊啊</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010139997.png" alt></p>
-<p>树叶低模效果，黑色区域可以烘焙Opacity贴图到游戏引擎内完成剔除。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722005100488.png" alt></p>
-<p>树叶低模</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722005937330.png" alt></p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><h3 id="石墙的构造"><a href="#石墙的构造" class="headerlink" title="石墙的构造"></a>石墙的构造</h3><p>首先创建grid，利用copy节点完成grid行列的复制，并在x轴方向随机偏移</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010352397.png" alt></p>
-<p>在面片撒点利用Voronoifracture形成破裂效果</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010433962.png" alt></p>
-<p>随机挤出的厚度以及缩放的大小，并用Noise去营造石块的磨损感</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010543889.png" alt></p>
-<p>利用面与面之间的最近点计算，进行遮挡点的删除</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010730307.png" alt></p>
-<p>通过VDB构建石墙的低模</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010821048.png" alt></p>
-<h3 id="叶子的构造"><a href="#叶子的构造" class="headerlink" title="叶子的构造"></a>叶子的构造</h3><p>首先通过trace节点完成叶子的建模</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722011053695.png" alt></p>
-<p>利用刚体进行模拟叶子掉落的解算</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722011222222.png" alt></p>
-<p>通过volumesampler进行SDF采样对于返回值大于0，既在体积外部的点都删除，得到基础的叶子整体模型</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722012615155.png" alt></p>
-<p>最后讲叶子整体模型对地面以及石墙进行一定的贴近，并进行面数的删减</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722012921251.png" alt></p>
-<p>最后利用labs maper Baker进行高低模的贴图烘焙</p>
-]]></content>
-      <categories>
-        <category>UE4</category>
-      </categories>
-      <tags>
-        <tag>UE4</tag>
       </tags>
   </entry>
   <entry>
