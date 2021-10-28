@@ -6,7 +6,7 @@
   <link href="http://yoursite.com/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2021-01-05T13:44:58.323Z</updated>
+  <updated>2021-10-28T14:25:03.393Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>作业说明</title>
+    <link href="http://yoursite.com/2021/10/28/%E6%97%A0%E6%A0%87%E9%A2%98Markdown/"/>
+    <id>http://yoursite.com/2021/10/28/%E6%97%A0%E6%A0%87%E9%A2%98Markdown/</id>
+    <published>2021-10-28T14:25:03.392Z</published>
+    <updated>2021-10-28T14:25:03.393Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;效果图&quot;&gt;&lt;a href=&quot;#效果图&quot; class=&quot;headerlink&quot; title=&quot;效果图&quot;&gt;&lt;/a&gt;效果图&lt;/h2&gt;&lt;p&gt;高模Houdini渲染效果图&lt;/p&gt;
+&lt;p&gt;&lt;img</summary>
+        
+      
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>UE4---雨点和水滴滑落效果笔记</title>
@@ -367,25 +389,6 @@
     
     
     <summary type="html">&lt;h2 id=&quot;使用id贴图和多边形填充工具制作遮罩&quot;&gt;&lt;a href=&quot;#使用id贴图和多边形填充工具制作遮罩&quot; class=&quot;headerlink&quot; title=&quot;使用id贴图和多边形填充工具制作遮罩&quot;&gt;&lt;/a&gt;使用id贴图和多边形填充工具制作遮罩&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00005.png&quot; alt=&quot;HighresScreenshot00005&quot;&gt;&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="Substance painter" scheme="http://yoursite.com/categories/Substance-painter/"/>
-    
-    
-    <category term="Substance painter" scheme="http://yoursite.com/tags/Substance-painter/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>SP学习笔记(四)</title>
-    <link href="http://yoursite.com/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E5%9B%9B)/"/>
-    <id>http://yoursite.com/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E5%9B%9B)/</id>
-    <published>2020-12-02T07:00:00.000Z</published>
-    <updated>2020-12-02T13:33:56.070Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;理解笔刷系统&quot;&gt;&lt;a href=&quot;#理解笔刷系统&quot; class=&quot;headerlink&quot; title=&quot;理解笔刷系统&quot;&gt;&lt;/a&gt;理解笔刷系统&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00005.png&quot; alt=&quot;HighresScreenshot00005&quot;&gt;&lt;/p&gt;</summary>
     
     
     

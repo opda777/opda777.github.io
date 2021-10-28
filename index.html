@@ -136,6 +136,79 @@
     
     
     <article
+  id="post-无标题Markdown"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/10/28/%E6%97%A0%E6%A0%87%E9%A2%98Markdown/"
+    >作业说明</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/10/28/%E6%97%A0%E6%A0%87%E9%A2%98Markdown/" class="article-date">
+  <time datetime="2021-10-28T14:25:03.392Z" itemprop="datePublished">2021-10-28</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h2><p>高模Houdini渲染效果图</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/%E6%B8%B2%E6%9F%93%E6%95%88%E6%9E%9C%E5%9B%BE.png" alt="渲染效果图"></p>
+<p>调整树叶的范围就是啊啊啊啊</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010139997.png" alt></p>
+<p>树叶低模效果，黑色区域可以烘焙Opacity贴图到游戏引擎内完成剔除。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722005100488.png" alt></p>
+<p>树叶低模</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722005937330.png" alt></p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><h3 id="石墙的构造"><a href="#石墙的构造" class="headerlink" title="石墙的构造"></a>石墙的构造</h3><p>首先创建grid，利用copy节点完成grid行列的复制，并在x轴方向随机偏移</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010352397.png" alt></p>
+<p>在面片撒点利用Voronoifracture形成破裂效果</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010433962.png" alt></p>
+<p>随机挤出的厚度以及缩放的大小，并用Noise去营造石块的磨损感</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010543889.png" alt></p>
+<p>利用面与面之间的最近点计算，进行遮挡点的删除</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010730307.png" alt></p>
+<p>通过VDB构建石墙的低模</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722010821048.png" alt></p>
+<h3 id="叶子的构造"><a href="#叶子的构造" class="headerlink" title="叶子的构造"></a>叶子的构造</h3><p>首先通过trace节点完成叶子的建模</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722011053695.png" alt></p>
+<p>利用刚体进行模拟叶子掉落的解算</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722011222222.png" alt></p>
+<p>通过volumesampler进行SDF采样对于返回值大于0，既在体积外部的点都删除，得到基础的叶子整体模型</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722012615155.png" alt></p>
+<p>最后讲叶子整体模型对地面以及石墙进行一定的贴近，并进行面数的删减</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20210722012921251.png" alt></p>
+<p>最后利用labs maper Baker进行高低模的贴图烘焙</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
   id="post-UE4---雨滴和水滴滑落效果笔记"
   class="article article-type-post"
   itemscope
@@ -616,62 +689,6 @@
        
   <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p> 
       <a class="article-more-link" href="/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E6%B7%BB%E5%8A%A0%E7%AC%AC%E4%B8%89%E4%BA%BA%E7%A7%B0%E6%91%84%E5%83%8F%E6%9C%BA%E5%92%8Cdiffuse%E5%85%89%E7%85%A7/"
-        >阅读更多...</a
-      >
-       
-      <!-- reward -->
-      
-    </div>
-    
-
-    <!-- copyright -->
-    
-    <footer class="article-footer">
-       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DirectX11/" rel="tag">DirectX11</a></li></ul>
-
-    </footer>
-  </div>
-
-    
- 
-   
-</article>
-
-    
-    <article
-  id="post-DirectX11入门笔记---第三方库的安装"
-  class="article article-type-post"
-  itemscope
-  itemprop="blogPost"
-  data-scroll-reveal
->
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/"
-    >DirectX11入门笔记---第三方库的安装</a> 
-</h2>
- 
-
-    </header>
-     
-    <div class="article-meta">
-      <a href="/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/" class="article-date">
-  <time datetime="2020-12-26T05:00:00.000Z" itemprop="datePublished">2020-12-26</time>
-</a> 
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/DirectX11/">DirectX11</a>
-  </div>
-   
-    </div>
-      
-    <div class="article-entry" itemprop="articleBody">
-       
-  <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png" alt="image-20201217210042177" style="zoom: 50%;"></p> 
-      <a class="article-more-link" href="/2020/12/26/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85/"
         >阅读更多...</a
       >
        
