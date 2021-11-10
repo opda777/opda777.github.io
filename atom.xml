@@ -6,7 +6,7 @@
   <link href="http://yoursite.com/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2021-11-03T16:53:41.603Z</updated>
+  <updated>2021-11-10T16:56:42.405Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,25 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Unity-PBR学习</title>
+    <link href="http://yoursite.com/2021/11/10/unity-PBR%E5%AD%A6%E4%B9%A0/"/>
+    <id>http://yoursite.com/2021/11/10/unity-PBR%E5%AD%A6%E4%B9%A0/</id>
+    <published>2021-11-10T10:00:00.000Z</published>
+    <updated>2021-11-10T16:56:42.405Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211110142932731.png&quot; alt=&quot;image-20211110142932731&quot;&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Unity" scheme="http://yoursite.com/categories/Unity/"/>
+    
+    
+    <category term="Unity" scheme="http://yoursite.com/tags/Unity/"/>
+    
+  </entry>
   
   <entry>
     <title>Python FBX SDK踩坑记录</title>
@@ -169,11 +188,11 @@
   </entry>
   
   <entry>
-    <title>DirectX11入门笔记---创建几何体以及添加BaseObject类</title>
-    <link href="http://yoursite.com/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E5%88%9B%E5%BB%BA%E5%9F%BA%E6%9C%AC%E5%87%A0%E4%BD%95%E4%BD%93/"/>
-    <id>http://yoursite.com/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E5%88%9B%E5%BB%BA%E5%9F%BA%E6%9C%AC%E5%87%A0%E4%BD%95%E4%BD%93/</id>
+    <title>DirectX11入门笔记---添加第三人称摄像机和diffuse光照</title>
+    <link href="http://yoursite.com/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E6%B7%BB%E5%8A%A0%E7%AC%AC%E4%B8%89%E4%BA%BA%E7%A7%B0%E6%91%84%E5%83%8F%E6%9C%BA%E5%92%8Cdiffuse%E5%85%89%E7%85%A7/"/>
+    <id>http://yoursite.com/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E6%B7%BB%E5%8A%A0%E7%AC%AC%E4%B8%89%E4%BA%BA%E7%A7%B0%E6%91%84%E5%83%8F%E6%9C%BA%E5%92%8Cdiffuse%E5%85%89%E7%85%A7/</id>
     <published>2020-12-29T05:00:00.000Z</published>
-    <updated>2020-12-29T13:55:27.555Z</updated>
+    <updated>2020-12-29T13:15:24.375Z</updated>
     
     
     <summary type="html">&lt;p&gt;&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png&quot; alt=&quot;image-20201217210042177&quot; style=&quot;zoom: 50%;&quot;&gt;&lt;/p&gt;</summary>
@@ -188,11 +207,11 @@
   </entry>
   
   <entry>
-    <title>DirectX11入门笔记---添加第三人称摄像机和diffuse光照</title>
-    <link href="http://yoursite.com/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E6%B7%BB%E5%8A%A0%E7%AC%AC%E4%B8%89%E4%BA%BA%E7%A7%B0%E6%91%84%E5%83%8F%E6%9C%BA%E5%92%8Cdiffuse%E5%85%89%E7%85%A7/"/>
-    <id>http://yoursite.com/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E6%B7%BB%E5%8A%A0%E7%AC%AC%E4%B8%89%E4%BA%BA%E7%A7%B0%E6%91%84%E5%83%8F%E6%9C%BA%E5%92%8Cdiffuse%E5%85%89%E7%85%A7/</id>
+    <title>DirectX11入门笔记---创建几何体以及添加BaseObject类</title>
+    <link href="http://yoursite.com/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E5%88%9B%E5%BB%BA%E5%9F%BA%E6%9C%AC%E5%87%A0%E4%BD%95%E4%BD%93/"/>
+    <id>http://yoursite.com/2020/12/29/DirectX11%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0---%E5%88%9B%E5%BB%BA%E5%9F%BA%E6%9C%AC%E5%87%A0%E4%BD%95%E4%BD%93/</id>
     <published>2020-12-29T05:00:00.000Z</published>
-    <updated>2020-12-29T13:15:24.375Z</updated>
+    <updated>2020-12-29T13:55:27.555Z</updated>
     
     
     <summary type="html">&lt;p&gt;&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20201217210042177.png&quot; alt=&quot;image-20201217210042177&quot; style=&quot;zoom: 50%;&quot;&gt;&lt;/p&gt;</summary>
@@ -367,25 +386,6 @@
     
     
     <summary type="html">&lt;h2 id=&quot;渲染作品图片&quot;&gt;&lt;a href=&quot;#渲染作品图片&quot; class=&quot;headerlink&quot; title=&quot;渲染作品图片&quot;&gt;&lt;/a&gt;渲染作品图片&lt;/h2&gt;&lt;p&gt;Iray，只渲了两分钟电脑实在顶不住了&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/%E6%B8%B2%E6%9F%93%E6%88%90%E5%9B%BE.jpg&quot; alt=&quot;渲染成图&quot;&gt;&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="Substance painter" scheme="http://yoursite.com/categories/Substance-painter/"/>
-    
-    
-    <category term="Substance painter" scheme="http://yoursite.com/tags/Substance-painter/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>SP学习笔记(五)</title>
-    <link href="http://yoursite.com/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E4%BA%94)/"/>
-    <id>http://yoursite.com/2020/12/02/SP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E4%BA%94)/</id>
-    <published>2020-12-02T08:00:00.000Z</published>
-    <updated>2020-12-02T13:34:07.465Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;使用id贴图和多边形填充工具制作遮罩&quot;&gt;&lt;a href=&quot;#使用id贴图和多边形填充工具制作遮罩&quot; class=&quot;headerlink&quot; title=&quot;使用id贴图和多边形填充工具制作遮罩&quot;&gt;&lt;/a&gt;使用id贴图和多边形填充工具制作遮罩&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/HighresScreenshot00005.png&quot; alt=&quot;HighresScreenshot00005&quot;&gt;&lt;/p&gt;</summary>
     
     
     

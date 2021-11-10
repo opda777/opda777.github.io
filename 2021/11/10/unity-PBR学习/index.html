@@ -9,7 +9,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    Python FBX SDK踩坑记录 |  
+    Unity-PBR学习 |  
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -41,7 +41,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-Python-FBX-SDK踩坑记录"
+  id="post-unity-PBR学习"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -52,18 +52,18 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  Python FBX SDK踩坑记录
+  Unity-PBR学习
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2021/11/03/Python-FBX-SDK%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/" class="article-date">
-  <time datetime="2021-11-03T10:00:00.000Z" itemprop="datePublished">2021-11-03</time>
+      <a href="/2021/11/10/unity-PBR%E5%AD%A6%E4%B9%A0/" class="article-date">
+  <time datetime="2021-11-10T10:00:00.000Z" itemprop="datePublished">2021-11-10</time>
 </a> 
   <div class="article-category">
-    <a class="article-category-link" href="/categories/Python/">Python</a>
+    <a class="article-category-link" href="/categories/Unity/">Unity</a>
   </div>
   
 <div class="word_count">
@@ -71,7 +71,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">1.7k</span>
+            <span class="post-count">1.8k</span>
         </span>
     </span>
 
@@ -95,174 +95,172 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p><img src="https://cdn.jsdelivr.net/gh/opda777/opdaBlogImage/image/lotte-de-brabander-shot02.png" alt="lotte-de-brabander-shot02"></p>
+  <p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211110142932731.png" alt="image-20211110142932731"></p>
 <a id="more"></a>
-<h2 id="Python-FBX-SDK-的安装"><a href="#Python-FBX-SDK-的安装" class="headerlink" title="Python FBX SDK 的安装"></a>Python FBX SDK 的安装</h2><p>我们首先要在官网上下载Python FBX SDK</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211029110110820.png" alt="image-20211029110110820"></p>
-<p>下载之后打开文件会得到编译好的fbx.pyd文件</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211029110315973.png" alt="image-20211029110315973"></p>
-<p>把这三个文件放到相对应的Python site-packages文件夹里面，你就会发现用不了，踩的第一个坑。后面查阅了各路大佬的资料，说要编译自己对应Python版本的fbx.pyd才能使用，我看了一下有两种方法进行编译：</p>
-<p>1.智伤帝大佬的一个一个手动编译的高难度方法（我没成功复刻，不知道哪里出了问题）</p>
-<p><a href="https://blog.l0v0.com/posts/38fb96a1.html" target="_blank" rel="noopener">指路地址</a></p>
-<p>2.懒人的救星！手残党的救世主！一键自动编译！按照操作说明一步一步来就行了，非常的方便快捷</p>
-<p><a href="https://gitlab.inria.fr/radili/fbxsdk_python" target="_blank" rel="noopener">指路地址</a></p>
-<p>把编译的文件放到site-packages文件夹，终于把环境弄好了</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211029111140035.png" alt="image-20211029111140035"></p>
-<h2 id="FBX结构分析"><a href="#FBX结构分析" class="headerlink" title="FBX结构分析"></a>FBX结构分析</h2><p>在使用FBX SDK时，最先遇到的是<strong>FbxSdkManager</strong>和<strong>FbxScene</strong>。</p>
-<p><strong>FbxSdkManage</strong>是sdk的中心类，负责整个sdk的内部状态，很多其他类的创建也需要FbxSdkManage，在程序中只需要一个FbxSdkMange实例即可。</p>
-<p><strong>FbxScene</strong>代表着一个场景，包含着fbx文件的所有信息，一个fbx文件只需要一个<strong>FbxScene</strong>实例</p>
-<h3 id="FBX的数据组织方式"><a href="#FBX的数据组织方式" class="headerlink" title="FBX的数据组织方式"></a>FBX的数据组织方式</h3><p>FBX的数据组织方式是场景树，根节点包含一系列的子节点FbxNode，每个子节点又有自己的子节点，这样的好处是可以通过循环递归遍历到每一个节点。</p>
-<pre><code># 获取场景的根节点
-pNode = pScene.GetRootNode()
-</code></pre><p>大概的结构如下</p>
-<p><img src="https://pic2.zhimg.com/v2-c8f8c67f033bd6fcf5a86668b7e8085d_r.jpg" alt="preview"></p>
-<h3 id="层次Layer"><a href="#层次Layer" class="headerlink" title="层次Layer"></a>层次Layer</h3><p>法线，纹理坐标等都是存储在层次Layer里面的，每个节点都能有多个层次，每个层次都能包含一套纹理，法线。</p>
-<p>每种保存在Layer的元素（比如UV）都继承于<strong>FbxLayerElement</strong>，FbxLayerElementNormal对应Normal数据，FbxLayerElementUV对应UV数据。</p>
-<p><strong>FbxLayerElement</strong>中有两个非常重要的属性<strong>EmappingMode和EReferenceMode</strong>。<strong>MappingMode</strong>定义了当前类型元素如何映射到mesh上。</p>
-<h4 id="MappingMode"><a href="#MappingMode" class="headerlink" title="MappingMode"></a>MappingMode</h4><p>总共有三种类型：</p>
-<p>1.MappingMode = eBY_POLYGON_VERTEX表示如果一个顶点被n个多边形共享，那个这个顶点就有n条法线信息。</p>
-<p>2.MappingMode = eBY_CONTROL_POINT表示每个顶点无论被n个多边形共享，都只有一条法线信息</p>
-<p>3.MappingMode = eBY_POLYGON表示构成多边形的n个顶点只对应这一条法线信息</p>
-<h4 id="ReferenceMode"><a href="#ReferenceMode" class="headerlink" title="ReferenceMode"></a>ReferenceMode</h4><p>ReferenceMode定义了如何访问相关数据。一个FbxLayerElement内部通常包含着两个数组<strong>DirectArray和IndexArray</strong>。</p>
-<p>总共有两种类型：</p>
-<p>1.ReferenceMode = eDIRECT，第n个顶点相对的element元素就在DirectArray的第n个位置，此时IndexArray为空。</p>
-<p>2.ReferenceMode = eINDEX_TO_DIRECT通常和<strong>eBY_POLYGON_VERTEX</strong>一起搭配使用，因为一个控点对应着多个值。</p>
-<h3 id="Mesh节点"><a href="#Mesh节点" class="headerlink" title="Mesh节点"></a>Mesh节点</h3><p>mesh存储了模型的重要数据，包含顶点颜色，UV，法线，顶点坐标等等信息。由RenderDoc导出的模型一般都是三角面片。</p>
-<h4 id="顶点坐标"><a href="#顶点坐标" class="headerlink" title="顶点坐标"></a>顶点坐标</h4><p>Mesh有控制点（Control point）和顶点（Polygon point）两个概念。控制点只包含<strong>位置信息</strong>，顶点通过索引可以得到</p>
-<p>控制点和顶点的关系：根据MappingMode来决定，</p>
-<p>1.eBY_POLYGON_VERTEX 则需要分裂控制点，一个控制点可以出现在多个三角面上作为顶点，一个控制点对应多个顶点，通常这个更为常用</p>
-<p>2.eBY_CONTROL_POINT 控制点与顶点的数量一一对应。 </p>
-<p><a href="https://zhuanlan.zhihu.com/p/51123783" target="_blank" rel="noopener">控制点和顶点概念解释</a>这个解释得更加通俗一点</p>
-<h2 id="动手动手！"><a href="#动手动手！" class="headerlink" title="动手动手！"></a>动手动手！</h2><p>通过了解了FBX模型的代码层结构，我们就可以动手了解决问题</p>
-<h3 id="QtDesigner制作工具界面"><a href="#QtDesigner制作工具界面" class="headerlink" title="QtDesigner制作工具界面"></a>QtDesigner制作工具界面</h3><p>我们需要一个好看的界面，界面参考Wanderson大佬的界面风格，大致的使用方法就是选择csv文件，并读入相对应的列标题</p>
-<p><a href="https://www.youtube.com/user/VFXtestingWMP" target="_blank" rel="noopener">界面参考</a></p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211103192449260.png" alt="image-20211103192449260"></p>
-<h4 id="Widget拖拽界面"><a href="#Widget拖拽界面" class="headerlink" title="Widget拖拽界面"></a>Widget拖拽界面</h4><p>因为为了美观，界面隐藏了Window的菜单栏</p>
-<pre><code># 隐藏菜单栏
-self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-</code></pre><p>这时候会出现无法拖拽界面的问题，我们可以通过以下代码实现Widgets拖拽界面的效果</p>
-<pre><code>        # 顶部栏拖拽绑定
-        self.frame_label_left.mouseMoveEvent = self.moveWindow
-        self.frame_label_left.mousePressEvent = self.mousePress
+<h2 id="PBR"><a href="#PBR" class="headerlink" title="PBR"></a>PBR</h2><p>首先什么是PBR？PBR全名：Physically Based Rendering基于物理的渲染，是指基于<strong>物理原理</strong>和<strong>微平面理论</strong>建模的着色/光照模型。</p>
+<h3 id="PBR基础理念概括"><a href="#PBR基础理念概括" class="headerlink" title="PBR基础理念概括"></a>PBR基础理念概括</h3><p>1.<strong>微平面理论</strong>。在微观的尺度上任何平面可以被称为<strong>微平面</strong>的细小镜面进行描述。根据粗糙程度的不同，微平面的排位也不尽相同。在实际的工作流程，这种物体表面的不规则形用<strong>粗糙度贴图</strong>和<strong>高光度贴图</strong>表示。</p>
+<p><img src="https://learnopengl-cn.github.io/img/07/01/microfacets.png" alt="img"></p>
+<p>2.<strong>能量守恒</strong>。出射光线的能量永远不会超过入射光线的能量。随着粗糙度的上升镜面反射区域的面积会增加，作为平衡镜面反射区域的平均亮度也会下降。</p>
+<p>3.<strong>菲涅尔反射</strong>。光线以不同的角度入射会有不同的反射率。相同的入射角度不同物质也会有不同的反射率。<strong>万物皆有菲涅尔反射</strong>。F0是即 0 度角入射的菲涅尔反射值。大多数非金属的F0范围是0.02~0.04，大多数金属的F0范围是0.7~1.0。</p>
+<p>4.<strong>线性空间</strong>。光照计算必须在线性空间完成，Shader中输入的gamma空间的贴图比如漫反射贴图需要转成线性空间，而描述物体表面属性的贴图如粗糙度，高光贴图，金属贴图等必须保证是线性空间。</p>
+<p>5.<strong>金属与非金属的差别</strong>。非金属具有单色/灰色镜面反射颜色。而金属具有彩色的镜面反射颜色。即非金属的F0是一个float。而金属的F0是一个float3。</p>
+<p><strong>金属：漫反射率=0，漫反射颜色=黑，高光反射率=reflctivity，高光颜色=自身颜色</strong></p>
+<p><strong>非金属：漫反射率=1-reflctivity，漫反射颜色=自身颜色，高光反射率=0.04，高光颜色=灰黑</strong></p>
+<p><img src="https://pic4.zhimg.com/80/v2-bff3db7eac931063df21a00609bf9267_720w.jpg" alt="img"></p>
+<h3 id="Unity-URP-PBR"><a href="#Unity-URP-PBR" class="headerlink" title="Unity URP PBR"></a>Unity URP PBR</h3><p>首先我们需要看看Unity URP PBR源码长啥样的，才会对后面的修改光照模型心中有数。首先查看Lighting文件的<strong>BRDFData结构体</strong>，这个结构体包含了BRDF计算的核心参数</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211109141932901.png" alt="image-20211109141932901"></p>
+<p>接下来就是初始化BRDFData数据，这里用宏定义是高光度流程还是金属度流程，我们这里只讨论金属度流程</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211109142142387.png" alt="image-20211109142142387"></p>
+<p>由于非金属的光照特性是：高光反射率在4%左右，所以在Unity中定义了kDielectricSpec来存储了一个经验数值，计算好漫反射率和高光反射率，再计算漫反射和高光颜色，最后传入InitializeBRDFDataDirect中做进一步处理。</p>
+<pre><code>#define kDielectricSpec half4(0.04, 0.04, 0.04, 1.0 - 0.04) // standard dielectric reflectivity coef at incident angle (= 4%)
+half OneMinusReflectivityMetallic(half metallic)
+{
+    // We&#39;ll need oneMinusReflectivity, so
+    //   1-reflectivity = 1-lerp(dielectricSpec, 1, metallic) = lerp(1-dielectricSpec, 0, metallic)
+    // store (1-dielectricSpec) in kDielectricSpec.a, then
+    //   1-reflectivity = lerp(alpha, 0, metallic) = alpha + metallic*(0 - alpha) =
+    //                  = alpha - metallic * alpha
+    half oneMinusDielectricSpec = kDielectricSpec.a;
+    return oneMinusDielectricSpec - metallic * oneMinusDielectricSpec;
+}
+</code></pre><p>整体框架如下：</p>
+<p><img src="https://pic4.zhimg.com/v2-4687a5f496e94f0b4cfb6116af5ee77f_r.jpg" alt="preview"></p>
+<h3 id="BRDF"><a href="#BRDF" class="headerlink" title="BRDF"></a>BRDF</h3><p>BRDF是渲染方程的一种，是用来模拟光的视觉效果的光照模型，其实我们知道<strong>兰伯特 + BlinnPhong</strong>其实就是<strong>漫反射+高光</strong>。BRDF可以简易概括为两部分的实现<strong>直接光照和间接光照</strong>，同时两部分又可以包含<strong>漫反射和高光</strong>两部分，所以可以分为：</p>
+<ol>
+<li>直射光漫反射</li>
+<li>间接光漫反射</li>
+<li>直接光镜面反射</li>
+<li>间接光江面反射</li>
+</ol>
+<p>BRDF就是把他所需要的数据扔进这个光照渲染方程里面，<strong>计算出PBR的最终颜色算法</strong>。</p>
+<h3 id="Unity的BRDF"><a href="#Unity的BRDF" class="headerlink" title="Unity的BRDF"></a>Unity的BRDF</h3><p>Unity的BRDF分为三级：</p>
+<ol>
+<li>brdf1：基于迪士尼的brdf</li>
+<li>brdf2：brdf1的优化版</li>
+<li>brdf3：预烘焙NHRoughness</li>
+</ol>
+<p>效果往下逐级递减，性能往下逐级上升。</p>
+<p>Unity会根据你选择的项目性能进行BRDF的区分</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211110105238575.png" alt="image-20211110105238575"></p>
+<p>知乎大神Lute Li理解的brdf算法简单易懂</p>
+<p><img src="https://pic1.zhimg.com/v2-c5dc048c68f2b56196a234b98f39a510_r.jpg" alt="preview"></p>
+<h4 id="BRDF1"><a href="#BRDF1" class="headerlink" title="BRDF1"></a>BRDF1</h4><p>1.漫反射项使用了DisneyDiffuse模型，与原版不同，Unity的DisneyDiffuse计算中没有除以π，Unity给出的解释是除以π会暗好多，为了保证物理平衡后面计算Specular的时候会乘以一个π。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211110105941628.png" alt="image-20211110105941628"></p>
+<p>2.GGX模型，GGX由三部分组成，D法线分布，G几何遮蔽和几何阴影，F菲涅尔，在Unity中G被V代替，即Visibility可见性。</p>
+<p>D：GGX法线分布</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211110111004373.png" alt="image-20211110111004373"></p>
+<p>V：SmithJointGGX</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211110110929518.png" alt="image-20211110110929518"></p>
+<p>F：用Schlick的近似经验模型</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211110111159370.png" alt="image-20211110111159370"></p>
+<h4 id="BRDF2"><a href="#BRDF2" class="headerlink" title="BRDF2"></a>BRDF2</h4><p>1.漫反射项使用了Lambert模型，在BRDF2函数中 ，没有对漫反射做特殊处理，只是在最后各项数据合并的时候才对光照漫反射部分进行了Lambert计算</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211110111636680.png" alt="image-20211110111636680"></p>
+<p>2.镜面反射项，Unity对V，F函数进行结合拟合操作。</p>
+<p>D依然为GGX分布函数，V为修改后的Kelemen可见项，F拟合为 1/L*H</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211110112624188.png" alt="image-20211110112624188"></p>
+<p>Unity在siggraph2015年中的分享内容，最终高光项</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211110113234811.png" alt="image-20211110113234811"></p>
+<h4 id="BRDF3"><a href="#BRDF3" class="headerlink" title="BRDF3"></a>BRDF3</h4><p>TODO…..</p>
+<h3 id="金克丝实践"><a href="#金克丝实践" class="headerlink" title="金克丝实践"></a>金克丝实践</h3><p><a href="https://zhuanlan.zhihu.com/p/286836840" target="_blank" rel="noopener">根据知乎大佬的文章进行实践</a>，整体实现主要结合ShaderGraph和CustomFunction实现，在ShaderGraph中准备好的BRDF所需要的数据，再传进BRDF中做进一步的光照计算。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211110142821750.png" alt="image-20211110142821750"></p>
+<pre><code>void lolm_brdf2_float(in float3 MainColor,in float3 MaskColor,in float3 MatcapColor,in float3 OcclusionColor,in float3 EmissionColor,in float4 SpecularColor,in UnityTexture2D SSS_Lut_Tex,in float3 WorldNormal,in float3 WorldViewDir, in float3 WorldPos,out float3 FinalColor)
+{
+    #ifdef SHADERGRAPH_PREVIEW
+        FinalColor = float3(1,1,1);
 
-    # 记录拖拽按下的Pos坐标位置
-    def mousePress(self, event):
-        self.dragPos = event.globalPos()
-
-    # 顶部拖拽事件
-    def moveWindow(self, event):
-        # 判断是否为左键点击
-        if event.buttons() == QtCore.Qt.LeftButton:
-            self.move(self.pos() + event.globalPos() - self.dragPos)
-            self.dragPos = event.globalPos()
-            event.accept()
-</code></pre><h3 id="FBX-SDK使用"><a href="#FBX-SDK使用" class="headerlink" title="FBX SDK使用"></a>FBX SDK使用</h3><p>首先创建必要的相关属性，像Manager和Scene，Node，Mesh</p>
-<pre><code>        # fbx相关创建
-        fbxManager = FbxManager.Create()
-        fbxScene = FbxScene.Create(fbxManager, &quot;&quot;)
-        rootNode = fbxScene.GetRootNode()
-        newNode = FbxNode.Create(fbxScene, &quot;myNode&quot;)
-        FbxNode.AddChild(rootNode, newNode)
-
-        # 创建一个Mesh
-        mesh = FbxMesh.Create(fbxScene, &quot;TestMesh&quot;)
-        newNode.SetNodeAttribute(mesh)
-</code></pre><p>接下来就是读取csv数据，并进行重新排序</p>
-<pre><code>        # 获取顶点的总数
-        vertexCount = len(DataFrame)
-
-        # 去重
-        DataFrame_change = DataFrame.drop_duplicates(subset=[&quot; IDX&quot;], keep=&quot;first&quot;, inplace=False)
-        # 排序
-        DataFrame_change = DataFrame_change.sort_values(by=&quot; IDX&quot;, ascending=True)
-        # 获取最小顶点索引
-        minIndex = int(DataFrame_change.iloc[0][&quot; IDX&quot;])
-        # 初始化控制点
-        mesh.InitControlPoints(len(DataFrame_change))
-</code></pre><p>接下来For循环往Mesh里面填数据就好，以Pos为例</p>
-<pre><code>        if (self.checkComboBox(self.comboBox_pos)):
-            print(&quot;填入pos数据&quot;)
-            # 利用切换进行最后一个字符的替换
-            pos_x = self.comboBox_pos.currentText()
-            pos_y = pos_x[:-1] + &quot;y&quot;
-            pos_z = pos_x[:-1] + &quot;z&quot;
-            for i in range(0, len(DataFrame_change)):
-                pos.append(np.array([DataFrame_change.iloc[i][pos_x], DataFrame_change.iloc[i][pos_y],
-                                     DataFrame_change.iloc[i][pos_z]]))
-
-            # FbxLayer
-            for i in range(0, len(DataFrame_change)):
-                # 对应的点索引
-                # pointIndex = int(DataFrame.iloc[i][&quot; IDX&quot;])
-                # 重组位置数据
-                vertexPos = FbxVector4(pos[i][0], pos[i][1], pos[i][2])
-                mesh.SetControlPointAt(vertexPos, i)
-
-            # 重构三角面
-            for j in range(0, int(vertexCount / 3.0)):
-                # 将vertex与point相互绑定
-                mesh.BeginPolygon(j)
-                mesh.AddPolygon(int(DataFrame.iloc[j * 3][&quot; IDX&quot;]) - minIndex)
-                mesh.AddPolygon(int(DataFrame.iloc[j * 3 + 1][&quot; IDX&quot;]) - minIndex)
-                mesh.AddPolygon(int(DataFrame.iloc[j * 3 + 2][&quot; IDX&quot;]) - minIndex)
-                mesh.EndPolygon()
-</code></pre><p>最后就是导出，导出需要FBX export，我就是直接复制了官方的FBX例子的函数方法进行了导出</p>
-<pre><code>        # FBX导出
-        saveScene(saveFileName, fbxManager, fbxScene, pAsASCII=True)
-        fbxManager.Destroy()
-        del fbxManager, fbxScene, DataFrame
-
-        print(&quot;导出成功&quot;)
-</code></pre><p>相关函数，<a href="http://docs.autodesk.com/FBX/2014/ENU/FBX-SDK-Documentation/index.html?url=files/GUID-42C4206E-B67B-45D0-B783-18C6D5B5CB29.htm,topicNumber=d30e12065" target="_blank" rel="noopener">引用地址</a></p>
-<pre><code>def saveScene(pFilename, pFbxManager, pFbxScene, pAsASCII=False):
-    &#39;&#39;&#39; Save the scene using the Python FBX API &#39;&#39;&#39;
-    exporter = FbxExporter.Create(pFbxManager, &#39;&#39;)
-
-    if pAsASCII:
-        # DEBUG: Initialize the FbxExporter object to export in ASCII.
-        asciiFormatIndex = getASCIIFormatIndex(pFbxManager)
-        isInitialized = exporter.Initialize(pFilename, asciiFormatIndex)
-    else:
-        isInitialized = exporter.Initialize(pFilename)
-
-    if (isInitialized == False):
-        raise Exception(&#39;Exporter failed to initialize. Error returned: &#39; + str(exporter.GetStatus().GetErrorString()))
-
-    exporter.Export(pFbxScene)
-
-    exporter.Destroy()
+    #else
+        #if SHADOWS_SCREEN
+            half4 clipPos = TransformWorldToHClip(WorldPos);
+            half4 shadowCoord = ComputeScreenPos(clipPos);
+        #else
+            half4 shadowCoord = TransformWorldToShadowCoord(WorldPos);
+        #endif
 
 
-def getASCIIFormatIndex(pManager):
-    &#39;&#39;&#39; Obtain the index of the ASCII export format. &#39;&#39;&#39;
-    # Count the number of formats we can write to.
-    numFormats = pManager.GetIOPluginRegistry().GetWriterFormatCount()
+    //获取主光源信息
+    Light light = GetMainLight(shadowCoord);
 
-    # Set the default format to the native binary format.
-    formatIndex = pManager.GetIOPluginRegistry().GetNativeWriterFormat()
+    // 基础数据准备
+    float halfDir = normalize(light.direction + WorldViewDir);
 
-    # Get the FBX format index whose corresponding description contains &quot;ascii&quot;.
-    for i in range(0, numFormats):
+    float nl = saturate(dot(WorldNormal,light.direction));
+    float nh = saturate(dot(WorldNormal,halfDir));
+    float nv = saturate(dot(WorldNormal,WorldViewDir));
+    float lh = saturate(dot(light.direction,halfDir));
 
-        # First check if the writer is an FBX writer.
-        if pManager.GetIOPluginRegistry().WriterIsFBX(i):
+    //获取光源根据法线的反射方向
+    // float worldLightReflectDir = normalize(reflect(-light.direction,WorldNormal));
+    // float lrDotv = dot(worldLightReflectDir,WorldViewDir);
 
-            # Obtain the description of the FBX writer.
-            description = pManager.GetIOPluginRegistry().GetWriterFormatDescription(i)
+    float halfLambert = nl*0.5f+0.5f;
 
-            # Check if the description contains &#39;ascii&#39;.
-            if &#39;ascii&#39; in description:
-                formatIndex = i
-                break
+    // 直接光的漫反射项
+    //计算漫反射率
+    float oneMinusReflectivity = 0.96f *(1 - MaskColor.r);
+    float3 diffuseColor = MainColor * oneMinusReflectivity;
+    //float3 diffuseColor = MainColor;
 
-    # Return the file format.
-    return formatIndex
-</code></pre><h3 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h3><p>从平安京截取的模型，带有UV通道。</p>
-<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211103194637329.png" alt="image-20211103194637329"></p>
-<h2 id="引用参考"><a href="#引用参考" class="headerlink" title="引用参考"></a>引用参考</h2><p>1.<a href="https://blog.l0v0.com/posts/38fb96a1.html" target="_blank" rel="noopener">UE4.26 FBX Python Binding 编译</a></p>
-<p>2.<a href="https://zhuanlan.zhihu.com/p/51123783" target="_blank" rel="noopener">用代码控制模型，python for fbx，顶点法线修复的实现。</a></p>
-<p>3.<a href="https://www.docin.com/p-2215083627.html" target="_blank" rel="noopener">读取Fbx文件中的信息</a></p>
-<p>4.<a href="http://docs.autodesk.com/FBX/2014/ENU/FBX-SDK-Documentation/index.html?url=files/GUID-42C4206E-B67B-45D0-B783-18C6D5B5CB29.htm,topicNumber=d30e12065" target="_blank" rel="noopener">官方PYTHON FBX SDK文档</a></p>
+    // 直接光的高光反射项
+    // 计算高光反射率
+    float reflectivity = 1.0f - oneMinusReflectivity;
+    // 计算高光颜色
+    float3 _selectSpecColor = lerp(float3(0.04f,0.04f,0.04f),MainColor,MaskColor.r);
+    // 首先计算D项
+    float roughness = 1 - MaskColor.g;
+    float a = roughness * roughness;
+    float a2 = a*a;
+
+    float D = nh * nh * (a2 - 1.0f) + 1.00001f; 
+
+    // 使用的是BRDF2，VF是用拟合做处理
+    float SpecularTerm =  a2 / (max(0.1f, lh*lh) * (roughness + 0.5f) * (D * D) * 4 * 3.14f);
+    //SpecularTerm = clamp(SpecularTerm,0.0f,1.0f);
+    //SpecularTerm = 1- SpecularTerm;
+
+    //自选高光Pow,控制高光区域
+    // float _specPow = 0.5;
+    //高光强度
+    // float _specStrength = 3;
+
+    // half specularPow = lerp(2,4,MaskColor.b);
+    // half phong = pow(saturate(lrDotv),specularPow);
+    // float3 directSpecular = _selectSpecColor * phong * _specStrength;
+
+    // 模拟次表面散射
+    float3 sss_Color = tex2D(SSS_Lut_Tex,float2(halfLambert, MaskColor.b));
+
+    half surfaceReduction = (0.6-0.08*roughness);
+    surfaceReduction = 1.0 - a*roughness*surfaceReduction;
+
+    //half oneMinusReflectivity = (1-MaskColor.r)*0.04f;
+    half grazingTerm = saturate(MaskColor.g + reflectivity);
+
+
+    // 间接光的漫反射部分
+    //环境光部分
+    float3 ambient = float3(unity_SHAr.w, unity_SHAg.w, unity_SHAb.w);
+    float indirectDiffuse = ambient * OcclusionColor.r * diffuseColor;
+
+    // 间接光的高光反射部分
+
+    FinalColor = (diffuseColor +  _selectSpecColor * SpecularTerm ) * light.color * sss_Color + indirectDiffuse 
+    + surfaceReduction * MatcapColor * FresnelLerpFast(_selectSpecColor,grazingTerm,nv) + EmissionColor ;
+    //FinalColor =light.shadowAttenuation;
+    #endif
+
+}
+</code></pre><p>最终效果如下，目前对于PBR流程有了更多的了解，但还是有点云里雾里的，还需要后面多进行实践，才能真正地弄懂PBR。</p>
+<p><img src="https://opda-hexo-1300535968.cos.ap-guangzhou.myqcloud.com/markdown/image-20211110142924585.png" alt="image-20211110142924585"></p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><ol>
+<li><a href="https://zhuanlan.zhihu.com/p/286836840" target="_blank" rel="noopener">LOLm渲染分析</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/81959654" target="_blank" rel="noopener">Unity的BRDF简易理解</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/342418327" target="_blank" rel="noopener">Unity中BRDF各种类型</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/352661506" target="_blank" rel="noopener">Unity UE4 BRDF研究</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/137039291" target="_blank" rel="noopener">Unity BRDF函数计算</a></li>
+<li><a href="https://answer.uwa4d.com/question/607fdebf6bb31032f97913ba" target="_blank" rel="noopener">Unity中BRDF与论文公式不一致的问题</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/407007915" target="_blank" rel="noopener">迪士尼BRDF</a></li>
+<li>Unity Siggraph2015</li>
+</ol>
  
       <!-- reward -->
       
@@ -327,12 +325,12 @@ def getASCIIFormatIndex(pManager):
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2021/11/03/Python-FBX-SDK%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2021/11/10/unity-PBR%E5%AD%A6%E4%B9%A0/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/" rel="tag">Python</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Unity/" rel="tag">Unity</a></li></ul>
 
     </footer>
   </div>
@@ -340,19 +338,10 @@ def getASCIIFormatIndex(pManager):
    
   <nav class="article-nav">
     
-      <a href="/2021/11/10/unity-PBR%E5%AD%A6%E4%B9%A0/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            Unity-PBR学习
-          
-        </div>
-      </a>
     
-    
-      <a href="/2021/01/05/UE4---%E9%9B%A8%E6%BB%B4%E5%92%8C%E6%B0%B4%E6%BB%B4%E6%BB%91%E8%90%BD%E6%95%88%E6%9E%9C%E7%AC%94%E8%AE%B0/" class="article-nav-link">
+      <a href="/2021/11/03/Python-FBX-SDK%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">UE4---雨点和水滴滑落效果笔记</div>
+        <div class="article-nav-title">Python FBX SDK踩坑记录</div>
       </a>
     
   </nav>
